@@ -428,21 +428,20 @@ questions:
       - Reddit (r/NixOS — unofficial)
       - Blog posts or tutorials
       - Other
-  - prompt: >
-      If you want to contribute or have contributed in the past to Nixpkgs,
-      please select all that apply:
+  - prompt: "If you’ve contributed to Nixpkgs or are interested in contributing, which of the following describe your experience or situation?"
     type: multiple
     choices:
-      - I don't plan to contribute.
-      - Everything I want to contribute to is already being worked on and I don't feel the need to get involved.
-      - I would like to contribute, but I don't know how to get started.
-      - I tried to contribute something, but got stuck after I started.
-      - I received unhelpful feedback.
-      - It took longer than I expected to receive feedback.
-      - I want to get involved in something being worked on, but don't know how to start.
-      - I can't contribute because my company forbids it.
+      - I don’t plan to contribute.
+      - I would like to contribute, but I don’t know how to get started.
+      - I want to contribute to an existing effort, but don’t know how to join in.
+      - I tried to contribute, but got stuck after I started.
+      - I received feedback, but it was unhelpful or unclear.
+      - It took too long to receive feedback.
+      - I can’t contribute because my employer doesn’t allow it.
+      - Everything I wanted to work on was already being handled by others and I don't feel the need to get involved.
       - I was able to contribute on my own.
-      - I was able to contribute with assistance from others in the community.
+      - I was able to contribute with help from the community.
+      - I plan to contribute in the future.
   - prompt: When you need to get help with Nix or NixOS, how often do you find an acceptable answer?
     type: single
     choices:
