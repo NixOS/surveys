@@ -122,13 +122,13 @@ questions:
       - I don't use Nix
       - I don't use NixOS
       - I use NixOS
-      - I manage or develop for machines running NixOS
       - I use Nix to install software
       - I develop software with Nix
+      - I manage or maintain machines running NixOS
       - I contribute packages or patches to Nixpkgs
-      - I actively maintain packages in Nixpkgs
+      - I maintain packages in Nixpkgs
       - I have merge access to Nixpkgs
-      - I develop a tool based on or integrating with Nix, Nixpkgs, or NixOS
+      - I develop tools or infrastructure that use or integrate with Nix, Nixpkgs, or NixOS
   - prompt: For how many years have you been using Nix in total?
     type: single
     choices:
