@@ -48,16 +48,24 @@ questions:
       - Non-binary/non-conforming
       - I identify in another way
       - Prefer not to say
-  - prompt: Including any education, how many years have you been programming in total?
+  - prompt: How many years of programming experience do you have (including time spent learning or studying)?
     type: single
     choices:
-      - I never programmed
+      # https://survey.stackoverflow.co/2024/developer-profile#experience
+      - I have never programmed
       - Less than 1 year
       - 1 to 4 years
       - 5 to 9 years
-      - 10 to 24 years
-      - 25 to 49 years
+      - 10 to 14 years
+      - 15 to 19 years
+      - 20 to 24 years
+      - 25 to 29 years
+      - 30 to 34 years
+      - 35 to 39 years
+      - 40 to 44 years
+      - 45 to 49 years
       - More than 50 years
+      - Prefer not to say
   - prompt: Which of the following describes your main occupation?
     type: single
     choices:
