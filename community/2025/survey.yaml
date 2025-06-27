@@ -265,7 +265,7 @@ questions:
       - Mobile device
       - High-performance computing or academic cluster
       - Other
-  - prompt: Which version of Nix do you use? (only write the SemVer, e.g. "2.18.11", get it with `nix-env --version`)
+  - prompt: "Which version of Nix do you use most often? (Enter the full SemVer version, e.g. 2.18.5. You can check by running `nix-env --version`.)"
     type: text
   - prompt: Which NixOS releases do you use?
     type: multiple
