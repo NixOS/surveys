@@ -243,14 +243,14 @@ questions:
       - Other
   # Query information about the installation method.
   # Also gives insight on the proportion of NixOS users since these would be the one who checked the `NixOS` box
-  - prompt: How did you install Nix?
+  - prompt: How have you installed Nix on any of your systems?
     type: multiple
     choices:
-      - NixOS
-      - With the official installer
-      - With another package manager
-      - With DeterminateSystems/nix-installer
-      - From source
+      - Nix was preinstalled with NixOS
+      - I used the official install script from nixos.org
+      - I used DeterminateSystems/nix-installer
+      - I used another package manager (e.g. Homebrew, APT)
+      - I built Nix from source
       - Other
   - prompt: In what environments do you use Nix?
     type: multiple
