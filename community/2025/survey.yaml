@@ -66,42 +66,44 @@ questions:
       - 45 to 49 years
       - More than 50 years
       - Prefer not to say
-  - prompt: Which of the following describes your main occupation?
+  - prompt: Which of the following best describes your primary role or occupation?
     type: single
     choices:
-      # Taken from Stack Overflow survey, ordered by most replied to least replied.
-      - Developer, full-stack
-      - Developer, back-end
-      - Developer, front-end
-      - Developer, desktop or enterprise applications
-      - Developer, mobile
-      - Developer, embedded applications or devices
-      - Developer, quality assurance or testing
-      - Developer, game or graphics
-      - Engineer, hardware
-      - Engineer, data
-      - Engineer, site reliability
-      - DevOps specialist
-      - Cloud infrastructure engineer
-      - Data scientist or machine learning specialist
-      - Data or business analyst
-      - System administrator
-      - Database administrator
-      - Security professional
+      # https://survey.stackoverflow.co/2024/developer-profile#developer-roles
       - Academic researcher
+      - Back-end developer
+      - Blockchain developer
+      - Cloud infrastructure engineer
+      - Data / Business analyst
+      - Data engineer
+      - Data scientist or ML specialist
+      - Database administrator
+      - Dev / AI specialist
+      - DevOps specialist
+      - Developer Experience (DevEx)
+      - Developer advocate (DevRel)
+      - Educator
+      - Embedded applications developer
+      - Enterprise (desktop) developer
+      - Front-end developer
+      - Full-stack developer
+      - Game developer
+      - Hardware engineer
+      - Manager
+      - Marketing or sales professional
+      - Mobile developer
+      - Product manager
+      - QA / Test engineer
       - Research & development role
       - Scientist
-      - Educator
-      - Project manager
-      - Engineering manager
-      - Senior executive (C-suite, VP, etc.)
-      - Product manager
-      - Developer experience
-      - Developer advocate
-      - User experience
-      - Designer
-      - Marketing or sales professional
+      - Security professional
+      - Senior Executive
+      - Site Reliability Engineer (SRE)
       - Student
+      - System / network administrator
+      - UX / UI designer
+      - Other
+      - Prefer not to say
   - prompt: Which operating systems do you currently use?
     type: multiple
     choices:
