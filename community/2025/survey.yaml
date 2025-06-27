@@ -27,17 +27,17 @@ questions:
       - Micronesia
       - Polynesia
       - Prefer not to say
-  - prompt: What is your age?
+  - prompt: What is your age in years?
     type: single
     choices:
-      - 0-18 years old
-      - 18-24 years old
-      - 25-34 years old
-      - 35-44 years old
-      - 45-54 years old
-      - 55-64 years old
-      - 65 years or older
-      - Prefer not to respond
+      - Under 18
+      - 18-24
+      - 25-34
+      - 35-44
+      - 45-54
+      - 55-64
+      - 65 or older
+      - Prefer not to say
   - prompt: How do you identify?
     type: single
     choices:
