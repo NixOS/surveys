@@ -38,13 +38,16 @@ questions:
       - 55-64
       - 65 or older
       - Prefer not to say
-  - prompt: How do you identify?
+  - prompt: What is your gender identity?
     type: single
     choices:
+      # https://www.csusm.edu/ipa/surveys/inclusive-language-guidelines.html
       - Man
       - Woman
+      - Transgender
       - Non-binary/non-conforming
-      - Prefer not to respond
+      - I identify in another way
+      - Prefer not to say
   - prompt: Including any education, how many years have you been programming in total?
     type: single
     choices:
