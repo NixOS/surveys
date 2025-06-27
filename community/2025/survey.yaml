@@ -337,25 +337,28 @@ questions:
   - prompt: Which Nix experimental features do you use?
     type: multiple
     choices:
-      - "Automatic UID allocation (`auto-allocate-uids`)"
+      - "Flakes (`flakes`)"
+      - "New `nix` command-line interface (`nix-command`)"
       - "Content-addressed derivations (`ca-derivations`)"
-      - "Use cgroups in execution environments (Linux) (`cgroups`)"
-      - "Allow impure environment variables in the execution environment (`configurable-impure-env`)"
-      - "Allow forcing trust settings for the Nix daemon (`daemon-trust-override`)"
       - "Dynamic derivations (`dynamic-derivations`)"
+      - "Git hashing for store objects (`git-hashing`)"
+      - "Recursive Nix (`recursive-nix`)"
+      - "Impure derivations (`impure-derivations`)"
       - "`builtins.fetchClosure` (`fetch-closure`)"
       - "`builtins.fetchTree` (`fetch-tree`)"
-      - "Flakes (`flakes`)"
-      - "Git hashing for store objects (`git-hashing`)"
-      - "Impure derivations (`impure-derivations`)"
-      - "Local overlay store (`local-overlay-store`)"
       - "Mounted SSH store (`mounted-ssh-store`)"
-      - "`nix` command line tools (`nix-command`)"
+      - "Local overlay store (`local-overlay-store`)"
+      - "Automatic UID allocation (`auto-allocate-uids`)"
+      - "Use cgroups in execution environments (`cgroups`)"
+      - "Allow impure environment variables in the execution environment (`configurable-impure-env`)"
+      - "Allow forcing trust settings for the Nix daemon (`daemon-trust-override`)"
       - "Disallow literal URL (`no-url-literals`)"
       - "Allow parsing timestamps in `builtins.fromTOML` (`parse-toml-timestamps`)"
-      - "Allow `read-only` on local stores `(`read-only-local-store`)"
+      - "Allow `read-only` on local stores (`read-only-local-store`)"
       - "Allow derivation builders to call Nix (`recursive-nix`)"
       - "Verify Git commit signatures with `builtins.fetchGit` (`verified-fetches`)"
+      - I don’t use any experimental features
+      - I’m not sure
   - prompt: Do you currently consider Nix as part of your usual set of tools?
     type: single
     choices:
