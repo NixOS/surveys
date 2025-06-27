@@ -129,16 +129,18 @@ questions:
       - I maintain packages in Nixpkgs
       - I have merge access to Nixpkgs
       - I develop tools or infrastructure that use or integrate with Nix, Nixpkgs, or NixOS
-  - prompt: For how many years have you been using Nix in total?
+  - prompt: How many years have you been using Nix (at any level of involvement)?
     type: single
     choices:
       - I don't use Nix
       - Less than 1 year
       - 1 to 2 years
-      - 2 to 3 years
-      - 3 to 5 years
-      - 5 to 10 years
-      - 10 to 20 years
+      - 3 to 4 years
+      - 5 to 6 years
+      - 7 to 8 years
+      - 9 to 10 years
+      - 11 or more years
+      - Prefer not to say
   - prompt: How would you describe your skill level with Nix?
     type: single
     choices:
