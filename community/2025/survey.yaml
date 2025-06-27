@@ -252,16 +252,19 @@ questions:
       - I used another package manager (e.g. Homebrew, APT)
       - I built Nix from source
       - Other
-  - prompt: In what environments do you use Nix?
+  - prompt: On what types of systems or infrastructure do you use Nix?
     type: multiple
     choices:
-      - I don't use Nix
-      - Laptops, desktops, workstations, development machines
-      - Home servers
-      - Continuous integration servers
-      - Production servers
-      - Mobile devices
-      - Embedded/IoT devices
+      - I don’t use Nix
+      - Personal computer (laptop or desktop)
+      - Workstation or development machine
+      - Home server
+      - Continuous integration (CI) environment
+      - Production server
+      - Embedded / IoT device
+      - Mobile device
+      - High-performance computing or academic cluster
+      - Other
   - prompt: Which version of Nix do you use? (only write the SemVer, e.g. "2.18.11", get it with `nix-env --version`)
     type: text
   - prompt: Which NixOS releases do you use?
