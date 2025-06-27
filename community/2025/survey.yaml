@@ -451,5 +451,5 @@ questions:
       - Rarely
       - Never
   # Final question to get meta feedback on the survey from participants
-  - prompt: How can we improve this survey?
+  - prompt: Do you have any feedback on how we can improve this survey for next time?
     type: text
