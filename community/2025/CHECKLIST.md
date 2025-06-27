@@ -2,17 +2,23 @@
 
 - [ ] Continue documenting the process of running the survey in a version controlled repository
   - purpose: make the process outlast the volunteer team members (who are likely to drop out eventually)
-  - https://github.com/GuillaumeDesforges/nix-survey
 - [ ] Design the survey questions
   - [ ] Ask community teams what information they need
-    - [ ] Nix maintainers
-    - [ ] Documentation
-    - [ ] Nixpkgs Architecture
-    - [ ] NixOS release managers
-    - [ ] Moderation
-    - [ ] Infrastructure
-    - [ ] Security
-    - [ ] Governance
+    - [ ] CUDA Team (https://matrix.to/#/#cuda:nixos.org)
+    - [ ] Documentation Team (https://matrix.to/#/#docs:nixos.org)
+    - [ ] Foundation (https://matrix.to/#/#foundation:nixos.org)
+    - [ ] Geospatial Team (https://matrix.to/#/#geospatial:nixos.org)
+    - [ ] Infrastructure Team (https://matrix.to/#/#infra:nixos.org)
+    - [ ] Marketing Team (https://matrix.to/#/#marketing:nixos.org)
+    - [ ] Moderation Team (https://matrix.to/#/#moderation:nixos.org) (Currently, matrix is for reports; @moderation-team on Discourse)
+    - [ ] Nix Team (https://matrix.to/#/#nix-dev:nixos.org)
+    - [ ] Nix@NGI Team (https://matrix.to/#/#ngipkgs:matrix.org)
+    - [ ] NixOS Hardware Team (https://matrix.to/#/#nixos-hardware:nixos.org)
+    - [ ] NixOS release managers (Find the list of the past few managers.)
+    - [ ] Security Team (https://matrix.to/#/#security:nixos.org)
+    - [ ] Stdenv Team (https://matrix.to/#/#stdenv:nixos.org)
+    - [ ] Steering Committee (No matrix? @steering_committee on Discourse)
+    - [ ] Xen Project Hypervisor Team (https://matrix.to/#/#xen:nixos.org)
     - [ ] (check for new teams)
   - limited count (e.g. max 4)
   - only yes/no, categorical or multiple choice
