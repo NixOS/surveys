@@ -1,0 +1,425 @@
+title: Nix Community Survey 2025
+intro: >
+  Welcome to this year's Nix Community Survey!
+  Please take 5-10 minutes to fill out this survey with info about yourself and how you use projects in the Nix ecosystem.
+  Your responses will help us develop Nix, Nixpkgs, and NixOS to better match your needs and come up with new ideas for serving and growing the community.
+  Please note that when we only say "Nix" in a question, we refer to the Nix command-line tool.
+  When we want to refer to the Nix language, Nixpkgs, NixOS, or the Nix ecosystem as a whole, we'll be clear with the terms.
+questions:
+  - prompt: Where do you live?
+    type: single
+    choices:
+      # Found this list on the internet. Should we use countries instead?
+      - North America
+      - South America
+      - Central America
+      - Caribbean
+      - Central & South Asia
+      - Northeastern Asia
+      - Southeastern Asia
+      - Australia and Oceania
+      - Northern Europe
+      - Southern Europe
+      - Eastern Europe
+      - Western Europe
+      - Middle East
+      - Northern Africa
+      - Southern Africa
+      - Prefer not to respond
+  - prompt: What is your age?
+    type: single
+    choices:
+      - 0-18 years old
+      - 18-24 years old
+      - 25-34 years old
+      - 35-44 years old
+      - 45-54 years old
+      - 55-64 years old
+      - 65 years or older
+      - Prefer not to respond
+  - prompt: How do you identify?
+    type: single
+    choices:
+      - Man
+      - Woman
+      - Non-binary/non-conforming
+      - Prefer not to respond
+  - prompt: Including any education, how many years have you been programming in total?
+    type: single
+    choices:
+      - I never programmed
+      - Less than 1 year
+      - 1 to 4 years
+      - 5 to 9 years
+      - 10 to 24 years
+      - 25 to 49 years
+      - More than 50 years
+  - prompt: Which of the following describes your main occupation?
+    type: single
+    choices:
+      # Taken from Stack Overflow survey, ordered by most replied to least replied.
+      - Developer, full-stack
+      - Developer, back-end
+      - Developer, front-end
+      - Developer, desktop or enterprise applications
+      - Developer, mobile
+      - Developer, embedded applications or devices
+      - Developer, quality assurance or testing
+      - Developer, game or graphics
+      - Engineer, hardware
+      - Engineer, data
+      - Engineer, site reliability
+      - DevOps specialist
+      - Cloud infrastructure engineer
+      - Data scientist or machine learning specialist
+      - Data or business analyst
+      - System administrator
+      - Database administrator
+      - Security professional
+      - Academic researcher
+      - Research & development role
+      - Scientist
+      - Educator
+      - Project manager
+      - Engineering manager
+      - Senior executive (C-suite, VP, etc.)
+      - Product manager
+      - Developer experience
+      - Developer advocate
+      - User experience
+      - Designer
+      - Marketing or sales professional
+      - Student
+  - prompt: Which operating systems do you currently use?
+    type: multiple
+    choices:
+      - GNU/Linux
+      - macOS
+      - Windows
+      - BSD
+      - iOS
+      - Android
+  - prompt: Which of these best describe your involvement with the Nix ecosystem?
+    type: multiple
+    choices:
+      - I don't use Nix
+      - I don't use NixOS
+      - I use NixOS
+      - I manage or develop for machines running NixOS
+      - I use Nix to install software
+      - I develop software with Nix
+      - I contribute packages or patches to Nixpkgs
+      - I actively maintain packages in Nixpkgs
+      - I have merge access to Nixpkgs
+      - I develop a tool based on or integrating with Nix, Nixpkgs, or NixOS
+  - prompt: For how many years have you been using Nix in total?
+    type: single
+    choices:
+      - I don't use Nix
+      - Less than 1 year
+      - 1 to 2 years
+      - 2 to 3 years
+      - 3 to 5 years
+      - 5 to 10 years
+      - 10 to 20 years
+  - prompt: How would you describe your skill level with Nix?
+    type: single
+    choices:
+      - I have never used Nix
+      - Beginner
+      - Intermediate
+      - Advanced
+  # This year, we try to assess how people discovered Nix
+  - prompt: >
+      Did you hear about Nix or NixOS first?
+      If you heard about both at the same time, select which one first made you interested in the Nix ecosystem.
+    type: single
+    choices:
+      - Nix
+      - NixOS
+  - prompt: How did you find out about it?
+    type: single
+    choices:
+      - At work
+      - In my education (School/University/...)
+      - From a friend
+      - YouTube
+      - Reddit
+      - Hacker News
+      - Twitter/X
+      - LinkedIn
+      - Other social media
+      - On a blog
+      - Academic Research (referenced in paper, conference talk)
+      - Searching (e.g. on Google)
+  - prompt: |
+      Which user types do you identify with? Select all that apply:
+      - A. You love the idea behind Nix or NixOS.
+        Maybe you spread the word among friends and coworkers.
+        Maybe you are interested in or enthusiastic about any of the following:
+          - Free and open source software
+          - Linux
+          - Home automation
+          - Online communities
+          - Distro-hopping
+      - B. You’re here because you’re curious about Nix and how it works.
+        Maybe you enjoy or want to learn functional programming,
+        or you just want to learn new things.
+        Maybe you identify yourself as:
+          - Nix-curious developer
+          - Student of a technical field
+          - Educator
+          - Academic researcher
+      - C. You use Nix or NixOS to get things done or boost your team’s productivity,
+        you learn it to grow your career opportunities,
+        or you have to use it on the job because someone said so.
+        Maybe you identify yourself as:
+          - System administrator
+          - Employee developer
+          - DevOps engineer
+          - Natural scientist
+          - Open source software author
+          - Early-career professional
+      - D. You work or want to work on the Nix ecosystem rather than just with it.
+        You are at least one of the following:
+          - Aspiring contributor
+          - Novice contributor
+          - Drive-by contributor
+          - Package maintainer
+          - Code owner
+          - Community team member
+          - Sponsor
+      - E. You make the strategic decisions for your team or company:
+        which technologies to adopt, which skills to train your employees in,
+        which projects to support or invest in, which services or products to offer.
+        Maybe you’re a:
+          - Entrepreneur
+          - Team lead
+          - Software architect
+          - CTO
+          - Sales executive
+          - Public service administrator
+    type: multiple
+    choices:
+      - A. I love the idea behind Nix
+      - B. I'm curious how Nix works
+      - C. I use Nix to get things done
+      - D. I (want to) work on Nix
+      - E. I'm a decision-maker
+  - prompt: On which operating systems do you use Nix currently?
+    type: multiple
+    choices:
+      - I don't use Nix
+      - GNU/Linux
+      - macOS
+      - Windows (via WSL)
+      - BSD
+      - Android
+  # Query information about the installation method.
+  # Also gives insight on the proportion of NixOS users since these would be the one who checked the `NixOS` box
+  - prompt: How did you install Nix?
+    type: multiple
+    choices:
+      - NixOS
+      - With the official installer
+      - With another package manager
+      - With DeterminateSystems/nix-installer
+      - From source
+      - Other
+  - prompt: In what environments do you use Nix?
+    type: multiple
+    choices:
+      - I don't use Nix
+      - Laptops, desktops, workstations, development machines
+      - Home servers
+      - Continuous integration servers
+      - Production servers
+      - Mobile devices
+      - Embedded/IoT devices
+  - prompt: Which version of Nix do you use? (only write the SemVer, e.g. "2.18.11", get it with `nix-env --version`)
+    type: text
+  - prompt: Which NixOS releases do you use?
+    type: multiple
+    choices:
+      - unstable
+      - 24.05
+      - 23.11
+      - 23.05
+      - older
+      - I don't know
+      - I don't use NixOS
+  - prompt: Which software ecosystems do you use Nix with?
+    type: multiple
+    choices:
+      - I don't use Nix
+      - NixOS configurations
+      # Taken from Stack Overflow survey, ordered alphabetically.
+      - APL
+      - Ada
+      - Apex
+      - Assembly
+      - Bash/Shell (all shells)
+      - C
+      - C#
+      - C++
+      - Clojure
+      - Cobol
+      - Crystal
+      - Dart
+      - Delphi
+      - Elixir
+      - Erlang
+      - F#
+      - Flow
+      - Fortran
+      - GDScript
+      - Go
+      - Groovy
+      - HTML/CSS
+      - Haskell
+      - Java
+      - JavaScript
+      - Julia
+      - Kotlin
+      - Lisp
+      - Lua
+      - MATLAB
+      - Nim
+      - OCaml
+      - Objective-C
+      - PHP
+      - Perl
+      - PowerShell
+      - Prolog
+      - Python
+      - R
+      - Raku
+      - Ruby
+      - Rust
+      - SAS
+      - SQL
+      - Scala
+      - Solidity
+      - Swift
+      - TypeScript
+      - VBA
+      - Visual Basic (.Net)
+      - Zig
+  - prompt: Which Nix experimental features do you use?
+    type: multiple
+    choices:
+      - "Automatic UID allocation (`auto-allocate-uids`)"
+      - "Content-addressed derivations (`ca-derivations`)"
+      - "Use cgroups in execution environments (Linux) (`cgroups`)"
+      - "Allow impure environment variables in the execution environment (`configurable-impure-env`)"
+      - "Allow forcing trust settings for the Nix daemon (`daemon-trust-override`)"
+      - "Dynamic derivations (`dynamic-derivations`)"
+      - "`builtins.fetchClosure` (`fetch-closure`)"
+      - "`builtins.fetchTree` (`fetch-tree`)"
+      - "Flakes (`flakes`)"
+      - "Git hashing for store objects (`git-hashing`)"
+      - "Impure derivations (`impure-derivations`)"
+      - "Local overlay store (`local-overlay-store`)"
+      - "Mounted SSH store (`mounted-ssh-store`)"
+      - "`nix` command line tools (`nix-command`)"
+      - "Disallow literal URL (`no-url-literals`)"
+      - "Allow parsing timestamps in `builtins.fromTOML` (`parse-toml-timestamps`)"
+      - "Allow `read-only` on local stores `(`read-only-local-store`)"
+      - "Allow derivation builders to call Nix (`recursive-nix`)"
+      - "Verify Git commit signatures with `builtins.fetchGit` (`verified-fetches`)"
+  - prompt: Do you currently consider Nix as part of your usual set of tools?
+    type: single
+    choices:
+      - Yes
+      - No
+  # This question has been collapsed into one, so that we don't need conditional questions.
+  - prompt: >
+      If Nix is not part of your usual set of tools,
+      please tell us what prevents it and what would help you.
+    type: text
+  # This question has been collapsed into one, so that we don't need conditional questions.
+  - prompt: >
+      If you want to use NixOS but can't use NixOS,
+      please tell us what prevents it and what would help you.
+    type: text
+  - prompt: Which objects do you interact with or search for most often across the ecosystem?
+    type: ranking
+    choices:
+      - Package search (package names, program names)
+      - NixOS option search (option names, option documentation)
+      - NixOS configuration examples
+      - Package examples
+      - Package parameters
+      - Development environments
+      - nix.dev
+      - Tutorials
+      - How-to guides
+      - Manuals
+      - Answers to questions
+      - Troubleshooting tips
+      - Function documentation
+      - Nix language functions
+      - Command-line interface
+      - Nix standalone installer
+      - NixOS installer
+      - Security notifications
+      - Source code (package)
+      - Source code (module)
+      - Source code (C++ Nix)
+      - Discourse conversations
+      - Press information
+      - Reviews and testimonials
+      - Community updates
+      - Lore, jokes, memes
+      - Release notes
+      - Additional tools
+      - Job postings
+      - Paid support offers
+  - prompt: >
+      When you need to get help with Nix or NixOS,
+      which resources do you use most often?
+      (if you always start with a web search, choose which resources you go to most often among the results)
+    type: ranking
+    choices:
+      - nix.dev
+      - Reference manuals (Nix/Nixpkgs/NixOS)
+      - NixOS Wiki (wiki.nixos.org, official)
+      - Discourse
+      - Matrix channels
+      - GitHub issues
+      - Source code
+      - Mastodon
+      - Twitter
+      - Stack Overflow
+      - Discord (unofficial)
+      - Reddit (unofficial)
+      - Wiki (nixos.wiki, unofficial)
+      - Blog posts
+      - Others
+  - prompt: >
+      If you want to contribute or have contributed in the past to Nixpkgs,
+      please select all that apply:
+    type: multiple
+    choices:
+      - I don't plan to contribute.
+      - Everything I want to contribute to is already being worked on and I don't feel the need to get involved.
+      - I would like to contribute, but I don't know how to get started.
+      - I tried to contribute something, but got stuck after I started.
+      - I received unhelpful feedback.
+      - It took longer than I expected to receive feedback.
+      - I want to get involved in something being worked on, but don't know how to start.
+      - I can't contribute because my company forbids it.
+      - I was able to contribute on my own.
+      - I was able to contribute with assistance from others in the community.
+  - prompt: When you need to get help with Nix or NixOS, how often do you find an acceptable answer?
+    type: single
+    choices:
+      - Every time
+      - Almost every time
+      - Most of the time
+      - Half of the time
+      - Sometimes
+      - Almost never
+  # Final question to get meta feedback on the survey from participants
+  - prompt: How can we improve this survey?
+    type: text
