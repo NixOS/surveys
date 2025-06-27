@@ -230,15 +230,17 @@ questions:
       - C. I use Nix to get things done
       - D. I (want to) work on Nix
       - E. I'm a decision-maker
-  - prompt: On which operating systems do you use Nix currently?
+  - prompt: On which operating systems do you currently use Nix?
     type: multiple
     choices:
-      - I don't use Nix
-      - GNU/Linux
+      - I don’t use Nix
+      - NixOS
+      - Other GNU/Linux distribution
       - macOS
       - Windows (via WSL)
       - BSD
       - Android
+      - Other
   # Query information about the installation method.
   # Also gives insight on the proportion of NixOS users since these would be the one who checked the `NixOS` box
   - prompt: How did you install Nix?
