@@ -267,14 +267,14 @@ questions:
       - Other
   - prompt: "Which version of Nix do you use most often? (Enter the full SemVer version, e.g. 2.18.5. You can check by running `nix-env --version`.)"
     type: text
-  - prompt: Which NixOS releases do you use?
+  - prompt: Which NixOS releases do you currently use on any of your systems?
     type: multiple
     choices:
       - unstable
-      - 24.05
-      - 23.11
-      - 23.05
-      - older
+      - "25.05"
+      - "24.11"
+      - "24.05"
+      - "23.11 or older"
       - I don't know
       - I don't use NixOS
   - prompt: Which software ecosystems do you use Nix with?
