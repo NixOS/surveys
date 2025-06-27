@@ -1,52 +1,51 @@
 # Community Survey 2025 checklist
 
-
 - [ ] Continue documenting the process of running the survey in a version controlled repository
-    - purpose: make the process outlast the volunteer team members (who are likely to drop out eventually)
-    - https://github.com/GuillaumeDesforges/nix-survey
+  - purpose: make the process outlast the volunteer team members (who are likely to drop out eventually)
+  - https://github.com/GuillaumeDesforges/nix-survey
 - [ ] Design the survey questions
-    - [ ] Ask community teams what information they need
-        - [ ] Nix maintainers
-        - [ ] Documentation
-        - [ ] Nixpkgs Architecture
-        - [ ] NixOS release managers
-        - [ ] Moderation
-        - [ ] Infrastructure
-        - [ ] Security
-        - [ ] Governance
-        - [ ] (check for new teams)
-    - limited count (e.g. max 4)
-    - only yes/no, categorical or multiple choice
-        - use ranking questions sparingly, too many options are confusing
-        - limit to one open-ended question, they are costly to analyze (ask @fricklerhandwerk)
-    - no conditionality/branching
-      - if there are conditional questions, consider splitting out a special-purpose survey
-    - group questions per persona?
-        - users
-        - package maintainers
-        - core contributors
+  - [ ] Ask community teams what information they need
+    - [ ] Nix maintainers
+    - [ ] Documentation
+    - [ ] Nixpkgs Architecture
+    - [ ] NixOS release managers
+    - [ ] Moderation
+    - [ ] Infrastructure
+    - [ ] Security
+    - [ ] Governance
+    - [ ] (check for new teams)
+  - limited count (e.g. max 4)
+  - only yes/no, categorical or multiple choice
+    - use ranking questions sparingly, too many options are confusing
+    - limit to one open-ended question, they are costly to analyze (ask @fricklerhandwerk)
+  - no conditionality/branching
+    - if there are conditional questions, consider splitting out a special-purpose survey
+  - group questions per persona?
+    - users
+    - package maintainers
+    - core contributors
 - [ ] Refine objectives
-    - what do we want to do with the data?
-    - sex/Gender question
-        - refine it?
-        - remove it?
-            - what StackOverflow did
+  - what do we want to do with the data?
+  - sex/Gender question
+    - refine it?
+    - remove it?
+      - what StackOverflow did
 - [ ] Get reviews of the draft (e.g. in a GitHub repo) by community teams
 - [ ] Implement the survey
 - [ ] Open the survey
 - [ ] Write announcement
 - [ ] Put a banner on the front page of the official websites
-    - [ ] nixos.org
-    - [ ] nix.dev
-    - [ ] wiki.nixos.org
-    - [ ] discourse.nixos.org
-    - [ ] search.nixos.org
+  - [ ] nixos.org
+  - [ ] nix.dev
+  - [ ] wiki.nixos.org
+  - [ ] discourse.nixos.org
+  - [ ] search.nixos.org
 - [ ] Social media outreach
-    - [ ] Reddit
-    - [ ] Twitter
-    - [ ] Mailinglist
-    - [ ] Hacker News
-    - [ ] Private/unofficial channels
+  - [ ] Reddit
+  - [ ] Twitter
+  - [ ] Mailinglist
+  - [ ] Hacker News
+  - [ ] Private/unofficial channels
 - [ ] Make analysis and write up evaluation
-    - Improve charts for color blindness
+  - Improve charts for color blindness
 - [ ] Post results
