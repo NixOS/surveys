@@ -442,15 +442,14 @@ questions:
       - I was able to contribute on my own.
       - I was able to contribute with help from the community.
       - I plan to contribute in the future.
-  - prompt: When you need to get help with Nix or NixOS, how often do you find an acceptable answer?
+  - prompt: When you look for help with Nix or NixOS, how often do you find a useful or acceptable answer?
     type: single
     choices:
-      - Every time
-      - Almost every time
-      - Most of the time
-      - Half of the time
+      - Always
+      - Often
       - Sometimes
-      - Almost never
+      - Rarely
+      - Never
   # Final question to get meta feedback on the survey from participants
   - prompt: How can we improve this survey?
     type: text
