@@ -159,21 +159,23 @@ questions:
     choices:
       - Nix
       - NixOS
-  - prompt: How did you find out about it?
+  - prompt: How did you first hear about Nix or NixOS?
     type: single
     choices:
       - At work
-      - In my education (School/University/...)
-      - From a friend
-      - YouTube
-      - Reddit
-      - Hacker News
-      - Twitter/X
-      - LinkedIn
-      - Other social media
-      - On a blog
-      - Academic Research (referenced in paper, conference talk)
-      - Searching (e.g. on Google)
+      - At school or university
+      - From a friend or colleague
+      - On a blog or personal website
+      - On YouTube
+      - On Reddit
+      - On Hacker News
+      - On Twitter/X
+      - On LinkedIn
+      - On another social media platform
+      - In academic research or a conference talk
+      - By searching online (e.g. Google)
+      - Other
+      - I don’t remember
   - prompt: |
       Which user types do you identify with? Select all that apply:
       - A. You love the idea behind Nix or NixOS.
