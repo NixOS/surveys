@@ -104,7 +104,7 @@ questions:
       - UX / UI designer
       - Other
       - Prefer not to say
-  - prompt: Which operating systems do you currently use?
+  - prompt: Which operating systems do you regularly use on your devices (e.g. for development, work, or personal use)?
     type: multiple
     choices:
       - GNU/Linux
@@ -113,6 +113,9 @@ questions:
       - BSD
       - iOS
       - Android
+      - ChromeOS
+      - Other
+      - Prefer not to say
   - prompt: Which of these best describe your involvement with the Nix ecosystem?
     type: multiple
     choices:
