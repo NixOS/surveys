@@ -359,20 +359,20 @@ questions:
       - "Verify Git commit signatures with `builtins.fetchGit` (`verified-fetches`)"
       - I don’t use any experimental features
       - I’m not sure
-  - prompt: Do you currently consider Nix as part of your usual set of tools?
+  - prompt: Do you consider Nix part of your regular toolset?
     type: single
     choices:
       - Yes
       - No
   # This question has been collapsed into one, so that we don't need conditional questions.
   - prompt: >
-      If Nix is not part of your usual set of tools,
-      please tell us what prevents it and what would help you.
+      If Nix is not part of your regular toolset, what holds you back from using it more?
+      What could make it easier or more useful for you?
     type: text
   # This question has been collapsed into one, so that we don't need conditional questions.
   - prompt: >
-      If you want to use NixOS but can't use NixOS,
-      please tell us what prevents it and what would help you.
+      If you would like to use NixOS but aren’t currently able to, what’s preventing you?
+      What could help make it possible?
     type: text
   - prompt: Which objects do you interact with or search for most often across the ecosystem?
     type: ranking
