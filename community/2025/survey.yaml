@@ -408,26 +408,26 @@ questions:
       - Job postings
       - Paid support offers
   - prompt: >
-      When you need to get help with Nix or NixOS,
-      which resources do you use most often?
-      (if you always start with a web search, choose which resources you go to most often among the results)
+      When you're looking for help with Nix or NixOS, which resources do you turn to most often?
+      (Rank your top 5. If you usually web search first, pick the resources you click on most.)
     type: ranking
     choices:
       - nix.dev
       - Reference manuals (Nix/Nixpkgs/NixOS)
-      - NixOS Wiki (wiki.nixos.org, official)
-      - Discourse
+      - NixOS Wiki (wiki.nixos.org — official)
+      - Unofficial Wiki (nixos.wiki)
+      - Discourse (discourse.nixos.org)
       - Matrix channels
-      - GitHub issues
+      - GitHub issues and discussions
       - Source code
       - Mastodon
-      - Twitter
+      - Twitter/X
       - Stack Overflow
       - Discord (unofficial)
-      - Reddit (unofficial)
-      - Wiki (nixos.wiki, unofficial)
-      - Blog posts
-      - Others
+      - Reddit (r/Nix — official)
+      - Reddit (r/NixOS — unofficial)
+      - Blog posts or tutorials
+      - Other
   - prompt: >
       If you want to contribute or have contributed in the past to Nixpkgs,
       please select all that apply:
