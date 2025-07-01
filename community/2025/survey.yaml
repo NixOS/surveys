@@ -277,6 +277,14 @@ questions:
       - "23.11 or older"
       - I don't know
       - I don't use NixOS
+  - prompt: How do you configure hardware on NixOS?
+    type: multiple
+    choices:
+      - nixos-generate-config
+      - nixos-hardware repository
+      - nixos-facter
+      - Manual configuration
+      - Other
   - prompt: Which software ecosystems do you use Nix with?
     type: multiple
     choices:
