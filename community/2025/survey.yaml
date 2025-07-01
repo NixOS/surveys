@@ -340,6 +340,7 @@ questions:
       - "Flakes (`flakes`)"
       - "New `nix` command-line interface (`nix-command`)"
       - "Content-addressed derivations (`ca-derivations`)"
+      - "Pipe Operators `|>` (`pipe-operators`)"
       - "Dynamic derivations (`dynamic-derivations`)"
       - "Git hashing for store objects (`git-hashing`)"
       - "Recursive Nix (`recursive-nix`)"
