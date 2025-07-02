@@ -116,6 +116,20 @@ questions:
       - ChromeOS
       - Other
       - Prefer not to say
+  - prompt: >
+      Which target triple best describes your system?
+      Run "uname -a" if you are not sure.
+    type: multiple
+    choices:
+      - x86_64-linux-gnu
+      - aarch64-linux-gnu
+      - aarch64-apple-darwin - Apple Silicon
+      - x86_64-apple-darwin - Intel Mac
+      - i686-linux-gnu
+      - x86_64-linux-musl - pkgsMusl, pkgsStatic, or bootstrap
+      - aarch64-linux-musl - pkgsMusl, pkgsStatic, or bootstrap
+      - riscv64-linux-gnu
+      - Other
   - prompt: Which of these best describe your involvement with the Nix ecosystem?
     type: multiple
     choices:
