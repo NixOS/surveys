@@ -41,12 +41,16 @@ questions:
   - prompt: What is your gender identity?
     type: single
     choices:
-      # https://www.csusm.edu/ipa/surveys/inclusive-language-guidelines.html
       - Man
       - Woman
-      - Transgender
       - Non-binary/non-conforming
       - I identify in another way
+      - Prefer not to say
+  - prompt: Do you identify as transgender?
+    type: single
+    choices:
+      - Yes
+      - No
       - Prefer not to say
   - prompt: How many years of programming experience do you have (including time spent learning or studying)?
     type: single
