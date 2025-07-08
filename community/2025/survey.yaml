@@ -451,6 +451,7 @@ questions:
       - Reddit (r/Nix — official)
       - Reddit (r/NixOS — unofficial)
       - Blog posts or tutorials
+      - LLMs (Large Language Models)
       - Other
   - prompt: "If you’ve contributed to Nixpkgs or are interested in contributing, which of the following describe your experience or situation?"
     type: multiple
