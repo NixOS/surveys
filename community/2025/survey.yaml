@@ -479,6 +479,30 @@ questions:
       - Sometimes
       - Rarely
       - Never
+  - prompt: What would encourage you to donate to the NixOS Foundation?
+    type: multiple
+    choices:
+      - Better insight (e.g. more regular and detailed financial and operational reports)
+      - Donor perks (e.g. recognition on website, Discourse badges, swag, exclusive access)
+      - The ability to deduct donations from tax
+      - More options for ear-marking donations
+  - prompt: Which areas should the NixOS Foundation prioritise excess funds for?
+    type: multiple
+    choices:
+      - Governance (e.g. policies, guidelines, processes)
+      - Community health (e.g. conflict resolution, moderation)
+      - Marketing (e.g. website, social media)
+      - Documentation
+      - NixOS releases
+      - Nix implementations
+      - Nixpkgs package maintenance
+      - Community events (non-NixCon)
+      - Nixpkgs architecture & developer experience
+      - Improved Nix/NixOS support (e.g. hardware, platforms, installers)
+      - Security
+      - Official infrastructure (e.g. faster builds and caches)
+      - Deployment systems (e.g. Nixops or a replacement)
+      - CI systems (e.g. Hydra or a replacement)
   # Final question to get meta feedback on the survey from participants
   - prompt: Do you have any feedback on how we can improve this survey for next time?
     type: text
