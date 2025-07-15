@@ -153,12 +153,25 @@ questions:
     type: single
     choices:
       - I have never used Nix
-      - Novice — I’ve just started using it
-      - Beginner — I can use Nix but rely on examples
-      - Intermediate — I write or adapt Nix expressions
-      - Advanced — I package software or build systems with Nix
-      - Expert — I contribute to Nix tooling or teach others
+      - Beginner
+      - Intermediate
+      - Advanced
       - Prefer not to say
+  - prompt: Which of these describe you?
+    type: multiple
+    choices:
+      - I usually rely on blog posts, video tutorials, or examples to help me write expressions.
+      - I usually can write my own Nix expressions without aide.
+      - I use the module system to create my own NixOS configuration.
+      - I can write my own NixOS modules.
+      - I understand some deeper aspect of the module system (e.g. submodules, freeform modules, priority system, etc).
+      - I have used overlays.
+      - I understand how overlays work.
+      - I feel comfortable enough to contribute upstream.
+      - I teach others about Nix/Nixpkgs/NixOS.
+      - I understand a portion of the ecosystem enough to make architectural choices (e.g. one of the language frameworks, stdenv, modules, Nix experimental features, etc).
+      - I have read some portion of the Nix source code and understand it.
+      - I completely understand all Nix error messages. 
   # This year, we try to assess how people discovered Nix
   - prompt: >
       Did you hear about Nix or NixOS first?
