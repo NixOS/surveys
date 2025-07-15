@@ -6,26 +6,16 @@ intro: >
   Please note that when we only say "Nix" in a question, we refer to the Nix command-line tool.
   When we want to refer to the Nix language, Nixpkgs, NixOS, or the Nix ecosystem as a whole, we'll be clear with the terms.
 questions:
-  - prompt: Where do you live? This uses Geographic Regions from the UN Statistics Division listed here https://unstats.un.org/unsd/methodology/m49/.
+  - prompt: Where do you live?
     type: single
     choices:
-      - Northern Africa
-      - Sub-Saharan Africa
-      - Latin America and the Caribbean
-      - Northern America
-      - Central Asia
-      - Eastern Asia
-      - South-eastern Asia
-      - Southern Asia
-      - Western Asia
-      - Eastern Europe
-      - Northern Europe
-      - Southern Europe
-      - Western Europe
-      - Australia and New Zealand
-      - Melanesia
-      - Micronesia
-      - Polynesia
+      - Africa
+      - Asia
+      - Europe
+      - Latin America & the Caribbean
+      - Middle East
+      - North America
+      - Oceania
       - Prefer not to say
   - prompt: What is your age in years?
     type: single
