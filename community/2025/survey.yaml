@@ -180,7 +180,6 @@ questions:
       - I understand a portion of the ecosystem enough to make architectural choices (e.g. one of the language frameworks, stdenv, modules, Nix experimental features, etc).
       - I have read some portion of the Nix source code and understand it.
       - I completely understand all Nix error messages. 
-  # This year, we try to assess how people discovered Nix
   - prompt: >
       Did you hear about Nix or NixOS first?
       If you heard about both at the same time, select which one first made you interested in the Nix ecosystem.
@@ -188,6 +187,7 @@ questions:
     choices:
       - Nix
       - NixOS
+      - I don’t remember
   - prompt: How did you first hear about Nix or NixOS?
     type: single
     choices:
