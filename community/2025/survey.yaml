@@ -399,6 +399,24 @@ questions:
       - "Verify Git commit signatures with `builtins.fetchGit` (`verified-fetches`)"
       - I don’t use any experimental features
       - I’m not sure
+  - prompt: In which areas would you like the Nix package manager to improve?
+    type: multiple
+    choices:
+      - Performance
+      - Language usability
+      - Flakes
+      - Make other features non-experimental
+      - Security
+      - Error messages
+      - Improve the Nix reference manual
+      - Provenance / SBOMs
+      - Windows support
+      - FreeBSD support
+      - Nix as a library (Unstable C++ API, C API, bindings in other languages)
+      - Other (next question)
+  - prompt: >
+      If applicable, in which other areas would you like `nix` to improve?
+    type: text
   - prompt: Do you consider Nix part of your regular toolset?
     type: single
     choices:
@@ -407,6 +425,10 @@ questions:
   # This question has been collapsed into one, so that we don't need conditional questions.
   - prompt: >
       If Nix is not part of your regular toolset, what holds you back from using it more?
+      What could make it easier or more useful for you?
+    type: text
+  - prompt: >
+      If Nix is not part of your toolset at work, what holds back your team from using it more?
       What could make it easier or more useful for you?
     type: text
   # This question has been collapsed into one, so that we don't need conditional questions.
