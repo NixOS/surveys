@@ -377,6 +377,7 @@ questions:
     choices:
       - "Flakes (`flakes`)"
       - "New `nix` command-line interface (`nix-command`)"
+      - "BLAKE3 hashing (`blake3-hashes`)"
       - "Content-addressed derivations (`ca-derivations`)"
       - "Pipe Operators `|>` (`pipe-operators`)"
       - "Dynamic derivations (`dynamic-derivations`)"
