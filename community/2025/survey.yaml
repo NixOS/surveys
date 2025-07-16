@@ -98,6 +98,63 @@ questions:
       - UX / UI designer
       - Other
       - Prefer not to say
+  - prompt: What best describes your economic sector?
+    type: single
+    choices:
+      - Academia or education
+      - Educational technology
+      - Scientific computing / HPC
+      - Machine learning or AI model development
+      - Administrative
+      - Agriculture and food technology
+      - Arts, entertainment, or media
+      - Entertainment technology and streaming
+      - Automotive
+      - Commercial research and development
+      - Construction or real estate
+      - Consulting or professional services
+      - Consumer products or services
+      - Defense industry
+      - Energy or utilities
+      - Financial services or insurance
+      - Government or public sector
+      - Government contracting
+      - Healthcare or pharmaceuticals
+      - Hospitality or food services
+      - Legal and regulatory
+      - Manufacturing or industrial
+      - Non-profit or charity
+      - Retail or e-commerce
+      - Telecommunications or networking
+      - Transportation or logistics
+      - Other
+  - prompt: What best describes your software domain?
+    type: single
+    choices:
+      - Programming languages, compilers, or code analysis tooling
+      - System / OS development
+      - Operational or end-user software tooling (e.g. low-code platforms)
+      - Embedded systems or IoT
+      - Web development
+      - Mobile development
+      - Game development
+      - Proprietary or closed-source applications
+      - Software as a Service (SaaS)
+      - Open source software development
+      - Cloud / PaaS development (e.g. infrastructure tooling, APIs)
+      - Cloud / PaaS operations (e.g. provisioning, monitoring, SRE)
+      - IT operations and DevOps (internal)
+      - IT operations and DevOps (client-facing)
+      - Telecommunications or networking
+      - Information security / cybersecurity (internal)
+      - Information security / cybersecurity (client-facing)
+      - Blockchain / cryptocurrency / web3
+      - Other
+  - prompt: Can we reach out to you for upcoming sponsorship efforts?
+    type: single
+    choices:
+      - Yes
+      - No
   - prompt: Which operating systems do you regularly use on your devices (e.g. for development, work, or personal use)?
     type: multiple
     choices:
