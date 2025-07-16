@@ -435,9 +435,9 @@ questions:
       - Nix standalone installer
       - NixOS installer
       - Security notifications
-      - Source code (package)
-      - Source code (module)
-      - Source code (C++ Nix)
+      - Source code (package, Nix language)
+      - Source code (module, Nix language)
+      - Source code (Nix itself, C++)
       - Discourse conversations
       - Press information
       - Reviews and testimonials
@@ -500,7 +500,7 @@ questions:
       - More options for ear-marking donations
       - Official support or services
       - A maintained Long-Term-Support release
-  - prompt: Which areas should the NixOS Foundation prioritise excess funds for?
+  - prompt: Which areas should the NixOS Foundation prioritise funds for?
     type: multiple
     choices:
       - Governance (e.g. policies, guidelines, processes)
