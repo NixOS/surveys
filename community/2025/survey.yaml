@@ -399,7 +399,7 @@ questions:
       - "Verify Git commit signatures with `builtins.fetchGit` (`verified-fetches`)"
       - I don’t use any experimental features
       - I’m not sure
-  - prompt: In which areas would you like the Nix package manager to improve?
+  - prompt: You can afford about 3 improvements. Which aspects of the Nix package manager do you pick?
     type: multiple
     choices:
       - Performance
