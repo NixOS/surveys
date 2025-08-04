@@ -155,6 +155,8 @@ questions:
     choices:
       - Yes
       - No
+  - prompt: If you replied Yes to the previous question, please provide an email so we may contact you.
+    type: text
   - prompt: Which operating systems do you regularly use on your devices (e.g. for development, work, or personal use)?
     type: multiple
     choices:
