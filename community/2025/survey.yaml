@@ -481,6 +481,16 @@ questions:
     choices:
       - Yes
       - No
+  - prompt: Does your workplace use Nix?
+    type: text
+  - prompt: Are you the one that made that decision?
+    type: text
+  - prompt: What convinced your workplace to use Nix?
+    type: text
+  - prompt: What prevented your workplace from using Nix?
+    type: text
+  - prompt: What convinced you to use Nix in your workplace?
+    type: text
   # This question has been collapsed into one, so that we don't need conditional questions.
   - prompt: >
       If Nix is not part of your regular toolset, what holds you back from using it more?
