@@ -381,6 +381,7 @@ questions:
     choices:
       - I don't use Nix
       - NixOS configurations
+      - Other
       # Taken from Stack Overflow survey, ordered alphabetically.
       - APL
       - Ada
