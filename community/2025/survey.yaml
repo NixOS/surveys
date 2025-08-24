@@ -591,9 +591,7 @@ questions:
       - Donor perks (e.g. recognition on website, Discourse badges, swag, exclusive access)
       - The ability to deduct donations from tax
       - More options for ear-marking donations
-      - Official support or services
-      - A maintained Long-Term-Support release
-  - prompt: Which areas should the NixOS Foundation prioritise funds for?
+  - prompt: Which areas should the NixOS Foundation prioritise excess funds for?
     type: multiple
     choices:
       - Governance (e.g. policies, guidelines, processes)
