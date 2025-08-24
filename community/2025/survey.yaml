@@ -186,11 +186,13 @@ questions:
   - prompt: If you use NixOS stable, how was your experience upgrading to the new stable version (25.05)?
     type: single
     choices:
-      - 1 - I had severe issues and could not make the upgrade.
-      - 2 - I had severe issues but figured it out after some time.
-      - 3 - I had moderate issues.
-      - 4 - I had minor issues.
-      - 5 - I had no issues.
+      - I had severe issues and could not make the upgrade.
+      - I had severe issues but figured it out after some time.
+      - I had moderate issues.
+      - I had minor issues.
+      - I had no issues.
+      - I have not upgraded.
+      - I did not know there was a new stable release.
   - prompt: Which of these best describe your involvement with the Nix ecosystem?
     type: multiple
     choices:
