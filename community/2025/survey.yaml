@@ -150,7 +150,7 @@ questions:
       - Information security / cybersecurity (client-facing)
       - Blockchain / cryptocurrency / web3
       - Other
-  - prompt: Can we reach out to you for upcoming sponsorship efforts?
+  - prompt: Can we reach out to you about sponsoring the project in the future?
     type: single
     choices:
       - Yes
