@@ -150,7 +150,7 @@ questions:
       - Information security / cybersecurity (client-facing)
       - Blockchain / cryptocurrency / web3
       - Other
-  - prompt: Can we reach out to you for upcoming sponsorship efforts?
+  - prompt: Can we reach out to you about sponsoring the project in the future?
     type: single
     choices:
       - Yes
@@ -186,11 +186,13 @@ questions:
   - prompt: If you use NixOS stable, how was your experience upgrading to the new stable version (25.05)?
     type: single
     choices:
-      - 1 - I had severe issues and could not make the upgrade.
-      - 2 - I had severe issues but figured it out after some time.
-      - 3 - I had moderate issues.
-      - 4 - I had minor issues.
-      - 5 - I had no issues.
+      - I had severe issues and could not make the upgrade.
+      - I had severe issues but figured it out after some time.
+      - I had moderate issues.
+      - I had minor issues.
+      - I had no issues.
+      - I have not upgraded.
+      - I did not know there was a new stable release.
   - prompt: Which of these best describe your involvement with the Nix ecosystem?
     type: multiple
     choices:
@@ -238,7 +240,7 @@ questions:
       - I teach others about Nix/Nixpkgs/NixOS.
       - I understand a portion of the ecosystem enough to make architectural choices (e.g. one of the language frameworks, stdenv, modules, Nix experimental features, etc).
       - I have read some portion of the Nix source code and understand it.
-      - I completely understand all Nix error messages. 
+      - I completely understand all Nix error messages.
   - prompt: >
       Did you hear about Nix or NixOS first?
       If you heard about both at the same time, select which one first made you interested in the Nix ecosystem.
@@ -341,6 +343,14 @@ questions:
       - I used another package manager (e.g. Homebrew, APT)
       - I built Nix from source
       - Other
+  - prompt: Which of these do you use?
+    type: multiple
+      - Nix
+      - Tvix
+      - Lix
+      - Determinate Nix
+      - Snix
+      - None
   - prompt: On what types of systems or infrastructure do you use Nix?
     type: multiple
     choices:
@@ -379,6 +389,7 @@ questions:
     choices:
       - I don't use Nix
       - NixOS configurations
+      - Other
       # Taken from Stack Overflow survey, ordered alphabetically.
       - APL
       - Ada
@@ -589,10 +600,8 @@ questions:
       - Donor perks (e.g. recognition on website, Discourse badges, swag, exclusive access)
       - The ability to deduct donations from tax
       - More options for ear-marking donations
-      - Official support or services
-      - A maintained Long-Term-Support release
-  - prompt: Which areas should the NixOS Foundation prioritise funds for?
-    type: multiple
+  - prompt: Which areas should the NixOS Foundation prioritise excess funds for?
+    type: ranking
     choices:
       - Governance (e.g. policies, guidelines, processes)
       - Community health (e.g. conflict resolution, moderation)
