@@ -601,7 +601,7 @@ questions:
       - The ability to deduct donations from tax
       - More options for ear-marking donations
   - prompt: Which areas should the NixOS Foundation prioritise excess funds for?
-    type: multiple
+    type: ranking
     choices:
       - Governance (e.g. policies, guidelines, processes)
       - Community health (e.g. conflict resolution, moderation)
