@@ -4,6 +4,75 @@ import altair as alt
 import panel as pn
 import polars as pl
 
+
+def pretty_bar_chart(pdf, title, max_items=25, height_step=18):
+    # Optional: keep top N
+    if len(pdf) > max_items:
+        top = pdf.iloc[:max_items].copy()
+        other = pdf.iloc[max_items:]["len"].sum()
+        top.loc[len(top)] = {"response": "Other", "len": int(other)}
+        pdf = top
+
+    # Make height scale with number of categories
+    height = max(240, len(pdf) * height_step)
+
+    base = alt.Chart(pdf).encode(
+        x=alt.X(
+            "len:Q",
+            title=None,
+            axis=alt.Axis(
+                labelFontSize=12,
+                ticks=False,
+                grid=True,
+            ),
+        ),
+        y=alt.Y(
+            "response_short:N",
+            sort="-x",
+            title=None,
+            axis=alt.Axis(
+                labelLimit=320,  # prevent overly wide labels
+                labelFontSize=12,
+                ticks=False,
+            ),
+        ),
+        tooltip=[alt.Tooltip("response:N", title="Response"), alt.Tooltip("len:Q")],
+    )
+
+    bars = base.mark_bar(cornerRadiusEnd=3)
+
+    labels = base.mark_text(
+        align="left",
+        baseline="middle",
+        dx=4,  # nudge label right
+        fontSize=12,
+    ).encode(text=alt.Text("len:Q"))
+
+    chart = (
+        (bars + labels)
+        .properties(
+            title=alt.TitleParams(
+                text=title,
+                fontSize=18,
+                anchor="start",
+                subtitle=["Counts of responses (blank → None)"],
+                subtitleFontSize=12,
+            ),
+            height=height,
+        )
+        .configure_view(strokeWidth=0)  # remove outer border
+        .configure_axis(
+            domain=False,  # remove axis lines
+            labelColor="#222",
+            gridColor="#ddd",
+            gridOpacity=0.35,
+        )
+        .configure_title(offset=10)
+    )
+
+    return chart
+
+
 pn.extension("vega")
 
 csv_data = Path(__file__).parent / "nix-community-survey-2025-completed-responses.csv"
@@ -21,7 +90,13 @@ counts = (
         .fill_null("Skipped")
         .alias("response")
     )
-    .group_by("response")
+    .with_columns(
+        pl.when(pl.col("response").str.len_chars() > 60)
+        .then(pl.col("response").str.slice(0, 57) + "…")
+        .otherwise(pl.col("response"))
+        .alias("response_short")
+    )
+    .group_by(["response", "response_short"])
     .len()
     .sort("len", descending=True)
 )
@@ -29,18 +104,13 @@ counts = (
 pdf = counts.to_pandas()
 print(counts)
 
-chart = (
-    alt.Chart(pdf, title=col_name)
-    .mark_bar()
-    .encode(
-        y=alt.Y("response:N", sort="-x", title=None),
-        x=alt.X("len:Q", title="Count"),
-        tooltip=[alt.Tooltip("response:N"), alt.Tooltip("len:Q", title="Count")],
-    )
-    .properties(height=500)
-)
+chart = pretty_bar_chart(pdf, title=col_name)
+altair_pane = pn.pane.Vega(chart, sizing_mode="stretch_width")
 
-pn.Column(
-    f"## {col_name}",
-    pn.pane.Vega(chart, sizing_mode="stretch_width"),
-).servable()
+app = pn.Column(
+    pn.pane.Markdown(f"# {col_name}\nSurvey results", margin=(0, 0, 10, 0)),
+    pn.Card(altair_pane, title="Responses", collapsible=False),
+    sizing_mode="stretch_width",
+    margin=20,
+)
+app.servable()
