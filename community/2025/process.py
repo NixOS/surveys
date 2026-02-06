@@ -73,39 +73,42 @@ def pretty_bar_chart(pdf, title, max_items=25, height_step=18):
     return chart
 
 
+def make_simple_bar_chart_pane(df, column):
+    col_name = df.columns[column]
+    counts = (
+        df.select(
+            pl.col(col_name)
+            .cast(pl.Utf8)
+            .str.strip_chars()
+            .replace("", None)
+            .fill_null("Skipped")
+            .alias("response")
+        )
+        .with_columns(
+            pl.when(pl.col("response").str.len_chars() > 60)
+            .then(pl.col("response").str.slice(0, 57) + "…")
+            .otherwise(pl.col("response"))
+            .alias("response_short")
+        )
+        .group_by(["response", "response_short"])
+        .len()
+        .sort("len", descending=True)
+    )
+
+    pdf = counts.to_pandas()
+
+    chart = pretty_bar_chart(pdf, title=col_name)
+    altair_pane = pn.pane.Vega(chart, sizing_mode="stretch_width")
+
+    return col_name, altair_pane
+
+
 pn.extension("vega")
 
 csv_data = Path(__file__).parent / "nix-community-survey-2025-completed-responses.csv"
 df = pl.read_csv(csv_data)
 
-col_name = df.columns[5]
-
-
-counts = (
-    df.select(
-        pl.col(col_name)
-        .cast(pl.Utf8)
-        .str.strip_chars()
-        .replace("", None)
-        .fill_null("Skipped")
-        .alias("response")
-    )
-    .with_columns(
-        pl.when(pl.col("response").str.len_chars() > 60)
-        .then(pl.col("response").str.slice(0, 57) + "…")
-        .otherwise(pl.col("response"))
-        .alias("response_short")
-    )
-    .group_by(["response", "response_short"])
-    .len()
-    .sort("len", descending=True)
-)
-
-pdf = counts.to_pandas()
-print(counts)
-
-chart = pretty_bar_chart(pdf, title=col_name)
-altair_pane = pn.pane.Vega(chart, sizing_mode="stretch_width")
+col_name, altair_pane = make_simple_bar_chart_pane(df, 5)
 
 app = pn.Column(
     pn.pane.Markdown(f"# {col_name}\nSurvey results", margin=(0, 0, 10, 0)),
