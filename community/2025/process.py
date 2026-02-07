@@ -206,6 +206,26 @@ def make_simple_bar_chart_pane(df, column, label_order=None):
     return altair_pane
 
 
+def make_plot_row(md_text: str, plot_pane):
+    common_style = {"border": "2px solid black", "box-shadow": "3px 3px 0 black"}
+    return pn.Row(
+        pn.Card(
+            pn.pane.Markdown(md_text, width=320),
+            collapsible=False,
+            hide_header=True,
+            sizing_mode="stretch_height",
+            styles=common_style,
+        ),
+        pn.Spacer(width=20),
+        pn.Card(
+            plot_pane,
+            collapsible=False,
+            hide_header=True,
+            styles=common_style,
+        ),
+    )
+
+
 csv_data = Path(__file__).parent / "nix-community-survey-2025-completed-responses.csv"
 df = pl.read_csv(csv_data)
 
@@ -215,113 +235,53 @@ app = pn.Column(
     pn.pane.Markdown(
         "# NixOS Community Survey 2025\nSurvey results", margin=(0, 0, 10, 0)
     ),
-    pn.Row(
-        pn.Card(
-            pn.pane.Markdown(
-                """
+    make_plot_row(
+        md_text="""
                 # Country
                 European responses increased from 52% to 60%.
                 North American responses decreased from 27.5% to 21.3%.
                 The remaining responses changed less than 1% from the previous year.
                 """,
-                width=320,
-            ),
-            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
-            hide_header=True,
-            sizing_mode="stretch_height",
-            collapsible=False,
-        ),
-        pn.Spacer(width=20),
-        pn.Card(
-            make_simple_bar_chart_pane(df, 5),
-            collapsible=False,
-            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
-            hide_header=True,
-        ),
+        plot_pane=make_simple_bar_chart_pane(df, 5),
     ),
     pn.Spacer(height=20),
-    pn.Row(
-        pn.Card(
-            pn.pane.Markdown(
-                """
+    make_plot_row(
+        md_text="""
                 # Age
                 The curve has flattened and shifted.
                 The largest age group of 25-34 decreased from 35.6% to 30.7%.
                 The 35-44 age group also decreased from 22.7% to 19.4%.
                 Age groups under 25 or over 44 increased between 0.4% and 3.1%.
                 """,
-                width=320,
-            ),
-            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
-            hide_header=True,
-            sizing_mode="stretch_height",
-            collapsible=False,
-        ),
-        pn.Spacer(width=20),
-        pn.Card(
-            make_simple_bar_chart_pane(
-                df,
-                6,
-                label_order=[
-                    "Under 18",
-                    "18-24",
-                    "25-34",
-                    "35-44",
-                    "45-54",
-                    "55-64",
-                    "65 or older",
-                    "Prefer not to say",
-                    "Skipped",
-                ],
-            ),
-            collapsible=False,
-            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
-            hide_header=True,
+        plot_pane=make_simple_bar_chart_pane(
+            df,
+            6,
+            label_order=[
+                "Under 18",
+                "18-24",
+                "25-34",
+                "35-44",
+                "45-54",
+                "55-64",
+                "65 or older",
+                "Prefer not to say",
+                "Skipped",
+            ],
         ),
     ),
     pn.Spacer(height=20),
-    pn.Row(
-        pn.Card(
-            pn.pane.Markdown(
-                """
+    make_plot_row(
+        md_text="""
                 # Gender Identity
                 """,
-                width=320,
-            ),
-            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
-            hide_header=True,
-            sizing_mode="stretch_height",
-            collapsible=False,
-        ),
-        pn.Spacer(width=20),
-        pn.Card(
-            make_simple_bar_chart_pane(df, 7),
-            collapsible=False,
-            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
-            hide_header=True,
-        ),
+        plot_pane=make_simple_bar_chart_pane(df, 7),
     ),
     pn.Spacer(height=20),
-    pn.Row(
-        pn.Card(
-            pn.pane.Markdown(
-                """
+    make_plot_row(
+        md_text="""
                 # Transgender Identity
                 """,
-                width=320,
-            ),
-            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
-            hide_header=True,
-            sizing_mode="stretch_height",
-            collapsible=False,
-        ),
-        pn.Spacer(width=20),
-        pn.Card(
-            make_simple_bar_chart_pane(df, 8),
-            collapsible=False,
-            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
-            hide_header=True,
-        ),
+        plot_pane=make_simple_bar_chart_pane(df, 8),
     ),
     sizing_mode="stretch_width",
     margin=20,
