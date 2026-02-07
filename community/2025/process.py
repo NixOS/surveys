@@ -287,11 +287,15 @@ app = pn.Column(
     make_plot_row(
         md_text="""
                 # Years Coding
+                The are more fine grained bins for 10+ years of experience compared to previous years.
+                The groups with 4 or less years of experience have increased.
+                The groups with 5 or more years of experience have decreased.
                 """,
         plot_pane=make_simple_bar_chart_pane(
             df,
             9,
             label_order=[
+                "I have never programmed",
                 "Less than 1 year",
                 "1 to 4 years",
                 "5 to 9 years",
@@ -304,7 +308,6 @@ app = pn.Column(
                 "40 to 44 years",
                 "45 to 49 years",
                 "More than 50 years",
-                "I have never programmed",
                 "Prefer not to say",
                 "Skipped",
             ],
