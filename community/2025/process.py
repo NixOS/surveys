@@ -79,20 +79,41 @@ def so_style_bar_chart(
     step: int = 24,  # controls row height => constant bar thickness
     bar_size: int = 16,  # actual bar thickness
     gap: int = 0,  # gap between label column and bars
+    label_order: list[str] | None = None,
 ):
     pdf = pdf.copy()
 
-    # Order categories by count (so y-domain is stable across concatenated charts)
-    pdf = pdf.sort_values("len", ascending=False)
-    order = pdf["response"].tolist()
+    # Default: order by count descending (like SO)
+    if label_order is None:
+        pdf = pdf.sort_values("len", ascending=False)
+        order = pdf["response"].tolist()
+    else:
+        present = set(pdf["response"].tolist())
+
+        # keep user order (deduped) but only for labels present in the data
+        seen = set()
+        user_part = []
+        for s in label_order:
+            if s in present and s not in seen:
+                user_part.append(s)
+                seen.add(s)
+
+        # append anything not specified, by count desc
+        rest = pdf.sort_values("len", ascending=False)["response"].tolist()
+        rest = [s for s in rest if s not in seen]
+        order = user_part + rest
+
+        # Optional: sort the dataframe to match the final display order (nice for debugging)
+        rank = {s: i for i, s in enumerate(order)}
+        pdf["_order"] = pdf["response"].map(rank)
+        pdf = pdf.sort_values("_order").drop(columns=["_order"])
 
     total = float(pdf["len"].sum()) if len(pdf) else 0.0
     pdf["pct"] = (pdf["len"] / total * 100.0) if total > 0 else 0.0
     pdf["pct_label"] = pdf["pct"].map(lambda v: f"{v:.1f}%")
-
     max_len = float(pdf["len"].max()) if len(pdf) else 1.0
 
-    # Shared y with dotted horizontal separators BETWEEN bars
+    # Shared y encoding with dotted horizontal separators between bars
     y_grid = alt.Y(
         "response:N",
         sort=order,
@@ -155,7 +176,7 @@ def so_style_bar_chart(
     )
 
 
-def make_simple_bar_chart_pane(df, column):
+def make_simple_bar_chart_pane(df, column, label_order=None):
     col_name = df.columns[column]
     counts = (
         df.select(
@@ -179,7 +200,7 @@ def make_simple_bar_chart_pane(df, column):
 
     pdf = counts.to_pandas()
 
-    chart = so_style_bar_chart(pdf, title=col_name)
+    chart = so_style_bar_chart(pdf, title=col_name, label_order=label_order)
     altair_pane = pn.pane.Vega(chart, sizing_mode="stretch_width")
 
     return altair_pane
@@ -238,7 +259,21 @@ app = pn.Column(
         ),
         pn.Spacer(width=20),
         pn.Card(
-            make_simple_bar_chart_pane(df, 6),
+            make_simple_bar_chart_pane(
+                df,
+                6,
+                label_order=[
+                    "Under 18",
+                    "18-24",
+                    "25-34",
+                    "35-44",
+                    "45-54",
+                    "55-64",
+                    "65 or older",
+                    "Prefer not to say",
+                    "Skipped",
+                ],
+            ),
             collapsible=False,
             styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
             hide_header=True,
