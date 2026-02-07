@@ -103,20 +103,27 @@ def make_simple_bar_chart_pane(df, column):
     return altair_pane
 
 
-pn.extension("vega")
-
 csv_data = Path(__file__).parent / "nix-community-survey-2025-completed-responses.csv"
 df = pl.read_csv(csv_data)
 
-where_do_you_live = make_simple_bar_chart_pane(df, 5)
-age_in_years = make_simple_bar_chart_pane(df, 6)
-gender_identity = make_simple_bar_chart_pane(df, 7)
+community_makeup = [
+    make_simple_bar_chart_pane(df, 5),
+    make_simple_bar_chart_pane(df, 6),
+    make_simple_bar_chart_pane(df, 7),
+    make_simple_bar_chart_pane(df, 8),
+]
+
+pn.extension("vega")
 
 app = pn.Column(
-    pn.pane.Markdown("# NixOS Community Survey 2025\nSurvey results", margin=(0, 0, 10, 0)),
-    pn.Card(where_do_you_live, title="Responses", collapsible=False),
-    pn.Card(age_in_years, title="Responses", collapsible=False),
-    pn.Card(gender_identity, title="Responses", collapsible=False),
+    pn.pane.Markdown(
+        "# NixOS Community Survey 2025\nSurvey results", margin=(0, 0, 10, 0)
+    ),
+    pn.Card(
+        *community_makeup,
+        title="Community Makeup",
+        collapsible=False,
+    ),
     sizing_mode="stretch_width",
     margin=20,
 )
