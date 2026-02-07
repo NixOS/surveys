@@ -93,6 +93,21 @@ def so_style_bar_chart(
     max_len = float(pdf["len"].max()) if len(pdf) else 1.0
 
     y = alt.Y("response:N", sort=order, axis=None)
+    y_bars = alt.Y(
+        "response:N",
+        sort=order,
+        title=None,
+        axis=alt.Axis(
+            title=None,
+            labels=False,
+            ticks=False,
+            domain=False,
+            grid=True,
+            tickBand="extent",
+            gridDash=[2, 4],  # dotted
+            gridOpacity=1.0,
+        ),
+    )
 
     # Left column: labels (fixed width, left-aligned)
     labels = (
@@ -113,11 +128,11 @@ def so_style_bar_chart(
 
     # Right column: bars + percent labels (no axes)
     base = alt.Chart(pdf).encode(
-        y=y,
+        y=y_bars,
         x=alt.X(
             "len:Q",
             axis=None,
-            scale=alt.Scale(domain=(0, max_len * 1.12)),  # room for % text
+            scale=alt.Scale(domain=(0, max_len * 1.12)),
         ),
         tooltip=[
             alt.Tooltip("response:N", title="Response"),
