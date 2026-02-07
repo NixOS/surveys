@@ -43,7 +43,7 @@ def pretty_bar_chart(pdf, title, max_items=25, height_step=18):
         ],
     )
 
-    bars = base.mark_bar(cornerRadiusEnd=3)
+    bars = base.mark_bar(cornerRadius=3)
 
     labels = base.mark_text(
         align="left",
@@ -67,6 +67,80 @@ def pretty_bar_chart(pdf, title, max_items=25, height_step=18):
         .configure_view(strokeWidth=0)
         .configure_axis(domain=False, gridOpacity=0.35)
         .configure_title(offset=10)
+    )
+
+
+def so_style_bar_chart(
+    pdf,
+    title: str,
+    *,
+    label_width: int = 240,
+    bar_width: int = 320,
+    step: int = 22,  # controls row height => constant bar thickness
+    bar_size: int = 16,  # actual bar thickness
+    gap: int = 16,  # gap between label column and bars
+):
+    pdf = pdf.copy()
+
+    # Order categories by count (so y-domain is stable across concatenated charts)
+    pdf = pdf.sort_values("len", ascending=False)
+    order = pdf["response"].tolist()
+
+    total = float(pdf["len"].sum()) if len(pdf) else 0.0
+    pdf["pct"] = (pdf["len"] / total * 100.0) if total > 0 else 0.0
+    pdf["pct_label"] = pdf["pct"].map(lambda v: f"{v:.1f}%")
+
+    max_len = float(pdf["len"].max()) if len(pdf) else 1.0
+
+    y = alt.Y("response:N", sort=order, axis=None)
+
+    # Left column: labels (fixed width, left-aligned)
+    labels = (
+        alt.Chart(pdf)
+        .mark_text(
+            align="left",
+            baseline="middle",
+            dx=0,
+            fontSize=12,
+        )
+        .encode(
+            y=y,
+            x=alt.value(0),  # <-- anchor labels at the left edge
+            text="response:N",
+        )
+        .properties(width=label_width, height=alt.Step(step))
+    )
+
+    # Right column: bars + percent labels (no axes)
+    base = alt.Chart(pdf).encode(
+        y=y,
+        x=alt.X(
+            "len:Q",
+            axis=None,
+            scale=alt.Scale(domain=(0, max_len * 1.12)),  # room for % text
+        ),
+        tooltip=[
+            alt.Tooltip("response:N", title="Response"),
+            alt.Tooltip("len:Q", title="Count"),
+            alt.Tooltip("pct:Q", title="Percent", format=".1f"),
+        ],
+    )
+
+    bars = base.mark_bar(size=bar_size, cornerRadius=bar_size // 4)
+    pct = base.mark_text(align="left", baseline="middle", dx=6, fontSize=12).encode(
+        text="pct_label:N"
+    )
+
+    bars_block = (bars + pct).properties(width=bar_width, height=alt.Step(step))
+
+    # Combine: fixed label column + bars column
+    return (
+        alt.hconcat(labels, bars_block, spacing=gap)
+        .resolve_scale(y="shared")
+        .properties(
+            title=alt.TitleParams(text=title, anchor="start", fontSize=18, offset=10)
+        )
+        .configure_view(strokeWidth=0)
     )
 
 
@@ -94,7 +168,7 @@ def make_simple_bar_chart_pane(df, column):
 
     pdf = counts.to_pandas()
 
-    chart = pretty_bar_chart(pdf, title=col_name)
+    chart = so_style_bar_chart(pdf, title=col_name)
     altair_pane = pn.pane.Vega(chart, sizing_mode="stretch_width")
 
     return altair_pane
@@ -120,7 +194,7 @@ app = pn.Column(
                 """,
                 width=320,
             ),
-            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
             hide_header=True,
             sizing_mode="stretch_height",
             collapsible=False,
@@ -129,7 +203,7 @@ app = pn.Column(
         pn.Card(
             make_simple_bar_chart_pane(df, 5),
             collapsible=False,
-            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
             hide_header=True,
         ),
     ),
@@ -146,7 +220,7 @@ app = pn.Column(
                 """,
                 width=320,
             ),
-            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
             hide_header=True,
             sizing_mode="stretch_height",
             collapsible=False,
@@ -155,7 +229,7 @@ app = pn.Column(
         pn.Card(
             make_simple_bar_chart_pane(df, 6),
             collapsible=False,
-            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
             hide_header=True,
         ),
     ),
@@ -168,7 +242,7 @@ app = pn.Column(
                 """,
                 width=320,
             ),
-            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
             hide_header=True,
             sizing_mode="stretch_height",
             collapsible=False,
@@ -177,7 +251,7 @@ app = pn.Column(
         pn.Card(
             make_simple_bar_chart_pane(df, 7),
             collapsible=False,
-            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
             hide_header=True,
         ),
     ),
@@ -190,7 +264,7 @@ app = pn.Column(
                 """,
                 width=320,
             ),
-            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
             hide_header=True,
             sizing_mode="stretch_height",
             collapsible=False,
@@ -199,7 +273,7 @@ app = pn.Column(
         pn.Card(
             make_simple_bar_chart_pane(df, 8),
             collapsible=False,
-            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            styles={"border": "2px solid black", "box-shadow": "3px 3px 0 black"},
             hide_header=True,
         ),
     ),
