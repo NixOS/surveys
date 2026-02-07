@@ -75,8 +75,8 @@ def so_style_bar_chart(
     title: str,
     *,
     label_width: int = 240,
-    bar_width: int = 320,
-    step: int = 22,  # controls row height => constant bar thickness
+    bar_width: int = 480,
+    step: int = 24,  # controls row height => constant bar thickness
     bar_size: int = 16,  # actual bar thickness
     gap: int = 16,  # gap between label column and bars
 ):
