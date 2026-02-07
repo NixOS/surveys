@@ -1,3 +1,4 @@
+import textwrap
 from pathlib import Path
 
 import altair as alt
@@ -170,10 +171,19 @@ def so_style_bar_chart(
         alt.hconcat(labels, bars_block, spacing=0)  # no empty gap between charts
         .resolve_scale(y="shared")
         .properties(
-            title=alt.TitleParams(text=title, anchor="start", fontSize=18, offset=10)
+            title=alt.TitleParams(
+                text=wrap_title(title),
+                anchor="start",
+                fontSize=18,
+                offset=10,
+            )
         )
         .configure_view(strokeWidth=0)
     )
+
+
+def wrap_title(s: str, width: int = 80) -> list[str]:
+    return textwrap.wrap(s, width=width, break_long_words=False)
 
 
 def make_simple_bar_chart_pane(df, column, label_order=None):
