@@ -78,7 +78,7 @@ def so_style_bar_chart(
     bar_width: int = 480,
     step: int = 24,  # controls row height => constant bar thickness
     bar_size: int = 16,  # actual bar thickness
-    gap: int = 16,  # gap between label column and bars
+    gap: int = 0,  # gap between label column and bars
 ):
     pdf = pdf.copy()
 
@@ -92,8 +92,8 @@ def so_style_bar_chart(
 
     max_len = float(pdf["len"].max()) if len(pdf) else 1.0
 
-    y = alt.Y("response:N", sort=order, axis=None)
-    y_bars = alt.Y(
+    # Shared y with dotted horizontal separators BETWEEN bars
+    y_grid = alt.Y(
         "response:N",
         sort=order,
         title=None,
@@ -109,26 +109,23 @@ def so_style_bar_chart(
         ),
     )
 
-    # Left column: labels (fixed width, left-aligned)
     labels = (
         alt.Chart(pdf)
         .mark_text(
             align="left",
             baseline="middle",
-            dx=0,
             fontSize=12,
         )
         .encode(
-            y=y,
-            x=alt.value(0),  # <-- anchor labels at the left edge
+            y=y_grid,
+            x=alt.value(0),  # pin to left edge
             text="response:N",
         )
-        .properties(width=label_width, height=alt.Step(step))
+        .properties(width=label_width + gap, height=alt.Step(step))
     )
 
-    # Right column: bars + percent labels (no axes)
     base = alt.Chart(pdf).encode(
-        y=y_bars,
+        y=y_grid,
         x=alt.X(
             "len:Q",
             axis=None,
@@ -148,9 +145,8 @@ def so_style_bar_chart(
 
     bars_block = (bars + pct).properties(width=bar_width, height=alt.Step(step))
 
-    # Combine: fixed label column + bars column
     return (
-        alt.hconcat(labels, bars_block, spacing=gap)
+        alt.hconcat(labels, bars_block, spacing=0)  # no empty gap between charts
         .resolve_scale(y="shared")
         .properties(
             title=alt.TitleParams(text=title, anchor="start", fontSize=18, offset=10)
