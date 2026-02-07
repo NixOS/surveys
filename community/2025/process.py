@@ -120,6 +120,8 @@ app = pn.Column(
                 """,
                 width=320,
             ),
+            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            hide_header=True,
             sizing_mode="stretch_height",
             collapsible=False,
         ),
@@ -127,8 +129,11 @@ app = pn.Column(
         pn.Card(
             make_simple_bar_chart_pane(df, 5),
             collapsible=False,
+            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            hide_header=True,
         ),
     ),
+    pn.Spacer(height=20),
     pn.Row(
         pn.Card(
             pn.pane.Markdown(
@@ -141,6 +146,8 @@ app = pn.Column(
                 """,
                 width=320,
             ),
+            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            hide_header=True,
             sizing_mode="stretch_height",
             collapsible=False,
         ),
@@ -148,8 +155,11 @@ app = pn.Column(
         pn.Card(
             make_simple_bar_chart_pane(df, 6),
             collapsible=False,
+            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            hide_header=True,
         ),
     ),
+    pn.Spacer(height=20),
     pn.Row(
         pn.Card(
             pn.pane.Markdown(
@@ -158,6 +168,8 @@ app = pn.Column(
                 """,
                 width=320,
             ),
+            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            hide_header=True,
             sizing_mode="stretch_height",
             collapsible=False,
         ),
@@ -165,8 +177,11 @@ app = pn.Column(
         pn.Card(
             make_simple_bar_chart_pane(df, 7),
             collapsible=False,
+            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            hide_header=True,
         ),
     ),
+    pn.Spacer(height=20),
     pn.Row(
         pn.Card(
             pn.pane.Markdown(
@@ -175,6 +190,8 @@ app = pn.Column(
                 """,
                 width=320,
             ),
+            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            hide_header=True,
             sizing_mode="stretch_height",
             collapsible=False,
         ),
@@ -182,6 +199,8 @@ app = pn.Column(
         pn.Card(
             make_simple_bar_chart_pane(df, 8),
             collapsible=False,
+            styles={'border': '2px solid black', 'box-shadow': '3px 3px 0 black'},
+            hide_header=True,
         ),
     ),
     sizing_mode="stretch_width",
