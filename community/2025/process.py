@@ -6,37 +6,41 @@ import polars as pl
 
 
 def pretty_bar_chart(pdf, title, max_items=25, height_step=18):
-    # Optional: keep top N
+    pdf = pdf.copy()
+
+    # Optional: keep top N and roll remainder into "Other"
     if len(pdf) > max_items:
         top = pdf.iloc[:max_items].copy()
         other = pdf.iloc[max_items:]["len"].sum()
         top.loc[len(top)] = {"response": "Other", "len": int(other)}
         pdf = top
 
-    # Make height scale with number of categories
+    total = float(pdf["len"].sum()) if len(pdf) else 0.0
+    if total > 0:
+        pdf["pct"] = (pdf["len"] / total) * 100.0
+    else:
+        pdf["pct"] = 0.0
+    pdf["pct_label"] = pdf["pct"].map(lambda v: f"{v:.1f}%")
+
     height = max(240, len(pdf) * height_step)
 
     base = alt.Chart(pdf).encode(
+        y=alt.Y(
+            "response:N",
+            sort="-x",
+            title=None,
+            axis=alt.Axis(labelLimit=320, labelFontSize=12, ticks=False),
+        ),
         x=alt.X(
             "len:Q",
             title=None,
-            axis=alt.Axis(
-                labelFontSize=12,
-                ticks=False,
-                grid=True,
-            ),
+            axis=alt.Axis(labelFontSize=12, ticks=False, grid=True),
         ),
-        y=alt.Y(
-            "response_short:N",
-            sort="-x",
-            title=None,
-            axis=alt.Axis(
-                labelLimit=320,  # prevent overly wide labels
-                labelFontSize=12,
-                ticks=False,
-            ),
-        ),
-        tooltip=[alt.Tooltip("response:N", title="Response"), alt.Tooltip("len:Q")],
+        tooltip=[
+            alt.Tooltip("response:N", title="Response"),
+            alt.Tooltip("len:Q", title="Count"),
+            alt.Tooltip("pct:Q", title="Percent", format=".1f"),
+        ],
     )
 
     bars = base.mark_bar(cornerRadiusEnd=3)
@@ -44,33 +48,26 @@ def pretty_bar_chart(pdf, title, max_items=25, height_step=18):
     labels = base.mark_text(
         align="left",
         baseline="middle",
-        dx=4,  # nudge label right
+        dx=4,
         fontSize=12,
-    ).encode(text=alt.Text("len:Q"))
+    ).encode(text=alt.Text("pct_label:N"))
 
-    chart = (
+    return (
         (bars + labels)
         .properties(
             title=alt.TitleParams(
                 text=title,
                 fontSize=18,
                 anchor="start",
-                subtitle=["Counts of responses (blank → None)"],
+                subtitle=["Counts (bars) with percent labels"],
                 subtitleFontSize=12,
             ),
             height=height,
         )
-        .configure_view(strokeWidth=0)  # remove outer border
-        .configure_axis(
-            domain=False,  # remove axis lines
-            labelColor="#222",
-            gridColor="#ddd",
-            gridOpacity=0.35,
-        )
+        .configure_view(strokeWidth=0)
+        .configure_axis(domain=False, gridOpacity=0.35)
         .configure_title(offset=10)
     )
-
-    return chart
 
 
 def make_simple_bar_chart_pane(df, column):
