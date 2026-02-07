@@ -317,6 +317,13 @@ app = pn.Column(
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 10),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Industry
+                """,
+        plot_pane=make_simple_bar_chart_pane(df, 11),
+    ),
     sizing_mode="stretch_width",
     margin=20,
 )
