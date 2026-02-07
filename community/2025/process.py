@@ -297,7 +297,7 @@ app = pn.Column(
     make_plot_row(
         md_text="""
                 # Years Coding
-                The are more fine grained bins for 10+ years of experience compared to previous years.
+                There are more fine grained bins for 10+ years of experience compared to previous years.
                 The groups with 4 or less years of experience have increased.
                 The groups with 5 or more years of experience have decreased.
                 """,
