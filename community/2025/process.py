@@ -103,23 +103,86 @@ def make_simple_bar_chart_pane(df, column):
 csv_data = Path(__file__).parent / "nix-community-survey-2025-completed-responses.csv"
 df = pl.read_csv(csv_data)
 
-community_makeup = [
-    make_simple_bar_chart_pane(df, 5),
-    make_simple_bar_chart_pane(df, 6),
-    make_simple_bar_chart_pane(df, 7),
-    make_simple_bar_chart_pane(df, 8),
-]
-
 pn.extension("vega")
 
 app = pn.Column(
     pn.pane.Markdown(
         "# NixOS Community Survey 2025\nSurvey results", margin=(0, 0, 10, 0)
     ),
-    pn.Card(
-        *community_makeup,
-        title="Community Makeup",
-        collapsible=False,
+    pn.Row(
+        pn.Card(
+            pn.pane.Markdown(
+                """
+                # Country
+                European responses increased from 52% to 60%.
+                North American responses decreased from 27.5% to 21.3%.
+                The remaining responses changed less than 1% from the previous year.
+                """,
+                width=320,
+            ),
+            sizing_mode="stretch_height",
+            collapsible=False,
+        ),
+        pn.Spacer(width=20),
+        pn.Card(
+            make_simple_bar_chart_pane(df, 5),
+            collapsible=False,
+        ),
+    ),
+    pn.Row(
+        pn.Card(
+            pn.pane.Markdown(
+                """
+                # Age
+                The curve has flattened and shifted.
+                The largest age group of 25-34 decreased from 35.6% to 30.7%.
+                The 35-44 age group also decreased from 22.7% to 19.4%.
+                Age groups under 25 or over 44 increased between 0.4% and 3.1%.
+                """,
+                width=320,
+            ),
+            sizing_mode="stretch_height",
+            collapsible=False,
+        ),
+        pn.Spacer(width=20),
+        pn.Card(
+            make_simple_bar_chart_pane(df, 6),
+            collapsible=False,
+        ),
+    ),
+    pn.Row(
+        pn.Card(
+            pn.pane.Markdown(
+                """
+                # Gender Identity
+                """,
+                width=320,
+            ),
+            sizing_mode="stretch_height",
+            collapsible=False,
+        ),
+        pn.Spacer(width=20),
+        pn.Card(
+            make_simple_bar_chart_pane(df, 7),
+            collapsible=False,
+        ),
+    ),
+    pn.Row(
+        pn.Card(
+            pn.pane.Markdown(
+                """
+                # Transgender Identity
+                """,
+                width=320,
+            ),
+            sizing_mode="stretch_height",
+            collapsible=False,
+        ),
+        pn.Spacer(width=20),
+        pn.Card(
+            make_simple_bar_chart_pane(df, 8),
+            collapsible=False,
+        ),
     ),
     sizing_mode="stretch_width",
     margin=20,
