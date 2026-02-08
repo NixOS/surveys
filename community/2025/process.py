@@ -283,7 +283,12 @@ pn.extension("vega")
 
 app = pn.Column(
     pn.pane.Markdown(
-        "# NixOS Community Survey 2025\nSurvey results", margin=(0, 0, 10, 0)
+        "# NixOS Community Survey 2025 Results",
+        styles={"font-size": "18px"},
+    ),
+    pn.pane.Markdown(
+        "## People",
+        styles={"font-size": "18px"},
     ),
     make_plot_row(
         md_text="""
