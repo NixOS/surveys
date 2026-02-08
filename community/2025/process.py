@@ -427,6 +427,12 @@ app = pn.Column(
         "## Technology",
         styles={"font-size": "18px"},
     ),
+    make_plot_row(
+        md_text="""
+                # Operating Systems
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 15, 24),
+    ),
     sizing_mode="stretch_width",
     margin=20,
 )
