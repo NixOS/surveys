@@ -467,6 +467,28 @@ app = pn.Column(
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 34, 44),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Years of Nix
+                """,
+        plot_pane=make_simple_bar_chart_pane(
+            df,
+            44,
+            label_order=[
+                "I don't use Nix",
+                "Less than 1 year",
+                "1 to 2 years",
+                "3 to 4 years",
+                "5 to 6 years",
+                "7 to 8 years",
+                "9 to 10 years",
+                "11 or more years",
+                "Prefer not to say",
+                "Skipped",
+            ],
+        ),
+    ),
     sizing_mode="stretch_width",
     margin=20,
 )
