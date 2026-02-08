@@ -460,6 +460,13 @@ app = pn.Column(
             ],
         ),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Involvement
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 34, 44),
+    ),
     sizing_mode="stretch_width",
     margin=20,
 )
