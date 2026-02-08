@@ -692,6 +692,45 @@ app = pn.Column(
     pn.Spacer(height=20),
     make_plot_row(
         md_text="""
+                # Expertise vs Experience
+                """,
+        plot_pane=heatmap_from_col_indices(
+            df,
+            44,
+            45,
+            value="percent",
+            normalize="y",
+            height=240,
+            title="Percent of self-evaluated skill level normalized by skill level.",
+            x_order=[
+                "Less than 1 year",
+                "1 to 2 years",
+                "3 to 4 years",
+                "5 to 6 years",
+                "7 to 8 years",
+                "9 to 10 years",
+                "11 or more years",
+            ],
+            y_order=[
+                "Beginner",
+                "Intermediate",
+                "Advanced",
+            ],
+            x_exclude=[
+                "I don't use Nix",
+                "Prefer not to say",
+                "Skipped",
+            ],
+            y_exclude=[
+                "I have never used Nix",
+                "Prefer not to say",
+                "Skipped",
+            ],
+        ),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
                 # Experimental Features
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 46, 70),
