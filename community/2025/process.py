@@ -1,3 +1,4 @@
+import re
 import textwrap
 from pathlib import Path
 
@@ -75,6 +76,7 @@ def so_style_bar_chart(
     pdf,
     title: str,
     *,
+    normalize: bool = True,
     label_width: int = 240,
     bar_width: int = 460,
     step: int = 24,  # controls row height => constant bar thickness
@@ -112,8 +114,13 @@ def so_style_bar_chart(
         pdf["_order"] = pdf["response"].map(rank)
         pdf = pdf.sort_values("_order").drop(columns=["_order"])
 
-    total = float(pdf["len"].sum()) if len(pdf) else 0.0
-    pdf["pct"] = (pdf["len"] / total * 100.0) if total > 0 else 0.0
+    if normalize:
+        total = float(pdf["len"].sum()) if len(pdf) else 0.0
+        pdf["pct"] = (pdf["len"] / total * 100.0) if total > 0 else 0.0
+    else:
+        # len is already the value you want to display
+        pdf["pct"] = pdf["len"]
+
     pdf["pct_label"] = pdf["pct"].map(lambda v: f"{v:.1f}%")
     max_len = float(pdf["len"].max()) if len(pdf) else 1.0
 
@@ -247,6 +254,33 @@ def make_simple_bar_chart_pane(df, column, label_order=None):
     pdf = counts.to_pandas()
 
     chart = so_style_bar_chart(pdf, title=col_name, label_order=label_order)
+    altair_pane = pn.pane.Vega(chart, sizing_mode="stretch_width")
+
+    return altair_pane
+
+
+def make_multi_bar_chart_pane(df, first, last):
+    question_pat = re.match(r"^(.*?)\s*\[[^\]]+\]\s*$", df[:, first].name)
+    title = question_pat.group(1)
+
+    multi = (df[:, first:last] == "Yes").mean()
+    square_pat = re.compile(r"\[([^\]]+)\]\s*$")
+    multi = multi.rename(
+        {
+            c: square_pat.search(c).group(1) if square_pat.search(c) else c
+            for c in multi.columns
+        }
+    )
+
+    long = (
+        multi.melt(variable_name="response", value_name="len")
+        .with_columns((pl.col("len") * 100).alias("len"))
+        .sort("len", descending=True)
+    )
+
+    pdf = long.to_pandas()
+
+    chart = so_style_bar_chart(pdf, title=title, normalize=False, label_order=None)
     altair_pane = pn.pane.Vega(chart, sizing_mode="stretch_width")
 
     return altair_pane
