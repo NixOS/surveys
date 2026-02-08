@@ -286,6 +286,187 @@ def make_multi_bar_chart_pane(df, first, last):
     return altair_pane
 
 
+def _merge_order(
+    user_order: list[str] | None, actual: list[str], fallback: list[str]
+) -> list[str]:
+    """Keep user_order (filtered to existing, deduped) then append remaining via fallback order."""
+    if user_order is None:
+        return fallback
+    present = set(actual)
+    seen: set[str] = set()
+    out: list[str] = []
+    for s in user_order:
+        if s in present and s not in seen:
+            out.append(s)
+            seen.add(s)
+    out.extend([s for s in fallback if s not in seen])
+    return out
+
+
+def heatmap_from_col_indices(
+    df: pl.DataFrame,
+    x_idx: int,
+    y_idx: int,
+    *,
+    # ordering
+    x_order: list[str] | None = None,
+    y_order: list[str] | None = None,
+    # filtering
+    x_exclude: list[str] | None = None,
+    y_exclude: list[str] | None = None,
+    fill_empty_as: str = "Skipped",
+    complete_grid: bool = True,
+    # value + normalization
+    value: str = "count",  # "count" or "percent"
+    normalize: str = "global",  # "global" | "x" | "y" (only if value="percent")
+    # sizing
+    width: int | str = "container",
+    height: int = 400,
+    # formatting
+    percent_decimals: int = 1,
+    # misc
+    title: str | None = None,
+):
+    if value not in {"count", "percent"}:
+        raise ValueError("value must be 'count' or 'percent'")
+    if normalize not in {"global", "x", "y"}:
+        raise ValueError("normalize must be 'global', 'x', or 'y'")
+
+    x_col = df.columns[x_idx]
+    y_col = df.columns[y_idx]
+    x_ex = set(x_exclude or [])
+    y_ex = set(y_exclude or [])
+
+    # Clean
+    cleaned = df.select(
+        pl.col(x_col)
+        .cast(pl.Utf8)
+        .str.strip_chars()
+        .replace("", None)
+        .fill_null(fill_empty_as)
+        .alias(x_col),
+        pl.col(y_col)
+        .cast(pl.Utf8)
+        .str.strip_chars()
+        .replace("", None)
+        .fill_null(fill_empty_as)
+        .alias(y_col),
+    )
+    if x_ex:
+        cleaned = cleaned.filter(~pl.col(x_col).is_in(list(x_ex)))
+    if y_ex:
+        cleaned = cleaned.filter(~pl.col(y_col).is_in(list(y_ex)))
+
+    # Count pairs
+    pairs = cleaned.group_by([x_col, y_col]).len().rename({"len": "count"})
+
+    # Axis totals for default ordering (always based on counts)
+    x_fallback = (
+        pairs.group_by(x_col)
+        .agg(pl.sum("count").alias("total"))
+        .sort("total", descending=True)[x_col]
+        .to_list()
+    )
+    y_fallback = (
+        pairs.group_by(y_col)
+        .agg(pl.sum("count").alias("total"))
+        .sort("total", descending=True)[y_col]
+        .to_list()
+    )
+
+    actual_x = cleaned.select(pl.col(x_col)).unique()[x_col].to_list()
+    actual_y = cleaned.select(pl.col(y_col)).unique()[y_col].to_list()
+
+    x_sort = _merge_order(x_order, actual_x, x_fallback)
+    y_sort = _merge_order(y_order, actual_y, y_fallback)
+
+    # Complete grid with zeros
+    if complete_grid:
+        grid = pl.DataFrame({x_col: x_sort}).join(
+            pl.DataFrame({y_col: y_sort}), how="cross"
+        )
+        pairs = grid.join(pairs, on=[x_col, y_col], how="left").with_columns(
+            pl.col("count").fill_null(0)
+        )
+
+    # Add percent column if requested
+    if value == "percent":
+        if normalize == "global":
+            total = pairs.select(pl.sum("count").alias("_total")).to_series()[0]
+            total = float(total or 0.0)
+
+            pairs = pairs.with_columns(
+                pl.when(pl.lit(total) > 0)
+                .then(pl.col("count") / pl.lit(total) * 100)
+                .otherwise(0.0)
+                .alias("percent")
+            )
+
+        elif normalize == "x":
+            denom = pl.sum("count").over(x_col)  # note: over(x_col), not over([x_col])
+            pairs = pairs.with_columns(
+                pl.when(denom > 0)
+                .then(pl.col("count") / denom * 100)
+                .otherwise(0.0)
+                .alias("percent")
+            )
+
+        else:  # normalize == "y"
+            denom = pl.sum("count").over(y_col)
+            pairs = pairs.with_columns(
+                pl.when(denom > 0)
+                .then(pl.col("count") / denom * 100)
+                .otherwise(0.0)
+                .alias("percent")
+            )
+
+    pdf = pairs.to_pandas()
+
+    if value == "count":
+        color_field = "count:Q"
+        legend_title = "Count"
+        tooltip = [
+            alt.Tooltip(f"{x_col}:N", title=x_col),
+            alt.Tooltip(f"{y_col}:N", title=y_col),
+            alt.Tooltip("count:Q", title="Count"),
+        ]
+    else:
+        color_field = "percent:Q"
+        legend_title = f"Percent ({normalize})"
+        tooltip = [
+            alt.Tooltip(f"{x_col}:N", title=x_col),
+            alt.Tooltip(f"{y_col}:N", title=y_col),
+            alt.Tooltip("percent:Q", title="Percent", format=f".{percent_decimals}f"),
+            alt.Tooltip("count:Q", title="Count"),
+        ]
+
+    chart = (
+        alt.Chart(pdf)
+        .mark_rect()
+        .encode(
+            x=alt.X(f"{x_col}:N", sort=x_sort, title=x_col),
+            y=alt.Y(f"{y_col}:N", sort=y_sort, title=y_col),
+            color=alt.Color(color_field, title=legend_title),
+            tooltip=tooltip,
+        )
+        .properties(width=width, height=height)
+        .configure_axis(domain=False, ticks=False)
+        .configure_view(stroke=None)
+    )
+
+    if title:
+        chart = chart.properties(
+            title=alt.TitleParams(
+                text=wrap_title(title),
+                anchor="start",
+                fontSize=18,
+                offset=10,
+            )
+        )
+
+    return chart
+
+
 def make_plot_row(md_text: str, plot_pane):
     common_style = {
         "border": "2px solid black",
