@@ -433,6 +433,13 @@ app = pn.Column(
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 15, 24),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Target Triple
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 24, 33),
+    ),
     sizing_mode="stretch_width",
     margin=20,
 )
