@@ -489,6 +489,25 @@ app = pn.Column(
             ],
         ),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Expertise
+                About the same as last year.
+                """,
+        plot_pane=make_simple_bar_chart_pane(
+            df,
+            45,
+            label_order=[
+                "I have never used Nix",
+                "Beginner",
+                "Intermediate",
+                "Advanced",
+                "Prefer not to say",
+                "Skipped",
+            ],
+        ),
+    ),
     sizing_mode="stretch_width",
     margin=20,
 )
