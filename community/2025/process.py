@@ -76,7 +76,7 @@ def so_style_bar_chart(
     title: str,
     *,
     label_width: int = 240,
-    bar_width: int = 480,
+    bar_width: int = 460,
     step: int = 24,  # controls row height => constant bar thickness
     bar_size: int = 16,  # actual bar thickness
     gap: int = 0,  # gap between label column and bars
@@ -218,7 +218,7 @@ def so_style_bar_chart(
     )
 
 
-def wrap_title(s: str, width: int = 80) -> list[str]:
+def wrap_title(s: str, width: int = 72) -> list[str]:
     return textwrap.wrap(s, width=width, break_long_words=False)
 
 
@@ -253,10 +253,14 @@ def make_simple_bar_chart_pane(df, column, label_order=None):
 
 
 def make_plot_row(md_text: str, plot_pane):
-    common_style = {"border": "2px solid black", "box-shadow": "3px 3px 0 black"}
+    common_style = {
+        "border": "2px solid black",
+        "box-shadow": "3px 3px 0 black",
+        "padding": "20px",
+    }
     return pn.Row(
         pn.Card(
-            pn.pane.Markdown(md_text, width=320),
+            pn.pane.Markdown(md_text, width=280, margin=0),
             collapsible=False,
             hide_header=True,
             sizing_mode="stretch_height",
