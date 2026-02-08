@@ -81,6 +81,9 @@ def so_style_bar_chart(
     bar_size: int = 16,  # actual bar thickness
     gap: int = 0,  # gap between label column and bars
     label_order: list[str] | None = None,
+    label_fade_px: int = 48,  # width of the fade region
+    label_fade_steps: int = 4,  # smoothness of fade
+    label_bg: str = "#ffffff",  # match your card background
 ):
     pdf = pdf.copy()
 
@@ -131,12 +134,14 @@ def so_style_bar_chart(
         ),
     )
 
-    labels = (
+    labels_text = (
         alt.Chart(pdf)
         .mark_text(
             align="left",
             baseline="middle",
             fontSize=12,
+            clip=True,
+            limit=label_width + gap,
         )
         .encode(
             y=y_grid,
@@ -144,6 +149,37 @@ def so_style_bar_chart(
             text="response:N",
         )
         .properties(width=label_width + gap, height=alt.Step(step))
+    )
+
+    fade_layers = []
+    if label_fade_px and label_fade_px > 0:
+        steps = label_fade_steps
+        start = (label_width + gap) - label_fade_px
+        w = label_fade_px / max(1, steps)
+
+        for i in range(steps):
+            x0 = start + i * w
+            x1 = start + (i + 1) * w
+            opacity = (i + 1) / steps
+
+            fade_layers.append(
+                alt.Chart(pdf)
+                .mark_bar(
+                    orient="horizontal",
+                    color=label_bg,
+                    opacity=opacity,
+                    size=bar_size,
+                )
+                .encode(
+                    y=y_grid,
+                    x=alt.value(x0),
+                    x2=alt.value(x1),
+                )
+                .properties(width=label_width + gap, height=alt.Step(step))
+            )
+
+    labels = alt.layer(labels_text, *fade_layers).properties(
+        width=label_width + gap, height=alt.Step(step)
     )
 
     base = alt.Chart(pdf).encode(
