@@ -389,6 +389,10 @@ app = pn.Column(
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 12),
     ),
+    pn.pane.Markdown(
+        "## Technology",
+        styles={"font-size": "18px"},
+    ),
     sizing_mode="stretch_width",
     margin=20,
 )
