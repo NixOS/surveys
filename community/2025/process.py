@@ -440,6 +440,26 @@ app = pn.Column(
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 24, 33),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Upgrade Experience
+                """,
+        plot_pane=make_simple_bar_chart_pane(
+            df,
+            33,
+            label_order=[
+                "I did not know there was a new stable release.",
+                "I have not upgraded.",
+                "I had no issues.",
+                "I had minor issues.",
+                "I had moderate issues.",
+                "I had severe issues but figured it out after some time.",
+                "I had severe issues and could not make the upgrade.",
+                "Skipped",
+            ],
+        ),
+    ),
     sizing_mode="stretch_width",
     margin=20,
 )
