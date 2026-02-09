@@ -152,6 +152,13 @@ technology = (
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 85, 91),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # (?:D|L|N|S|Tv)ix
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 91, 97),
+    ),
 )
 
 experience = (
