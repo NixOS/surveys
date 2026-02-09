@@ -184,6 +184,13 @@ technology = (
             0,
         ),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # NixOS Release
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 108, 115),
+    ),
 )
 
 experience = (
