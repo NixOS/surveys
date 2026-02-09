@@ -14,11 +14,7 @@ df = pl.read_csv(csv_data)
 
 pn.extension("vega")
 
-app = pn.Column(
-    pn.pane.Markdown(
-        "# NixOS Community Survey 2025 Results",
-        styles={"font-size": "18px"},
-    ),
+people = (
     pn.pane.Markdown(
         "## People",
         styles={"font-size": "18px"},
@@ -122,6 +118,9 @@ app = pn.Column(
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 12),
     ),
+)
+
+technology = (
     pn.pane.Markdown(
         "## Technology",
         styles={"font-size": "18px"},
@@ -142,7 +141,20 @@ app = pn.Column(
     pn.Spacer(height=20),
     make_plot_row(
         md_text="""
-                # Upgrade Experience
+                # Experimental Features
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 46, 70),
+    ),
+)
+
+experience = (
+    pn.pane.Markdown(
+        "## Experience",
+        styles={"font-size": "18px"},
+    ),
+    make_plot_row(
+        md_text="""
+                # Stable Upgrade
                 """,
         plot_pane=make_simple_bar_chart_pane(
             df,
@@ -169,7 +181,7 @@ app = pn.Column(
     pn.Spacer(height=20),
     make_plot_row(
         md_text="""
-                # Years of Nix
+                # Experience
                 """,
         plot_pane=make_simple_bar_chart_pane(
             df,
@@ -246,13 +258,16 @@ app = pn.Column(
             ],
         ),
     ),
-    pn.Spacer(height=20),
-    make_plot_row(
-        md_text="""
-                # Experimental Features
-                """,
-        plot_pane=make_multi_bar_chart_pane(df, 46, 70),
+)
+
+app = pn.Column(
+    pn.pane.Markdown(
+        "# NixOS Community Survey 2025 Results",
+        styles={"font-size": "18px"},
     ),
+    *people,
+    *technology,
+    *experience,
     sizing_mode="stretch_width",
     margin=20,
 )
