@@ -191,6 +191,13 @@ technology = (
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 108, 115),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Hardware Configuration
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 115, 120),
+    ),
 )
 
 experience = (
