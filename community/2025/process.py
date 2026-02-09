@@ -8,6 +8,9 @@ from altplot import (
     make_plot_row,
     make_simple_bar_chart_pane,
 )
+from dfhelpers import (
+    extract_first_mmp_semver_df,
+)
 
 csv_data = Path(__file__).parent / "nix-community-survey-2025-completed-responses.csv"
 df = pl.read_csv(csv_data)
@@ -120,6 +123,7 @@ people = (
     ),
 )
 
+
 technology = (
     pn.pane.Markdown(
         "## Technology",
@@ -165,6 +169,20 @@ technology = (
                 # Infrastructure
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 97, 107),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Nix Version
+                A lack of response or a an empty string was replaced with "Skipped".
+                A SemVer regular expression was used to match against the remaining answers.
+                Values that did not match were replaced with "No Match".
+                Finally, responses that comprised less that 0.5% were combined and replaced with "Other".
+                """,
+        plot_pane=make_simple_bar_chart_pane(
+            extract_first_mmp_semver_df(df, 107, min_percent=0.5),
+            0,
+        ),
     ),
 )
 
