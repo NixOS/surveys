@@ -1,9 +1,12 @@
-import re
 import textwrap
 
 import altair as alt
 import panel as pn
 import polars as pl
+from dfhelpers import (
+    bucket_rare_categories_df,
+    reduce_multi_choice_to_single_column,
+)
 
 
 def pretty_bar_chart(pdf, title, max_items=25, height_step=18):
@@ -258,26 +261,13 @@ def make_simple_bar_chart_pane(df, column, label_order=None):
     return altair_pane
 
 
-def make_multi_bar_chart_pane(df, first, last):
-    question_pat = re.match(r"^(.*?)\s*\[[^\]]+\]\s*$", df[:, first].name)
-    title = question_pat.group(1)
+def make_multi_bar_chart_pane(df, first, last, min_percent=0.0):
+    reduced, title = reduce_multi_choice_to_single_column(df, first, last)
 
-    multi = (df[:, first:last] == "Yes").mean()
-    square_pat = re.compile(r"\[([^\]]+)\]\s*$")
-    multi = multi.rename(
-        {
-            c: square_pat.search(c).group(1) if square_pat.search(c) else c
-            for c in multi.columns
-        }
-    )
+    if min_percent > 0:
+        reduced = bucket_rare_categories_df(reduced, 0, min_percent=min_percent)
 
-    long = (
-        multi.melt(variable_name="response", value_name="len")
-        .with_columns((pl.col("len") * 100).alias("len"))
-        .sort("len", descending=True)
-    )
-
-    pdf = long.to_pandas()
+    pdf = reduced.to_pandas()
 
     chart = so_style_bar_chart(pdf, title=title, normalize=False, label_order=None)
     altair_pane = pn.pane.Vega(chart, sizing_mode="stretch_width")

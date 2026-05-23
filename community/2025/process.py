@@ -10,6 +10,8 @@ from altplot import (
 )
 from dfhelpers import (
     extract_first_mmp_semver_df,
+    reduce_multi_choice_to_single_column,
+    bucket_rare_categories_df,
 )
 
 csv_data = Path(__file__).parent / "nix-community-survey-2025-completed-responses.csv"
@@ -198,7 +200,17 @@ technology = (
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 115, 120),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Software Ecosystems
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 120, 174),
+    ),
 )
+
+print(reduce_multi_choice_to_single_column(df, 120, 174)[0])
+print(bucket_rare_categories_df(reduce_multi_choice_to_single_column(df, 120, 174)[0], 0, min_percent=1))
 
 experience = (
     pn.pane.Markdown(
