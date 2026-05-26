@@ -553,3 +553,35 @@ def make_wordcloud_pane(
     wc.to_image().save(buf, format="PNG")
     buf.seek(0)
     return pn.pane.PNG(buf.read(), width=width, height=height)
+
+
+def make_text_plot_pair(
+    df: pl.DataFrame,
+    col: int,
+    *,
+    top_n: int = 20,
+    min_token_len: int = 2,
+    extra_stopwords: list[str] | None = None,
+    title: str | None = None,
+    cloud_width: int = 640,
+    cloud_height: int = 320,
+):
+    """Frequency bar chart + word cloud side by side. Returns a pn.Row
+    suitable for passing as plot_pane to make_plot_row."""
+    return pn.Row(
+        make_text_frequency_chart(
+            df, col,
+            top_n=top_n,
+            min_token_len=min_token_len,
+            extra_stopwords=extra_stopwords,
+            title=title,
+        ),
+        pn.Spacer(width=20),
+        make_wordcloud_pane(
+            df, col,
+            min_token_len=min_token_len,
+            extra_stopwords=extra_stopwords,
+            width=cloud_width,
+            height=cloud_height,
+        ),
+    )
