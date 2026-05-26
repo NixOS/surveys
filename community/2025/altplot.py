@@ -585,3 +585,90 @@ def make_text_plot_pair(
             height=cloud_height,
         ),
     )
+
+
+def make_ranking_chart(
+    df: pl.DataFrame,
+    rank_first: int,
+    rank_last: int,
+    *,
+    method: str = "avg_rank",
+    top_n: int | None = None,
+    title: str | None = None,
+):
+    """Ranking chart. Column N in [rank_first, rank_last) contains the choice
+    name that the respondent placed at rank (N - rank_first + 1).
+    method="avg_rank": horizontal bar of mean rank, sorted ascending (lower = preferred).
+    method="top_n_count": count of appearances in the top `top_n` rank columns,
+    sorted descending."""
+    import re
+    from collections import Counter as _C
+
+    rank_cols = df.columns[rank_first:rank_last]
+    if not rank_cols:
+        return pn.pane.Markdown("_(no ranking columns)_")
+
+    m = re.match(r"^(.*?)\s*\[Rank\s*\d+\]\s*$", rank_cols[0])
+    base_title = m.group(1) if m else rank_cols[0]
+    chart_title = title or base_title
+
+    if method == "avg_rank":
+        choice_to_ranks: dict[str, list[int]] = {}
+        for i, c in enumerate(rank_cols):
+            rank_pos = i + 1
+            for v in df[c].cast(pl.Utf8).to_list():
+                if v is None:
+                    continue
+                v_clean = v.strip()
+                if not v_clean:
+                    continue
+                choice_to_ranks.setdefault(v_clean, []).append(rank_pos)
+
+        if not choice_to_ranks:
+            return pn.pane.Markdown(f"_(no ranking responses for: {chart_title})_")
+
+        rows = [
+            {"response": ch, "len": sum(ranks) / len(ranks)}
+            for ch, ranks in choice_to_ranks.items()
+        ]
+        rows.sort(key=lambda r: r["len"])
+        pdf = pd.DataFrame(rows)
+
+        chart = so_style_bar_chart(
+            pdf,
+            title=f"{chart_title} — mean rank (lower = preferred)",
+            normalize=False,
+            label_format=lambda v: f"{v:.2f}",
+            sort_ascending=True,
+        )
+
+    elif method == "top_n_count":
+        effective_n = top_n if top_n is not None else len(rank_cols)
+        considered = rank_cols[:effective_n]
+        counter: _C[str] = _C()
+        for c in considered:
+            for v in df[c].cast(pl.Utf8).to_list():
+                if v is None:
+                    continue
+                v_clean = v.strip()
+                if not v_clean:
+                    continue
+                counter[v_clean] += 1
+
+        if not counter:
+            return pn.pane.Markdown(f"_(no ranking responses for: {chart_title})_")
+
+        ordered = counter.most_common()
+        pdf = pd.DataFrame({"response": [k for k, _ in ordered], "len": [v for _, v in ordered]})
+
+        chart = so_style_bar_chart(
+            pdf,
+            title=f"{chart_title} — appearances in top {effective_n}",
+            normalize=False,
+            label_format=lambda v: f"{int(v):,}",
+        )
+
+    else:
+        raise ValueError(f"Unknown method: {method!r}")
+
+    return pn.pane.Vega(chart, sizing_mode="stretch_width")
