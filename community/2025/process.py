@@ -207,6 +207,13 @@ technology = (
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 120, 174),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # OS where you use Nix
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 77, 85),
+    ),
 )
 
 print(reduce_multi_choice_to_single_column(df, 120, 174)[0])
