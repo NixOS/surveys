@@ -9,7 +9,6 @@ from altplot import (
     make_plot_row,
     make_ranking_chart,
     make_simple_bar_chart_pane,
-    make_text_plot_pair,
 )
 from dfhelpers import (
     extract_first_mmp_semver_df,
@@ -328,13 +327,6 @@ experience = (
                 # Three improvements
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 186, 198),
-    ),
-    pn.Spacer(height=20),
-    make_plot_row(
-        md_text="""
-                # Other areas to improve
-                """,
-        plot_pane=make_text_plot_pair(df, 198),
     ),
     pn.Spacer(height=20),
     make_plot_row(
