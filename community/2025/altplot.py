@@ -88,12 +88,14 @@ def so_style_bar_chart(
     label_fade_px: int = 48,  # width of the fade region
     label_fade_steps: int = 4,  # smoothness of fade
     label_bg: str = "#ffffff",  # match your card background
+    label_format=lambda v: f"{v:.1f}%",
+    sort_ascending: bool = False,
 ):
     pdf = pdf.copy()
 
-    # Default: order by count descending (like SO)
+    # Default: order by count (descending = SO default; ascending = ranking by mean)
     if label_order is None:
-        pdf = pdf.sort_values("len", ascending=False)
+        pdf = pdf.sort_values("len", ascending=sort_ascending)
         order = pdf["response"].tolist()
     else:
         present = set(pdf["response"].tolist())
@@ -123,7 +125,7 @@ def so_style_bar_chart(
         # len is already the value you want to display
         pdf["pct"] = pdf["len"]
 
-    pdf["pct_label"] = pdf["pct"].map(lambda v: f"{v:.1f}%")
+    pdf["pct_label"] = pdf["pct"].map(label_format)
     max_len = float(pdf["len"].max()) if len(pdf) else 1.0
 
     # Shared y encoding with dotted horizontal separators between bars
