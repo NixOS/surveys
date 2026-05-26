@@ -368,8 +368,39 @@ experience = (
                 A "love the idea": 85.3%. C "get things done": 51.2%. B "curious": 44.2%.
                 D "want to work on Nix": 31.3%. E "decision-maker": 14.8%. Multi-choice,
                 so respondents can identify with several personas at once.
+
+                **Persona definitions** (from the survey prompt):
+
+                **A. Love the idea behind Nix or NixOS.** Maybe you spread the word among
+                friends and coworkers. Interested in or enthusiastic about free and open
+                source software, Linux, home automation, online communities, or
+                distro-hopping.
+
+                **B. Curious about Nix and how it works.** Maybe you enjoy or want to
+                learn functional programming, or just want to learn new things. Identify
+                as: Nix-curious developer, student of a technical field, educator, or
+                academic researcher.
+
+                **C. Use Nix or NixOS to get things done** or boost your team's
+                productivity, learn it to grow career opportunities, or use it on the job
+                because someone said so. Identify as: system administrator, employee
+                developer, DevOps engineer, natural scientist, open source software
+                author, or early-career professional.
+
+                **D. Work or want to work on the Nix ecosystem** rather than just with
+                it. At least one of: aspiring contributor, novice contributor, drive-by
+                contributor, package maintainer, code owner, community team member, or
+                sponsor.
+
+                **E. Make strategic decisions** for your team or company: which
+                technologies to adopt, which skills to train, which projects to support
+                or invest in, which services or products to offer. Examples: entrepreneur,
+                team lead, software architect, CTO, sales executive, public service
+                administrator.
                 """,
-        plot_pane=make_multi_bar_chart_pane(df, 72, 77),
+        plot_pane=make_multi_bar_chart_pane(
+            df, 72, 77, title="Which user types do you identify with?"
+        ),
     ),
     pn.Spacer(height=20),
     make_plot_row(

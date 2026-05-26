@@ -264,15 +264,15 @@ def make_simple_bar_chart_pane(df, column, label_order=None):
     return altair_pane
 
 
-def make_multi_bar_chart_pane(df, first, last, min_percent=0.0):
-    reduced, title = reduce_multi_choice_to_single_column(df, first, last)
+def make_multi_bar_chart_pane(df, first, last, min_percent=0.0, title=None):
+    reduced, auto_title = reduce_multi_choice_to_single_column(df, first, last)
 
     if min_percent > 0:
         reduced = bucket_rare_categories_df(reduced, 0, min_percent=min_percent)
 
     pdf = reduced.to_pandas()
 
-    chart = so_style_bar_chart(pdf, title=title, normalize=False, label_order=None)
+    chart = so_style_bar_chart(pdf, title=title or auto_title, normalize=False, label_order=None)
     altair_pane = pn.pane.Vega(chart, sizing_mode="stretch_width")
 
     return altair_pane
