@@ -576,7 +576,7 @@ def make_multi_vs_single_heatmap(
     multi_last: int,
     single_col: int,
     *,
-    normalize: str,  # "single" or "trait"
+    denominator: str,  # "single" or "trait"
     x_order: list[str] | None = None,
     x_exclude: list[str] | None = None,
     title: str | None = None,
@@ -584,17 +584,33 @@ def make_multi_vs_single_heatmap(
 ):
     """Cross-tab heatmap: rows = trait columns (multi-choice, "Yes" indicates the
     respondent selected the trait), columns = values of single_col.
-    normalize="single": divide each cell by count of respondents at that single value.
-    normalize="trait":  divide each cell by count of respondents who picked that trait."""
+    denominator="single": each cell = P(trait | single_value). Reads as a *rate*
+        ("X% of respondents at this skill level picked this trait"). Cells in a
+        column do NOT sum to 100% because traits aren't mutually exclusive.
+    denominator="trait":  each cell = P(single_value | trait). Reads as a
+        *composition* ("X% of respondents who picked this trait are at this
+        skill level"). Cells in a row sum to 100%.
+    denominator="lift":   each cell = P(single_value | trait) / P(single_value).
+        Reads as a *lift / odds ratio* — how over- or under-represented this
+        single_value is among trait-pickers relative to the population baseline.
+        1.0 = same as baseline, >1.0 = over-represented, <1.0 = under-represented.
+        Strips out the baseline imbalance between single_value groups."""
     import re
 
-    if normalize not in {"single", "trait"}:
-        raise ValueError(f"normalize must be 'single' or 'trait', got {normalize!r}")
+    if denominator not in {"single", "trait", "lift"}:
+        raise ValueError(f"denominator must be 'single', 'trait', or 'lift', got {denominator!r}")
 
     multi_cols = df.columns[multi_first:multi_last]
     single_col_name = df.columns[single_col]
 
-    cleaned = df.filter(pl.col(single_col_name).is_not_null())
+    cleaned = df.with_columns(
+        pl.col(single_col_name)
+        .cast(pl.Utf8)
+        .str.strip_chars()
+        .replace("", None)
+        .fill_null("Skipped")
+        .alias(single_col_name)
+    )
     if x_exclude:
         cleaned = cleaned.filter(~pl.col(single_col_name).is_in(list(x_exclude)))
 
@@ -624,7 +640,7 @@ def make_multi_vs_single_heatmap(
 
     long_df = pl.DataFrame(rows)
 
-    if normalize == "single":
+    if denominator == "single":
         denom = cleaned.group_by(single_col_name).len().rename({"len": "denom"})
         long_df = long_df.join(
             denom,
@@ -632,22 +648,72 @@ def make_multi_vs_single_heatmap(
             right_on=single_col_name,
             how="left",
         )
-        legend = f"% of {single_col_name}"
-    else:
+        long_df = long_df.with_columns(
+            pl.when(pl.col("denom") > 0)
+            .then(pl.col("count") / pl.col("denom") * 100)
+            .otherwise(0.0)
+            .alias("value")
+        )
+        legend = "Rate (%)"
+        tooltip_title = "Rate (%)"
+        tooltip_format = ".1f"
+        color_scale = alt.Scale()  # default sequential
+    elif denominator == "trait":
         trait_totals = []
         for trait_col, trait_lbl in zip(multi_cols, trait_labels):
             n = cleaned.filter(pl.col(trait_col) == "Yes").height
             trait_totals.append({"trait": trait_lbl, "denom": n})
         denom = pl.DataFrame(trait_totals)
         long_df = long_df.join(denom, on="trait", how="left")
-        legend = "% of trait"
-
-    long_df = long_df.with_columns(
-        pl.when(pl.col("denom") > 0)
-        .then(pl.col("count") / pl.col("denom") * 100)
-        .otherwise(0.0)
-        .alias("percent")
-    )
+        long_df = long_df.with_columns(
+            pl.when(pl.col("denom") > 0)
+            .then(pl.col("count") / pl.col("denom") * 100)
+            .otherwise(0.0)
+            .alias("value")
+        )
+        legend = "Composition (%)"
+        tooltip_title = "Composition (%)"
+        tooltip_format = ".1f"
+        color_scale = alt.Scale()
+    else:  # "lift"
+        total_cleaned = cleaned.height
+        trait_totals = []
+        for trait_col, trait_lbl in zip(multi_cols, trait_labels):
+            n = cleaned.filter(pl.col(trait_col) == "Yes").height
+            trait_totals.append({"trait": trait_lbl, "trait_total": n})
+        trait_denom_df = pl.DataFrame(trait_totals)
+        single_denom_df = (
+            cleaned.group_by(single_col_name)
+            .len()
+            .rename({"len": "single_total"})
+        )
+        long_df = long_df.join(trait_denom_df, on="trait", how="left")
+        long_df = long_df.join(
+            single_denom_df,
+            left_on="single",
+            right_on=single_col_name,
+            how="left",
+        )
+        # lift = (count / single_total) / (trait_total / total_cleaned)
+        #      = (count * total_cleaned) / (single_total * trait_total)
+        long_df = long_df.with_columns(
+            pl.when(
+                (pl.col("trait_total") > 0)
+                & (pl.col("single_total") > 0)
+                & (pl.lit(total_cleaned) > 0)
+            )
+            .then(
+                pl.col("count") * pl.lit(float(total_cleaned))
+                / (pl.col("trait_total") * pl.col("single_total"))
+            )
+            .otherwise(pl.lit(1.0))
+            .alias("value")
+        )
+        legend = "Lift (× baseline)"
+        tooltip_title = "Lift (×)"
+        tooltip_format = ".2f"
+        # Diverging scale centered at 1.0: white at 1, red below, blue above.
+        color_scale = alt.Scale(scheme="redblue", domain=[0, 2], domainMid=1.0, clamp=True)
 
     if x_order is None:
         x_order_eff = sorted(long_df["single"].unique().to_list())
@@ -658,7 +724,7 @@ def make_multi_vs_single_heatmap(
 
     pdf = long_df.to_pandas()
 
-    chart_title = title or f"{single_col_name} (normalize: {normalize})"
+    chart_title = title or f"{single_col_name} (denominator: {denominator})"
 
     chart = (
         alt.Chart(pdf)
@@ -666,12 +732,12 @@ def make_multi_vs_single_heatmap(
         .encode(
             x=alt.X("single:N", sort=x_order_eff, title=single_col_name),
             y=alt.Y("trait:N", sort=trait_labels, title=None),
-            color=alt.Color("percent:Q", title=legend),
+            color=alt.Color("value:Q", title=legend, scale=color_scale),
             tooltip=[
                 alt.Tooltip("trait:N", title="Trait"),
                 alt.Tooltip("single:N", title=single_col_name),
                 alt.Tooltip("count:Q", title="Count"),
-                alt.Tooltip("percent:Q", title="Percent", format=".1f"),
+                alt.Tooltip("value:Q", title=tooltip_title, format=tooltip_format),
             ],
         )
         .properties(

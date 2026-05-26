@@ -392,6 +392,108 @@ experience = (
             ],
         ),
     ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Trait rate by skill level
+                Each cell: of respondents at this skill level, what percent picked this trait.
+                Cells in a column do NOT sum to 100% — traits are multi-choice.
+
+                Beginners overwhelmingly rely on tutorials (83%); rate drops to 57% at
+                Intermediate and 18% at Advanced. Writing own NixOS modules, understanding
+                overlays, and contributing upstream all climb steeply from under 20% at
+                Beginner to over 70% at Advanced.
+                """,
+        plot_pane=make_multi_vs_single_heatmap(
+            df, 174, 186, 45,
+            denominator="single",
+            x_order=["Beginner", "Intermediate", "Advanced"],
+            x_exclude=["Skipped", "Prefer not to say", "I have never used Nix"],
+            title="Trait rate by skill level",
+            height=360,
+        ),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Trait lift by skill level
+                Each cell: how over- or under-represented this skill level is among trait-pickers,
+                relative to the overall skill distribution. 1.0× = baseline, >1.0× = over-represented,
+                <1.0× = under-represented. Strips out the population-size imbalance.
+
+                Only "rely on tutorials" is over-represented among Beginners (1.30×). Every other
+                trait skews Advanced. Strongest Advanced lifts: "deeper module aspect" (3.34×),
+                "contribute upstream" (3.24×), "architectural choices" (2.79×).
+                """,
+        plot_pane=make_multi_vs_single_heatmap(
+            df, 174, 186, 45,
+            denominator="lift",
+            x_order=["Beginner", "Intermediate", "Advanced"],
+            x_exclude=["Skipped", "Prefer not to say", "I have never used Nix"],
+            title="Trait lift by skill level",
+            height=360,
+        ),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Trait rate by years using Nix
+                Each cell: of respondents with this much experience, what percent picked this trait.
+                Cells in a column do NOT sum to 100% — traits are multi-choice.
+
+                Tutorial reliance starts at 76% in the first year and falls to 26% by 11+ years.
+                Most "advanced" trait rates climb steeply through years 1–6 and largely plateau
+                after. Group sizes shrink rapidly past 5 years (665 → 225 → 98 → 53 → 42), so
+                cells in the rightmost columns are noisier.
+                """,
+        plot_pane=make_multi_vs_single_heatmap(
+            df, 174, 186, 44,
+            denominator="single",
+            x_order=[
+                "Less than 1 year",
+                "1 to 2 years",
+                "3 to 4 years",
+                "5 to 6 years",
+                "7 to 8 years",
+                "9 to 10 years",
+                "11 or more years",
+            ],
+            x_exclude=["Skipped", "Prefer not to say", "I don't use Nix"],
+            title="Trait rate by years using Nix",
+            height=360,
+        ),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Trait lift by years using Nix
+                Each cell: how over- or under-represented this experience bucket is among trait-pickers,
+                relative to the overall experience distribution. 1.0× = baseline, >1.0× = over-represented,
+                <1.0× = under-represented. Strips out the population-size imbalance.
+
+                Tutorial reliance is the only trait over-represented in year-1 respondents
+                (1.20×). All other traits skew toward more-experienced respondents, with
+                strongest lifts at 5+ years for "deeper module aspect" (2.1× → 2.4×) and
+                "contribute upstream" (2.1× → 2.8×). Group sizes shrink rapidly past 5 years,
+                so cells in the rightmost columns are noisier.
+                """,
+        plot_pane=make_multi_vs_single_heatmap(
+            df, 174, 186, 44,
+            denominator="lift",
+            x_order=[
+                "Less than 1 year",
+                "1 to 2 years",
+                "3 to 4 years",
+                "5 to 6 years",
+                "7 to 8 years",
+                "9 to 10 years",
+                "11 or more years",
+            ],
+            x_exclude=["Skipped", "Prefer not to say", "I don't use Nix"],
+            title="Trait lift by years using Nix",
+            height=360,
+        ),
+    ),
 )
 
 app = pn.Column(
