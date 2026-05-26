@@ -497,6 +497,42 @@ experience = (
     ),
 )
 
+information_seeking = (
+    pn.pane.Markdown(
+        "## Information seeking",
+        styles={"font-size": "18px"},
+    ),
+    make_plot_row(
+        md_text="""
+                # Objects you interact with
+                Mean rank (lower = preferred).
+
+                Search dominates: package search (avg 1.87) and NixOS option search (2.68)
+                are far ahead of every other object. NixOS configuration examples (4.58),
+                manuals (5.91), command-line interface (6.00), and development environments
+                (6.05) form the next tier. Peripheral items — job postings, press
+                information, reviews, paid support — sit at the bottom.
+                """,
+        plot_pane=make_ranking_chart(df, 208, 238, method="avg_rank"),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Help resources (top-5 appearances)
+                Respondents were asked to rank their top 5 only.
+                Bar = number of respondents who placed this resource in their top 5.
+
+                The official NixOS Wiki leads (2,313 — 68% of respondents put it in their
+                top 5), followed by reference manuals (1,995 — 59%) and GitHub issues
+                (1,359 — 40%). LLMs already crack the top 7 (919, 27%), ahead of nix.dev
+                (711, 21%). Social channels — Reddit, Stack Overflow, Matrix, Discord — sit
+                well below the official and code-adjacent sources; Mastodon and Twitter/X
+                are essentially unused for help-seeking.
+                """,
+        plot_pane=make_ranking_chart(df, 238, 255, method="top_n_count", top_n=5),
+    ),
+)
+
 foundation = (
     pn.pane.Markdown(
         "## Foundation",
@@ -591,6 +627,7 @@ app = pn.Column(
     *workplace,
     *contribution,
     *foundation,
+    *information_seeking,
     sizing_mode="stretch_width",
     margin=20,
 )
