@@ -135,3 +135,55 @@ def bucket_rare_categories_df(
         .otherwise(pl.col(col))
         .alias(col)
     )
+
+
+import re as _re_token
+from collections import Counter as _Counter
+
+DEFAULT_STOPWORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "been", "by", "for", "from",
+    "has", "have", "had", "he", "her", "him", "his", "i", "in", "is", "it",
+    "its", "me", "my", "of", "on", "or", "our", "she", "that", "the", "to",
+    "us", "was", "we", "were", "will", "with", "you", "your", "this",
+    "these", "those", "but", "not", "if", "so", "do", "does", "did", "can",
+    "could", "should", "would", "than", "then", "there", "here", "when",
+    "where", "what", "which", "who", "how", "why", "all", "any", "some",
+    "yes", "no", "just", "also", "very", "much", "more", "most", "less",
+    "only", "even", "still", "yet", "out", "up", "down", "over", "under",
+    "about", "into", "through", "after", "before", "while", "during",
+    "because", "though", "although", "however", "thus", "hence", "therefore",
+    "such", "like", "well", "really", "actually", "perhaps", "maybe",
+    "thats", "im", "ive", "id", "youre", "youd", "youve",
+    "dont", "doesnt", "didnt", "isnt", "arent", "wasnt", "werent",
+    "cant", "couldnt", "wouldnt", "shouldnt",
+    # Nix-specific (dominate every chart otherwise)
+    "nix", "nixos", "nixpkgs",
+}
+
+
+def tokenize_text_column(
+    df: pl.DataFrame,
+    col: int | str,
+    *,
+    min_token_len: int = 2,
+    extra_stopwords: list[str] | None = None,
+) -> dict[str, int]:
+    """Lowercase, tokenize on non-alphanumeric, drop short tokens and stopwords,
+    return token -> count."""
+    col_name = df.columns[col] if isinstance(col, int) else col
+    stopwords = set(DEFAULT_STOPWORDS)
+    if extra_stopwords:
+        stopwords.update(s.lower() for s in extra_stopwords)
+
+    counter: _Counter[str] = _Counter()
+    for raw in df[col_name].cast(pl.Utf8).to_list():
+        if raw is None:
+            continue
+        text = raw.lower()
+        for tok in _re_token.findall(r"[a-z0-9]+", text):
+            if len(tok) < min_token_len:
+                continue
+            if tok in stopwords:
+                continue
+            counter[tok] += 1
+    return dict(counter)
