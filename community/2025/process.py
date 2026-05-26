@@ -497,6 +497,26 @@ experience = (
     ),
 )
 
+contribution = (
+    pn.pane.Markdown(
+        "## Contribution",
+        styles={"font-size": "18px"},
+    ),
+    make_plot_row(
+        md_text="""
+                # Contribution experience
+
+                Onboarding is the dominant theme. 35.8% plan to contribute in the future, and
+                another 36% want to contribute now but don't know how to get started or how
+                to join existing efforts. Roughly 31% have actually contributed (combining "on
+                my own" and "with community help"). Feedback friction shows up at modest rates:
+                7.0% report slow feedback, 5.8% got stuck after starting, 2.1% found received
+                feedback unhelpful. Employer policy is rarely a blocker (0.6%).
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 255, 266),
+    ),
+)
+
 workplace = (
     pn.pane.Markdown(
         "## Workplace",
@@ -536,6 +556,7 @@ app = pn.Column(
     *technology,
     *experience,
     *workplace,
+    *contribution,
     sizing_mode="stretch_width",
     margin=20,
 )
