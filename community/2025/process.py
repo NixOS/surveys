@@ -65,6 +65,8 @@ people = (
     make_plot_row(
         md_text="""
                 # Gender Identity
+                Man: 78.3%. Woman: 7.2%. Prefer not to say: 6.6%. Non-binary or
+                non-conforming: 5.9%.
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 7),
     ),
@@ -72,6 +74,7 @@ people = (
     make_plot_row(
         md_text="""
                 # Transgender Identity
+                No: 81.8%. Yes: 9.8%. Prefer not to say: 7.2%.
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 8),
     ),
