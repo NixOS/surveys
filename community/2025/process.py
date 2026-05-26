@@ -497,6 +497,39 @@ experience = (
     ),
 )
 
+foundation = (
+    pn.pane.Markdown(
+        "## Foundation",
+        styles={"font-size": "18px"},
+    ),
+    make_plot_row(
+        md_text="""
+                # Donation incentives
+
+                Transparency is the top motivator: 26.7% would be encouraged by better
+                financial and operational reports — more than any other option. Tax
+                deductibility (16.1%), a maintained LTS release (15.3%), official support or
+                services (12.9%), and donor perks (12.4%) cluster as secondary motivators.
+                Ear-marking donations to specific areas lands last at 5.6%.
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 267, 273),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Foundation funding priorities
+                Mean rank (lower = preferred).
+
+                Documentation is the clear top priority (avg rank 2.28, ranked by 2,182
+                respondents — more than half). Nixpkgs package maintenance (3.47) and
+                Security (3.67) follow. Community health, NixOS releases, and Nixpkgs
+                architecture cluster around rank 4. Marketing (6.87) and community events
+                (7.89) are the lowest priorities.
+                """,
+        plot_pane=make_ranking_chart(df, 273, 287, method="avg_rank"),
+    ),
+)
+
 contribution = (
     pn.pane.Markdown(
         "## Contribution",
@@ -557,6 +590,7 @@ app = pn.Column(
     *experience,
     *workplace,
     *contribution,
+    *foundation,
     sizing_mode="stretch_width",
     margin=20,
 )
