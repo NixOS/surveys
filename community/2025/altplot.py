@@ -672,3 +672,124 @@ def make_ranking_chart(
         raise ValueError(f"Unknown method: {method!r}")
 
     return pn.pane.Vega(chart, sizing_mode="stretch_width")
+
+
+def make_multi_vs_single_heatmap(
+    df: pl.DataFrame,
+    multi_first: int,
+    multi_last: int,
+    single_col: int,
+    *,
+    normalize: str,  # "single" or "trait"
+    x_order: list[str] | None = None,
+    x_exclude: list[str] | None = None,
+    title: str | None = None,
+    height: int = 320,
+):
+    """Cross-tab heatmap: rows = trait columns (multi-choice, "Yes" indicates the
+    respondent selected the trait), columns = values of single_col.
+    normalize="single": divide each cell by count of respondents at that single value.
+    normalize="trait":  divide each cell by count of respondents who picked that trait."""
+    import re
+
+    if normalize not in {"single", "trait"}:
+        raise ValueError(f"normalize must be 'single' or 'trait', got {normalize!r}")
+
+    multi_cols = df.columns[multi_first:multi_last]
+    single_col_name = df.columns[single_col]
+
+    cleaned = df.filter(pl.col(single_col_name).is_not_null())
+    if x_exclude:
+        cleaned = cleaned.filter(~pl.col(single_col_name).is_in(list(x_exclude)))
+
+    bracket_re = re.compile(r"\[([^\]]+)\]\s*$")
+
+    def trait_label(c: str) -> str:
+        m = bracket_re.search(c)
+        return m.group(1) if m else c
+
+    trait_labels = [trait_label(c) for c in multi_cols]
+
+    rows: list[dict] = []
+    for trait_col, trait_lbl in zip(multi_cols, trait_labels):
+        sub = cleaned.filter(pl.col(trait_col) == "Yes")
+        if sub.height == 0:
+            continue
+        per_single = sub.group_by(single_col_name).len()
+        for r in per_single.iter_rows(named=True):
+            rows.append({
+                "trait": trait_lbl,
+                "single": r[single_col_name],
+                "count": r["len"],
+            })
+
+    if not rows:
+        return pn.pane.Markdown(f"_(no data for cross-tab: {single_col_name})_")
+
+    long_df = pl.DataFrame(rows)
+
+    if normalize == "single":
+        denom = cleaned.group_by(single_col_name).len().rename({"len": "denom"})
+        long_df = long_df.join(
+            denom,
+            left_on="single",
+            right_on=single_col_name,
+            how="left",
+        )
+        legend = f"% of {single_col_name}"
+    else:
+        trait_totals = []
+        for trait_col, trait_lbl in zip(multi_cols, trait_labels):
+            n = cleaned.filter(pl.col(trait_col) == "Yes").height
+            trait_totals.append({"trait": trait_lbl, "denom": n})
+        denom = pl.DataFrame(trait_totals)
+        long_df = long_df.join(denom, on="trait", how="left")
+        legend = "% of trait"
+
+    long_df = long_df.with_columns(
+        pl.when(pl.col("denom") > 0)
+        .then(pl.col("count") / pl.col("denom") * 100)
+        .otherwise(0.0)
+        .alias("percent")
+    )
+
+    if x_order is None:
+        x_order_eff = sorted(long_df["single"].unique().to_list())
+    else:
+        present = set(long_df["single"].unique().to_list())
+        x_order_eff = [v for v in x_order if v in present]
+        x_order_eff.extend(sorted(present - set(x_order_eff)))
+
+    pdf = long_df.to_pandas()
+
+    chart_title = title or f"{single_col_name} (normalize: {normalize})"
+
+    chart = (
+        alt.Chart(pdf)
+        .mark_rect()
+        .encode(
+            x=alt.X("single:N", sort=x_order_eff, title=single_col_name),
+            y=alt.Y("trait:N", sort=trait_labels, title=None),
+            color=alt.Color("percent:Q", title=legend),
+            tooltip=[
+                alt.Tooltip("trait:N", title="Trait"),
+                alt.Tooltip("single:N", title=single_col_name),
+                alt.Tooltip("count:Q", title="Count"),
+                alt.Tooltip("percent:Q", title="Percent", format=".1f"),
+            ],
+        )
+        .properties(
+            width="container",
+            height=height,
+            title=alt.TitleParams(
+                text=wrap_title(chart_title),
+                anchor="start",
+                fontSize=18,
+                offset=10,
+            ),
+        )
+        .configure_axis(domain=False, ticks=False)
+        .configure_view(stroke=None)
+    )
+
+    return pn.pane.Vega(chart, sizing_mode="stretch_width")
