@@ -187,3 +187,41 @@ def tokenize_text_column(
                 continue
             counter[tok] += 1
     return dict(counter)
+
+
+DEFAULT_YES_ALIASES = {"yes", "y", "yep", "yeah", "yes.", "yes!"}
+DEFAULT_NO_ALIASES = {"no", "n", "nope", "nah", "no.", "no!", "no :("}
+
+
+def normalize_yes_no_column(
+    df: pl.DataFrame,
+    col: int | str,
+    *,
+    yes_aliases: set[str] | None = None,
+    no_aliases: set[str] | None = None,
+) -> pl.DataFrame:
+    """Return a 1-column DataFrame where the chosen column has been
+    normalized into one of {"Yes", "No", "Other", "Skipped"} based on
+    case-insensitive exact match against the alias sets. Empty/whitespace
+    -> "Skipped"; values not matching any alias -> "Other"."""
+    col_name = df.columns[col] if isinstance(col, int) else col
+    yes_set = set(yes_aliases) if yes_aliases is not None else set(DEFAULT_YES_ALIASES)
+    no_set = set(no_aliases) if no_aliases is not None else set(DEFAULT_NO_ALIASES)
+
+    normalized = (
+        pl.col(col_name)
+        .cast(pl.Utf8)
+        .str.strip_chars()
+        .str.to_lowercase()
+    )
+
+    return df.select(
+        pl.when(normalized.is_null() | (normalized == ""))
+        .then(pl.lit("Skipped"))
+        .when(normalized.is_in(list(yes_set)))
+        .then(pl.lit("Yes"))
+        .when(normalized.is_in(list(no_set)))
+        .then(pl.lit("No"))
+        .otherwise(pl.lit("Other"))
+        .alias(col_name)
+    )
