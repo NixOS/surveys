@@ -109,6 +109,8 @@ people = (
     make_plot_row(
         md_text="""
                 # Role
+                Students lead at 24.0%, ahead of full-stack (13.4%), back-end (10.7%), and
+                "Other" (10.3%). Sysadmin trails at 4.8%.
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 10),
     ),
@@ -116,6 +118,10 @@ people = (
     make_plot_row(
         md_text="""
                 # Industry
+                "Other" is the largest single category at 21.0%, suggesting the listed
+                industries miss common workplaces. Academia or education (17.6%) is the
+                largest named category. Telecom (5.9%), Consulting (5.8%), and Financial
+                services (4.7%) follow.
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 11),
     ),
@@ -123,6 +129,10 @@ people = (
     make_plot_row(
         md_text="""
                 # Domain
+                "Other" leads at 15.7%, suggesting the listed domains miss common
+                categories. Web development (13.8%), open-source software development
+                (10.8%), and programming languages / compilers / code analysis (9.2%)
+                follow.
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 12),
     ),
@@ -137,6 +147,9 @@ technology = (
     make_plot_row(
         md_text="""
                 # Operating Systems
+                Linux: 96.9%. Android: 57.8%. Windows: 35.5%. macOS: 24.4%. iOS: 19.6%.
+                The question covers all devices, so Android and iOS counts likely include
+                phone use rather than Nix deployments.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 15, 24),
     ),
@@ -144,6 +157,8 @@ technology = (
     make_plot_row(
         md_text="""
                 # Target Triple
+                x86_64-linux-gnu: 94.5%. ARM combined (aarch64-linux-gnu 17.4% +
+                aarch64-apple-darwin 16.2%) reaches 33.6%. RISC-V: 2.0%.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 24, 33),
     ),
@@ -151,6 +166,9 @@ technology = (
     make_plot_row(
         md_text="""
                 # Experimental Features
+                Flakes (78.9%) and the new `nix` CLI (66.7%) lead. The next-ranked feature
+                (pipe operators, 8.0%) trails by 58.7 points. 10.9% report using no
+                experimental features; 7.9% are not sure.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 46, 70),
     ),
@@ -158,6 +176,9 @@ technology = (
     make_plot_row(
         md_text="""
                 # Install Method
+                NixOS preinstall: 78.4%. Official install script from nixos.org: 36.0%.
+                DeterminateSystems/nix-installer: 15.8%. Other package manager: 9.7%.
+                Built from source: 3.9%.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 85, 91),
     ),
@@ -165,6 +186,8 @@ technology = (
     make_plot_row(
         md_text="""
                 # (?:D|L|N|S|Tv)ix
+                Upstream Nix: 87.5%. Lix: 14.8%. Determinate Nix: 9.8%. None: 4.2%.
+                Snix: 1.2%. Tvix: 0.8%.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 91, 97),
     ),
@@ -172,6 +195,9 @@ technology = (
     make_plot_row(
         md_text="""
                 # Infrastructure
+                Personal computer: 90.3%. Workstation: 55.8%. Home server: 52.6%.
+                Production server: 21.4% and CI: 20.5% — roughly one-quarter the rate of
+                personal-computer use.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 97, 107),
     ),
@@ -193,6 +219,9 @@ technology = (
     make_plot_row(
         md_text="""
                 # NixOS Release
+                25.05 (current stable): 61.6%. Unstable: 56.8%. Sum exceeds 100%, indicating
+                many respondents run more than one release across machines. 24.11: 6.6%.
+                24.05: 2.2%. 23.11 or older: 1.4%.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 108, 115),
     ),
@@ -200,6 +229,8 @@ technology = (
     make_plot_row(
         md_text="""
                 # Hardware Configuration
+                nixos-generate-config: 68.6%. Manual configuration: 39.0%. nixos-hardware
+                repository: 26.7%. nixos-facter: 3.9%.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 115, 120),
     ),
@@ -207,6 +238,9 @@ technology = (
     make_plot_row(
         md_text="""
                 # Software Ecosystems
+                NixOS configurations leads at 81.1% (a meta-result — Nix users using Nix for
+                their own systems). Among programming languages: Python 45.8%, Rust 42.9%,
+                Bash 36.8%, C 26.7%, JavaScript 23.5%, C++ 22.7%, Go 21.3%.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 120, 174),
     ),
@@ -214,6 +248,8 @@ technology = (
     make_plot_row(
         md_text="""
                 # OS where you use Nix
+                NixOS: 90.0%. Other GNU/Linux: 26.5%. macOS: 18.1%. Windows (via WSL):
+                11.0%. Android: 7.5%. 3.7% do not use Nix.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 77, 85),
     ),
@@ -230,6 +266,9 @@ experience = (
     make_plot_row(
         md_text="""
                 # Stable Upgrade
+                No issues: 37.4%. Minor issues: 19.5%. Moderate: 4.4%. Severe but resolved:
+                1.8%. Severe and unresolved: 0.9%. Not upgraded: 12.8%. Did not know about
+                the release: 5.5%. Skipped: 17.7%.
                 """,
         plot_pane=make_simple_bar_chart_pane(
             df,
@@ -250,6 +289,10 @@ experience = (
     make_plot_row(
         md_text="""
                 # Involvement
+                I use NixOS: 87.1%. Install software with Nix: 66.7%. Maintain machines
+                running NixOS: 58.1%. Develop software with Nix: 48.8%. Contribute packages
+                or patches to Nixpkgs: 22.8%. Develop tools or infrastructure: 17.9%.
+                Maintain packages in Nixpkgs: 15.5%. Have merge access to Nixpkgs: 2.9%.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 34, 44),
     ),
@@ -257,6 +300,8 @@ experience = (
     make_plot_row(
         md_text="""
                 # Experience
+                Less than 1 year: 28.9%. 1-2 years: 34.0%. 3-4 years: 19.6%. 82.5% of
+                respondents have used Nix for under 4 years. 5+ years: 11.7%.
                 """,
         plot_pane=make_simple_bar_chart_pane(
             df,
@@ -279,6 +324,7 @@ experience = (
     make_plot_row(
         md_text="""
                 # Expertise
+                Intermediate 45.6%, Beginner 38.9%, Advanced 10.2%.
                 About the same as last year.
                 """,
         plot_pane=make_simple_bar_chart_pane(
@@ -298,6 +344,8 @@ experience = (
     make_plot_row(
         md_text="""
                 # First heard: Nix vs NixOS
+                NixOS: 70.8%. Nix: 20.0%. Don't remember: 7.6%. The operating system is the
+                more common entry point into the ecosystem.
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 70),
     ),
@@ -305,6 +353,8 @@ experience = (
     make_plot_row(
         md_text="""
                 # How first heard about Nix or NixOS
+                YouTube: 28.3%. Friend or colleague: 15.9%. Don't remember: 12.0%. Blog or
+                personal website: 7.3%. Search: 6.7%. Reddit: 4.9%. At work: 4.6%.
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 71),
     ),
@@ -312,6 +362,9 @@ experience = (
     make_plot_row(
         md_text="""
                 # User types
+                A "love the idea": 85.3%. C "get things done": 51.2%. B "curious": 44.2%.
+                D "want to work on Nix": 31.3%. E "decision-maker": 14.8%. Multi-choice,
+                so respondents can identify with several personas at once.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 72, 77),
     ),
@@ -326,6 +379,9 @@ experience = (
     make_plot_row(
         md_text="""
                 # Three improvements
+                Flakes: 50.3%. Error messages: 47.6%. Improve the reference manual: 41.5%.
+                Performance: 39.2%. Language usability: 31.2%. Security: 20.2%. Make other
+                features non-experimental: 19.4%. Windows support: 6.4%. FreeBSD: 3.5%.
                 """,
         plot_pane=make_multi_bar_chart_pane(df, 186, 198),
     ),
@@ -333,6 +389,7 @@ experience = (
     make_plot_row(
         md_text="""
                 # Regular toolset
+                Yes: 81.1%. No: 15.2%. Skipped: 3.7%.
                 """,
         plot_pane=make_simple_bar_chart_pane(df, 199),
     ),
@@ -340,6 +397,8 @@ experience = (
     make_plot_row(
         md_text="""
                 # Help-success frequency
+                Often: 48.8%. Sometimes: 30.4%. Always: 6.7%. Rarely: 4.5%. Never: 0.3%.
+                Skipped: 9.3%.
                 """,
         plot_pane=make_simple_bar_chart_pane(
             df,
@@ -358,6 +417,12 @@ experience = (
     make_plot_row(
         md_text="""
                 # Expertise vs Experience
+                Each row sums to 100%. Beginners are concentrated in <2 years (88.0%);
+                Intermediate peaks at 1-2 years (43.3%) and extends through 3-4 years
+                (28.0%); Advanced spreads from 3 years onward, peaking at 3-4 years
+                (30.3%). Self-described skill and time-spent aren't strictly aligned —
+                2.0% of Advanced respondents report <1 year using Nix and 2.3% of Beginners
+                report 5+ years.
                 """,
         plot_pane=heatmap_from_col_indices(
             df,
