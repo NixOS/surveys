@@ -5,8 +5,11 @@ import polars as pl
 from altplot import (
     heatmap_from_col_indices,
     make_multi_bar_chart_pane,
+    make_multi_vs_single_heatmap,
     make_plot_row,
+    make_ranking_chart,
     make_simple_bar_chart_pane,
+    make_text_plot_pair,
 )
 from dfhelpers import (
     extract_first_mmp_semver_df,
@@ -287,6 +290,73 @@ experience = (
                 "Intermediate",
                 "Advanced",
                 "Prefer not to say",
+                "Skipped",
+            ],
+        ),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # First heard: Nix vs NixOS
+                """,
+        plot_pane=make_simple_bar_chart_pane(df, 70),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # How first heard about Nix or NixOS
+                """,
+        plot_pane=make_simple_bar_chart_pane(df, 71),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # User types
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 72, 77),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Which of these describe you?
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 174, 186),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Three improvements
+                """,
+        plot_pane=make_multi_bar_chart_pane(df, 186, 198),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Other areas to improve
+                """,
+        plot_pane=make_text_plot_pair(df, 198),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Regular toolset
+                """,
+        plot_pane=make_simple_bar_chart_pane(df, 199),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Help-success frequency
+                """,
+        plot_pane=make_simple_bar_chart_pane(
+            df,
+            266,
+            label_order=[
+                "Always",
+                "Often",
+                "Sometimes",
+                "Rarely",
+                "Never",
                 "Skipped",
             ],
         ),
