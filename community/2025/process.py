@@ -11,9 +11,10 @@ from altplot import (
     make_simple_bar_chart_pane,
 )
 from dfhelpers import (
-    extract_first_mmp_semver_df,
-    reduce_multi_choice_to_single_column,
     bucket_rare_categories_df,
+    extract_first_mmp_semver_df,
+    normalize_yes_no_column,
+    reduce_multi_choice_to_single_column,
 )
 
 csv_data = Path(__file__).parent / "nix-community-survey-2025-completed-responses.csv"
@@ -496,6 +497,36 @@ experience = (
     ),
 )
 
+workplace = (
+    pn.pane.Markdown(
+        "## Workplace",
+        styles={"font-size": "18px"},
+    ),
+    make_plot_row(
+        md_text="""
+                # Does your workplace use Nix?
+                Free-text answers normalized to Yes / No / Other / Skipped.
+                """,
+        plot_pane=make_simple_bar_chart_pane(
+            normalize_yes_no_column(df, 200),
+            0,
+            label_order=["Yes", "No", "Other", "Skipped"],
+        ),
+    ),
+    pn.Spacer(height=20),
+    make_plot_row(
+        md_text="""
+                # Did you make the workplace decision?
+                Free-text answers normalized to Yes / No / Other / Skipped.
+                """,
+        plot_pane=make_simple_bar_chart_pane(
+            normalize_yes_no_column(df, 201),
+            0,
+            label_order=["Yes", "No", "Other", "Skipped"],
+        ),
+    ),
+)
+
 app = pn.Column(
     pn.pane.Markdown(
         "# NixOS Community Survey 2025 Results",
@@ -504,6 +535,7 @@ app = pn.Column(
     *people,
     *technology,
     *experience,
+    *workplace,
     sizing_mode="stretch_width",
     margin=20,
 )
