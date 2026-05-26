@@ -1,6 +1,7 @@
 import textwrap
 
 import altair as alt
+import pandas as pd
 import panel as pn
 import polars as pl
 from dfhelpers import (
@@ -480,3 +481,39 @@ def make_plot_row(md_text: str, plot_pane):
             styles=common_style,
         ),
     )
+
+
+def make_text_frequency_chart(
+    df: pl.DataFrame,
+    col: int,
+    *,
+    top_n: int = 20,
+    min_token_len: int = 2,
+    extra_stopwords: list[str] | None = None,
+    title: str | None = None,
+):
+    """Top-N token frequency bar chart for a free-text column.
+    Reuses so_style_bar_chart with a count formatter."""
+    from dfhelpers import tokenize_text_column
+
+    counts = tokenize_text_column(
+        df, col,
+        min_token_len=min_token_len,
+        extra_stopwords=extra_stopwords,
+    )
+    col_name = df.columns[col]
+    chart_title = title or col_name
+
+    if not counts:
+        return pn.pane.Markdown(f"_(no tokens for: {col_name})_")
+
+    top = sorted(counts.items(), key=lambda kv: -kv[1])[:top_n]
+    pdf = pd.DataFrame({"response": [t for t, _ in top], "len": [c for _, c in top]})
+
+    chart = so_style_bar_chart(
+        pdf,
+        title=chart_title,
+        normalize=False,
+        label_format=lambda v: f"{int(v):,}",
+    )
+    return pn.pane.Vega(chart, sizing_mode="stretch_width")
