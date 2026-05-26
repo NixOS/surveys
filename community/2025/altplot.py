@@ -517,3 +517,39 @@ def make_text_frequency_chart(
         label_format=lambda v: f"{int(v):,}",
     )
     return pn.pane.Vega(chart, sizing_mode="stretch_width")
+
+
+def make_wordcloud_pane(
+    df: pl.DataFrame,
+    col: int,
+    *,
+    min_token_len: int = 2,
+    extra_stopwords: list[str] | None = None,
+    width: int = 640,
+    height: int = 320,
+    background_color: str = "white",
+):
+    """Render a word cloud PNG for a free-text column."""
+    from io import BytesIO
+    from wordcloud import WordCloud
+    from dfhelpers import tokenize_text_column
+
+    counts = tokenize_text_column(
+        df, col,
+        min_token_len=min_token_len,
+        extra_stopwords=extra_stopwords,
+    )
+    if not counts:
+        col_name = df.columns[col]
+        return pn.pane.Markdown(f"_(no tokens for: {col_name})_")
+
+    wc = WordCloud(
+        width=width,
+        height=height,
+        background_color=background_color,
+    ).generate_from_frequencies(counts)
+
+    buf = BytesIO()
+    wc.to_image().save(buf, format="PNG")
+    buf.seek(0)
+    return pn.pane.PNG(buf.read(), width=width, height=height)
