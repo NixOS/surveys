@@ -194,3 +194,61 @@ def test_load_commentary_preserves_multiline(fixtures_dir):
 def test_load_commentary_strips_trailing_blank_lines(fixtures_dir):
     cm = load_commentary(fixtures_dir / "tiny_commentary.md")
     assert not cm["country"].endswith("\n\n")
+
+
+def test_load_responses_errors_when_csv_has_extra_multi_choices(tmp_path):
+    """If the CSV has multi-choice columns whose bracket suffix is not in
+    the YAML question's choices, the loader must raise (silent drops hide
+    real data-loss bugs)."""
+    yaml_p = _write_yaml(tmp_path, """
+        title: t
+        questions:
+          - id: os
+            prompt: Which OS do you use?
+            type: multiple
+            choices:
+              - Linux
+              - macOS
+    """)
+    csv_p = tmp_path / "responses.csv"
+    csv_p.write_text(
+        '"Which OS do you use? [Linux]","Which OS do you use? [macOS]","Which OS do you use? [Windows]"\n'
+        '"Yes","No","Yes"\n'
+    )
+    schema = load_schema(yaml_p)
+    with pytest.raises(ValueError) as exc:
+        load_responses(csv_p, schema=schema)
+    msg = str(exc.value)
+    assert "choice mismatch" in msg
+    assert "'Windows'" in msg
+    assert "CSV has 1 column" in msg
+
+
+def test_load_responses_errors_when_yaml_has_extra_multi_choices(tmp_path):
+    """If the YAML lists choices that have no matching CSV column, the
+    loader must raise."""
+    yaml_p = _write_yaml(tmp_path, """
+        title: t
+        questions:
+          - id: os
+            prompt: Which OS do you use?
+            type: multiple
+            choices:
+              - Linux
+              - macOS
+              - Windows
+              - BSD
+    """)
+    csv_p = tmp_path / "responses.csv"
+    csv_p.write_text(
+        '"Which OS do you use? [Linux]","Which OS do you use? [macOS]"\n'
+        '"Yes","No"\n'
+    )
+    schema = load_schema(yaml_p)
+    with pytest.raises(ValueError) as exc:
+        load_responses(csv_p, schema=schema)
+    msg = str(exc.value)
+    assert "choice mismatch" in msg
+    assert "'BSD'" in msg
+    assert "'Windows'" in msg
+    assert "YAML has 2 choice" in msg

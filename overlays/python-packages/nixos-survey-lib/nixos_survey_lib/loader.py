@@ -148,11 +148,33 @@ def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
                 raise ValueError(
                     f"no CSV columns matched question id {q.id!r} (prompt: {q.prompt!r})"
                 )
+            csv_suffixes = [suffix for _, suffix in matches]
             if q.choices is None:
-                choice_order = [suffix for _, suffix in matches]
+                choice_order = csv_suffixes
             else:
-                by_suffix = {suffix: col for col, suffix in matches}
-                choice_order = [c for c in q.choices if c in by_suffix]
+                # Strict: YAML choices and CSV columns must agree. Silently
+                # dropping mismatched columns hides real data-loss bugs
+                # (see donation_incentives, 2025-06).
+                csv_set = set(csv_suffixes)
+                yaml_set = set(q.choices)
+                csv_only = csv_set - yaml_set
+                yaml_only = yaml_set - csv_set
+                if csv_only or yaml_only:
+                    parts = [
+                        f"choice mismatch for multi-choice question id {q.id!r}:"
+                    ]
+                    if csv_only:
+                        parts.append(
+                            f"  CSV has {len(csv_only)} column(s) not in YAML choices:"
+                        )
+                        parts.extend(f"    + {s!r}" for s in sorted(csv_only))
+                    if yaml_only:
+                        parts.append(
+                            f"  YAML has {len(yaml_only)} choice(s) not in CSV columns:"
+                        )
+                        parts.extend(f"    - {s!r}" for s in sorted(yaml_only))
+                    raise ValueError("\n".join(parts))
+                choice_order = list(q.choices)
             choice_columns_dict: dict[str, pl.Series] = {}
             cols: list[str] = []
             by_suffix_full = {suffix: col for col, suffix in matches}
