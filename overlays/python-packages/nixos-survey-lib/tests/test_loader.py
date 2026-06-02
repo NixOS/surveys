@@ -1,4 +1,14 @@
+import textwrap
+
+import pytest
+
 from nixos_survey_lib.loader import load_schema
+
+
+def _write_yaml(tmp_path, text):
+    p = tmp_path / "s.yaml"
+    p.write_text(textwrap.dedent(text))
+    return p
 
 
 def test_load_schema_returns_all_questions(fixtures_dir):
@@ -21,3 +31,45 @@ def test_load_schema_preserves_types_and_choices(fixtures_dir):
         "Africa", "Asia", "Europe", "North America", "Prefer not to say"
     ]
     assert by_id["nix_version"].choices is None
+
+
+def test_load_schema_rejects_missing_id(tmp_path):
+    p = _write_yaml(tmp_path, """
+        title: t
+        questions:
+          - prompt: hi
+            type: single
+            choices: [a]
+    """)
+    with pytest.raises(ValueError, match="missing 'id'"):
+        load_schema(p)
+
+
+def test_load_schema_rejects_non_identifier_id(tmp_path):
+    p = _write_yaml(tmp_path, """
+        title: t
+        questions:
+          - id: "1bad"
+            prompt: hi
+            type: single
+            choices: [a]
+    """)
+    with pytest.raises(ValueError, match="not a valid Python identifier"):
+        load_schema(p)
+
+
+def test_load_schema_rejects_duplicate_ids(tmp_path):
+    p = _write_yaml(tmp_path, """
+        title: t
+        questions:
+          - id: dup
+            prompt: a
+            type: single
+            choices: [x]
+          - id: dup
+            prompt: b
+            type: single
+            choices: [y]
+    """)
+    with pytest.raises(ValueError, match="duplicate question id"):
+        load_schema(p)
