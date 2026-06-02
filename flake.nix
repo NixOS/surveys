@@ -1,12 +1,14 @@
 {
+  description = "NixOS community surveys";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs-lib.url = "github:nix-community/nixpkgs.lib";
   };
 
   outputs = inputs: {
-    legacyPackages = import ./legacy-packages/default.nix inputs;
-    devShells = import ./dev-shells/default.nix inputs;
+    overlays       = import ./overlays inputs;
+    legacyPackages = import ./legacy-packages inputs;
+    devShells      = import ./dev-shells inputs;
   };
-
 }
