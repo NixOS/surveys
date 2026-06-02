@@ -92,3 +92,73 @@ def counts_multi(
         bins = keep
 
     return bins
+
+
+def crosstab(
+    x: SingleChoice,
+    y: SingleChoice,
+    *,
+    normalize: Literal["global", "x", "y"] = "global",
+    x_order: list[str] | None = None,
+    y_order: list[str] | None = None,
+    x_exclude: list[str] | None = None,
+    y_exclude: list[str] | None = None,
+) -> CrossTab:
+    """Cross-tab two single-choice questions, normalized over global / x / y."""
+    df = pl.DataFrame({"x": x.values, "y": y.values})
+    if x_exclude:
+        df = df.filter(~pl.col("x").is_in(list(x_exclude)))
+    if y_exclude:
+        df = df.filter(~pl.col("y").is_in(list(y_exclude)))
+
+    if df.height == 0:
+        return CrossTab(x_labels=[], y_labels=[], cells=[], cell_kind="rate_pct")
+
+    def _resolve_order(arg_order: list[str] | None, series_name: str) -> list[str]:
+        actual = df[series_name].unique().to_list()
+        if arg_order is None:
+            return df.group_by(series_name).len().sort("len", descending=True)[series_name].to_list()
+        seen: set[str] = set()
+        result: list[str] = []
+        for v in arg_order:
+            if v in actual and v not in seen:
+                result.append(v)
+                seen.add(v)
+        for v in actual:
+            if v not in seen:
+                result.append(v)
+        return result
+
+    x_labels = _resolve_order(x_order, "x")
+    y_labels = _resolve_order(y_order, "y")
+
+    pairs = df.group_by(["x", "y"]).len().rename({"len": "count"})
+    pair_counts: dict[tuple[str, str], int] = {
+        (row["x"], row["y"]): int(row["count"]) for row in pairs.to_dicts()
+    }
+
+    total = df.height
+    row_totals: dict[str, int] = {
+        xl: sum(pair_counts.get((xl, yl), 0) for yl in y_labels) for xl in x_labels
+    }
+    col_totals: dict[str, int] = {
+        yl: sum(pair_counts.get((xl, yl), 0) for xl in x_labels) for yl in y_labels
+    }
+
+    cells: list[list[float]] = []
+    for xl in x_labels:
+        row: list[float] = []
+        for yl in y_labels:
+            c = pair_counts.get((xl, yl), 0)
+            if normalize == "global":
+                pct = c / total * 100.0
+            elif normalize == "x":
+                rt = row_totals[xl]
+                pct = (c / rt * 100.0) if rt > 0 else 0.0
+            else:
+                ct_v = col_totals[yl]
+                pct = (c / ct_v * 100.0) if ct_v > 0 else 0.0
+            row.append(pct)
+        cells.append(row)
+
+    return CrossTab(x_labels=x_labels, y_labels=y_labels, cells=cells, cell_kind="rate_pct")

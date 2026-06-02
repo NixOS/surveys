@@ -1,7 +1,7 @@
 import polars as pl
 import pytest
 
-from nixos_survey_lib.aggregate import counts_multi, counts_single
+from nixos_survey_lib.aggregate import counts_multi, counts_single, crosstab
 from nixos_survey_lib.types import Bin, MultiChoice, Question, SingleChoice
 
 
@@ -92,3 +92,44 @@ def test_counts_multi_bucket_min_percent():
     assert "A" in labels
     assert "Other" in labels
     assert "B" not in labels and "C" not in labels
+
+
+def test_crosstab_global_normalize():
+    x = _sc(["A", "A", "B", "B"], qid="x")
+    y = _sc(["P", "Q", "P", "Q"], qid="y")
+    ct = crosstab(x, y, normalize="global", x_order=["A", "B"], y_order=["P", "Q"])
+    assert ct.cell_kind == "rate_pct"
+    assert ct.cells == [[25.0, 25.0], [25.0, 25.0]]
+
+
+def test_crosstab_x_normalize():
+    x = _sc(["A", "A", "A", "B", "B"], qid="x")
+    y = _sc(["P", "P", "Q", "P", "Q"], qid="y")
+    ct = crosstab(x, y, normalize="x", x_order=["A", "B"], y_order=["P", "Q"])
+    assert ct.cells[0][0] == pytest.approx(2 / 3 * 100, abs=0.01)
+    assert ct.cells[0][1] == pytest.approx(1 / 3 * 100, abs=0.01)
+
+
+def test_crosstab_y_normalize():
+    x = _sc(["A", "A", "B"], qid="x")
+    y = _sc(["P", "Q", "P"], qid="y")
+    ct = crosstab(x, y, normalize="y", x_order=["A", "B"], y_order=["P", "Q"])
+    assert ct.cells[0][0] == pytest.approx(50.0)
+    assert ct.cells[1][0] == pytest.approx(50.0)
+
+
+def test_crosstab_excludes_values():
+    x = _sc(["A", "B", "Skipped"], qid="x")
+    y = _sc(["P", "Q", "P"], qid="y")
+    ct = crosstab(x, y, normalize="global", x_exclude=["Skipped"],
+                  x_order=["A", "B"], y_order=["P", "Q"])
+    assert "Skipped" not in ct.x_labels
+
+
+def test_crosstab_empty_returns_empty():
+    x = _sc([], qid="x")
+    y = _sc([], qid="y")
+    ct = crosstab(x, y)
+    assert ct.x_labels == []
+    assert ct.y_labels == []
+    assert ct.cells == []
