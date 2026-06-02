@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "year": 2025,
+  "title": "Fixture Survey Results",
+  "sections": [
+    {
+      "id": "demographics",
+      "heading": "Demographics",
+      "rows": [
+        {
+          "id": "country",
+          "title": "Country",
+          "commentary": "Europe leads in this fixture, with North America second.",
+          "chart": {
+            "option": {
+              "grid": {"left": 200, "right": 80, "top": 40, "bottom": 30},
+              "xAxis": {"type": "value", "show": false, "max": "dataMax"},
+              "yAxis": {
+                "type": "category",
+                "data": ["Africa", "Asia", "North America", "Europe"]
+              },
+              "series": [{
+                "type": "bar",
+                "data": [5, 15, 25, 55],
+                "label": {"show": true, "position": "right", "formatter": "{c}%"},
+                "barWidth": 16,
+                "itemStyle": {"borderRadius": 4}
+              }]
+            },
+            "height": 240
+          }
+        }
+      ]
+    }
+  ]
+}
