@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from nixos_survey_lib.loader import load_schema
+from nixos_survey_lib.loader import load_schema, normalize_prompt
 
 
 def _write_yaml(tmp_path, text):
@@ -73,3 +73,17 @@ def test_load_schema_rejects_duplicate_ids(tmp_path):
     """)
     with pytest.raises(ValueError, match="duplicate question id"):
         load_schema(p)
+
+
+def test_normalize_prompt_collapses_whitespace():
+    assert normalize_prompt("  hello   world ") == "hello world"
+    assert normalize_prompt("a\nb\tc") == "a b c"
+    assert normalize_prompt("a\r\nb") == "a b"
+
+
+def test_normalize_prompt_handles_nbsp():
+    assert normalize_prompt("a\u00a0b") == "a b"
+
+
+def test_normalize_prompt_idempotent():
+    assert normalize_prompt(normalize_prompt("  a  b  ")) == "a b"

@@ -1,8 +1,18 @@
+import re
 from pathlib import Path
 
 import yaml
 
 from .types import Question, SurveySchema
+
+_WS_RUN = re.compile(r"\s+", re.UNICODE)
+
+
+def normalize_prompt(text: str) -> str:
+    """Collapse all whitespace runs (newlines, tabs, NBSP) to single spaces
+    and strip leading/trailing whitespace. Used to compare YAML prompts
+    against CSV column headers."""
+    return _WS_RUN.sub(" ", text.replace("\u00a0", " ")).strip()
 
 
 def load_schema(yaml_path: Path) -> SurveySchema:
