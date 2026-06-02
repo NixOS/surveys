@@ -88,25 +88,38 @@ def heatmap(
             "max": 2,
             "precision": 1,
             "calculable": True,
-            "orient": "horizontal",
-            "left": "center",
-            "bottom": 0,
+            "orient": "vertical",
+            "right": 10,
+            "top": "center",
         }
     else:
         visual_map = {
             "min": 0,
             "max": 100,
-            "precision": 1,
             "calculable": True,
-            "orient": "horizontal",
-            "left": "center",
-            "bottom": 0,
+            "orient": "vertical",
+            "right": 10,
+            "top": "center",
         }
 
     option: dict[str, Any] = {
-        "grid": {"left": 200, "right": 40, "top": 40, "bottom": 80},
-        "xAxis": {"type": "category", "data": table.x_labels, "splitArea": {"show": True}},
-        "yAxis": {"type": "category", "data": table.y_labels, "splitArea": {"show": True}},
+        "grid": {"left": 200, "right": 80, "top": 40, "bottom": 70},
+        "xAxis": {
+            "type": "category",
+            "data": table.x_labels,
+            "splitArea": {"show": True},
+            # interval=0 forces every label to render even if they'd overlap;
+            # rotate makes long labels (e.g. "Less than 1 year") fit horizontally.
+            "axisLabel": {"interval": 0, "rotate": 30},
+        },
+        "yAxis": {
+            "type": "category",
+            "data": table.y_labels,
+            "splitArea": {"show": True},
+            # Match the bar charts: truncate from the END so the start of the
+            # label is visible (ellipsis at the tail).
+            "axisLabel": {"width": 180, "overflow": "truncate", "interval": 0},
+        },
         "visualMap": visual_map,
         "series": [{
             "type": "heatmap",
