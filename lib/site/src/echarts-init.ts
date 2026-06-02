@@ -80,12 +80,19 @@ const currentTheme = () =>
 // ECharts' theme merging replaces a chart's `visualMap` object as a whole when
 // the chart provides one, so the theme's `inRange.color` never reaches the
 // heatmap. Inject the colors per chart here based on the visualMap's range.
+// Also fade out-of-range cells so the visualMap's hover-highlight reads clearly.
 function injectVisualMapColors(option: Record<string, unknown>): void {
-  const vm = option.visualMap as { min?: number; max?: number; inRange?: { color?: unknown[] } } | undefined;
+  const vm = option.visualMap as {
+    min?: number;
+    max?: number;
+    inRange?: { color?: unknown[] };
+    outOfRange?: { opacity?: number };
+  } | undefined;
   if (!vm) return;
   if (vm.inRange?.color && vm.inRange.color.length > 0) return;
   const isLift = vm.min === 0 && vm.max === 2;
   vm.inRange = { color: isLift ? liftGradient() : seqGradient() };
+  vm.outOfRange = { opacity: 0.15 };
 }
 
 // Heatmap tooltips need to look up axis labels by index — that can't be

@@ -56,6 +56,15 @@ def horizontal_bar(
     return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(bins)))
 
 
+def _default_heatmap_height(x_count: int, y_count: int) -> int:
+    """Pick a heatmap container height that produces roughly-square cells
+    given a typical effective grid width (~560px after left/right padding)."""
+    grid_width = 560
+    target_cell_h = max(36, grid_width // max(x_count, 1))
+    chrome = 40 + 80  # top + bottom grid padding plus visualMap room
+    return chrome + target_cell_h * y_count
+
+
 def heatmap(
     table: CrossTab,
     *,
@@ -77,6 +86,7 @@ def heatmap(
         visual_map: dict[str, Any] = {
             "min": 0,
             "max": 2,
+            "precision": 1,
             "calculable": True,
             "orient": "horizontal",
             "left": "center",
@@ -86,6 +96,7 @@ def heatmap(
         visual_map = {
             "min": 0,
             "max": 100,
+            "precision": 1,
             "calculable": True,
             "orient": "horizontal",
             "left": "center",
@@ -101,12 +112,21 @@ def heatmap(
             "type": "heatmap",
             "data": data,
             "label": {"show": False},
+            "emphasis": {
+                "itemStyle": {
+                    "shadowBlur": 10,
+                    "shadowColor": "rgba(0,0,0,0.5)",
+                },
+            },
         }],
     }
     if title is not None:
         option["title"] = {"text": title, "left": "left"}
 
-    return ChartSpec(option=option, height=height)
+    return ChartSpec(
+        option=option,
+        height=height if height is not None else _default_heatmap_height(len(table.x_labels), len(table.y_labels)),
+    )
 
 
 def ranking_bar(
