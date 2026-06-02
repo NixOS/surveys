@@ -164,11 +164,11 @@ def main(csv_path: str, out_path: str) -> None:
                     chart=horizontal_bar(counts_single(r.help_success_frequency, order=HELP_FREQUENCY_ORDER, bucket_min_percent=None))),
                 Row("skill_x_experience", "Expertise vs Experience", commentary=cm["skill_x_experience"],
                     chart=heatmap(crosstab(
-                        r.skill_level, r.years_using_nix,
+                        r.years_using_nix, r.skill_level,
                         normalize="y",
-                        x_order=SKILL_ORDER, y_order=YEARS_USING_NIX_ORDER,
-                        x_exclude=["I have never used Nix", "Prefer not to say", "Skipped"],
-                        y_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
+                        x_order=YEARS_USING_NIX_ORDER, y_order=SKILL_ORDER,
+                        x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
+                        y_exclude=["I have never used Nix", "Prefer not to say", "Skipped"],
                     ), height=356)),
                 Row("traits_rate_by_skill", "Trait rate by skill level", commentary=cm["traits_rate_by_skill"],
                     chart=heatmap(crosstab_multi(

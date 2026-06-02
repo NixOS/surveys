@@ -115,6 +115,9 @@ def heatmap(
         "yAxis": {
             "type": "category",
             "data": table.y_labels,
+            # ECharts category y-axis defaults to bottom-up (index 0 at bottom);
+            # invert so the first item is at the top (natural reading order).
+            "inverse": True,
             "splitArea": {"show": True},
             # Match the bar charts: truncate from the END so the start of the
             # label is visible (ellipsis at the tail).
