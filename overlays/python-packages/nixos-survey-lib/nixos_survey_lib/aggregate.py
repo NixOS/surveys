@@ -62,3 +62,33 @@ def counts_single(
         Bin(label=row["response"], count=int(row["count"]), percent=row["count"] / total * 100.0)
         for row in rows
     ]
+
+
+def counts_multi(
+    r: MultiChoice,
+    *,
+    bucket_min_percent: float | None = DEFAULT_BUCKET_MIN_PERCENT,
+) -> list[Bin]:
+    """For each choice, count 'Yes' responses; percent is relative to total respondents."""
+    total = len(r)
+    if total == 0:
+        return []
+
+    rows: list[tuple[str, int]] = []
+    for choice, series in r.choice_columns.items():
+        yes_count = int((series == "Yes").sum())
+        rows.append((choice, yes_count))
+
+    bins = [Bin(label=c, count=n, percent=n / total * 100.0) for c, n in rows]
+    bins.sort(key=lambda b: b.percent, reverse=True)
+
+    if bucket_min_percent is not None and bucket_min_percent > 0:
+        keep = [b for b in bins if b.percent >= bucket_min_percent]
+        rare = [b for b in bins if b.percent < bucket_min_percent]
+        if rare:
+            other_count = sum(b.count for b in rare)
+            other_pct = sum(b.percent for b in rare)
+            keep.append(Bin(label="Other", count=other_count, percent=other_pct))
+        bins = keep
+
+    return bins

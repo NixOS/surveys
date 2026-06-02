@@ -1,8 +1,8 @@
 import polars as pl
 import pytest
 
-from nixos_survey_lib.aggregate import counts_single
-from nixos_survey_lib.types import Bin, Question, SingleChoice
+from nixos_survey_lib.aggregate import counts_multi, counts_single
+from nixos_survey_lib.types import Bin, MultiChoice, Question, SingleChoice
 
 
 def _sc(values: list[str], qid: str = "country") -> SingleChoice:
@@ -48,3 +48,47 @@ def test_counts_single_empty():
     s = _sc([])
     bins = counts_single(s)
     assert bins == []
+
+
+def _mc(choice_columns: dict[str, list[str]]) -> MultiChoice:
+    q = Question(id="x", prompt="x", type="multiple", choices=list(choice_columns), csv_columns=[])
+    return MultiChoice(question=q, choice_columns={k: pl.Series(v) for k, v in choice_columns.items()})
+
+
+def test_counts_multi_basic():
+    m = _mc({
+        "Linux": ["Yes", "Yes", "Yes", "Yes"],
+        "macOS": ["No", "Yes", "Yes", "No"],
+        "Windows": ["No", "No", "No", "Yes"],
+    })
+    bins = counts_multi(m, bucket_min_percent=None)
+    by_label = {b.label: b for b in bins}
+    assert by_label["Linux"].count == 4
+    assert by_label["Linux"].percent == 100.0
+    assert by_label["macOS"].count == 2
+    assert by_label["macOS"].percent == 50.0
+    assert by_label["Windows"].count == 1
+    assert by_label["Windows"].percent == 25.0
+
+
+def test_counts_multi_sorted_by_percent_desc():
+    m = _mc({
+        "A": ["No", "Yes"],
+        "B": ["Yes", "Yes"],
+        "C": ["No", "No"],
+    })
+    bins = counts_multi(m, bucket_min_percent=None)
+    assert [b.label for b in bins] == ["B", "A", "C"]
+
+
+def test_counts_multi_bucket_min_percent():
+    m = _mc({
+        "A": ["Yes"] * 100,
+        "B": ["Yes"] * 1 + ["No"] * 99,
+        "C": ["Yes"] * 1 + ["No"] * 99,
+    })
+    bins = counts_multi(m, bucket_min_percent=5.0)
+    labels = {b.label for b in bins}
+    assert "A" in labels
+    assert "Other" in labels
+    assert "B" not in labels and "C" not in labels
