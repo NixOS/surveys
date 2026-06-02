@@ -1,68 +1,21 @@
 inputs:
 
 let
-
-  inherit (inputs.nixpkgs)
-    lib
-    ;
-
-  inherit (lib.attrsets)
-    attrValues
-    mapAttrs
-    ;
-
-  inherit (lib.trivial)
-    const
-    ;
-
-  inherit (inputs.self)
-    legacyPackages
-    ;
-
+  inherit (inputs.nixpkgs-lib.lib.attrsets) mapAttrs;
 in
+mapAttrs (system: pkgs: {
+  default = pkgs.mkShell {
+    packages = [
+      (pkgs.python3.withPackages (ps: [ ps.polars ps.pyyaml ps.pytest ]))
+      pkgs.nodejs_22
+    ];
 
-mapAttrs (const (pkgs: {
-
-  survey-dev = pkgs.callPackage (
-    {
-      mkShell,
-      python3,
-    }:
-    mkShell {
-
-      packages = [
-
-        (python3.withPackages (
-          ps:
-          attrValues {
-            inherit (ps)
-              altair
-              anywidget
-              bleach
-              bokeh
-              linkify-it-py
-              markdown-it-py
-              mdit-py-plugins
-              narwhals
-              numpy
-              packaging
-              pandas
-              panel
-              param
-              polars
-              pyarrow
-              pyviz-comms
-              requests
-              tqdm
-              typing-extensions
-              vega
-              ;
-          }
-        ))
-
-      ];
-
-    }
-  ) { };
-
-})) legacyPackages
+    shellHook = ''
+      export PYTHONPATH=$PWD/overlays/python-packages/nixos-survey-lib:$PYTHONPATH
+      echo "Surveys dev. nixos-survey-lib will be available via Nix once defined; local edits override."
+      echo "Run: python community/2025/process.py <csv> <out.json>"
+      echo "Tests: pytest overlays/python-packages/nixos-survey-lib/tests/"
+      echo "Astro: (cd lib/site && npm install && npm run dev)"
+    '';
+  };
+}) inputs.self.legacyPackages
