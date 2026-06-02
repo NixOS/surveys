@@ -44,6 +44,13 @@
                   "show": false
                 }
               },
+              "tooltip": {
+                "trigger": "axis",
+                "axisPointer": {
+                  "type": "shadow"
+                },
+                "formatter": "{b}: {c}%"
+              },
               "series": [
                 {
                   "type": "bar",
@@ -103,6 +110,13 @@
                 "axisTick": {
                   "show": false
                 }
+              },
+              "tooltip": {
+                "trigger": "axis",
+                "axisPointer": {
+                  "type": "shadow"
+                },
+                "formatter": "{b}: {c}%"
               },
               "series": [
                 {
@@ -168,6 +182,13 @@
                   "show": false
                 }
               },
+              "tooltip": {
+                "trigger": "axis",
+                "axisPointer": {
+                  "type": "shadow"
+                },
+                "formatter": "{b}: {c}%"
+              },
               "series": [
                 {
                   "type": "bar",
@@ -226,6 +247,13 @@
                 "axisTick": {
                   "show": false
                 }
+              },
+              "tooltip": {
+                "trigger": "axis",
+                "axisPointer": {
+                  "type": "shadow"
+                },
+                "formatter": "{b}: {c}%"
               },
               "series": [
                 {
@@ -291,6 +319,13 @@
                 "axisTick": {
                   "show": false
                 }
+              },
+              "tooltip": {
+                "trigger": "axis",
+                "axisPointer": {
+                  "type": "shadow"
+                },
+                "formatter": "{b}: {c}"
               },
               "series": [
                 {

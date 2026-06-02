@@ -37,6 +37,11 @@ def horizontal_bar(
             "axisLine": {"show": False},
             "axisTick": {"show": False},
         },
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "shadow"},
+            "formatter": "{b}: {c}%",
+        },
         "series": [{
             "type": "bar",
             "data": values,
@@ -129,6 +134,11 @@ def ranking_bar(
             "axisLabel": {"width": 180, "overflow": "truncate"},
             "axisLine": {"show": False},
             "axisTick": {"show": False},
+        },
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "shadow"},
+            "formatter": "{b}: {c}",
         },
         "series": [{
             "type": "bar",
