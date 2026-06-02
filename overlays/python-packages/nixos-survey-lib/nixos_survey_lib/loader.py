@@ -147,6 +147,27 @@ def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
             )
             by_id[q.id] = MultiChoice(question=updated, choice_columns=choice_columns_dict)
 
-        # ranking handled in the next task
+        elif q.type == "ranking":
+            matches = bracketed_headers.get(norm_prompt, [])
+            if not matches:
+                raise ValueError(
+                    f"no CSV columns matched question id {q.id!r} (prompt: {q.prompt!r})"
+                )
+            indexed: list[tuple[int, str]] = []
+            for col, suffix in matches:
+                m = re.match(r"^Rank\s+(\d+)$", suffix)
+                if not m:
+                    raise ValueError(
+                        f"ranking column {col!r} has non-'Rank N' suffix {suffix!r}"
+                    )
+                indexed.append((int(m.group(1)), col))
+            indexed.sort()
+            rank_cols = [df[col] for _, col in indexed]
+            rcols = [col for _, col in indexed]
+            updated = Question(
+                id=q.id, prompt=q.prompt, type=q.type,
+                choices=q.choices, csv_columns=rcols,
+            )
+            by_id[q.id] = Ranking(question=updated, rank_columns=rank_cols)
 
     return Responses(schema=schema, by_id=by_id)

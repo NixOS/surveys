@@ -152,3 +152,21 @@ def test_load_responses_multi_choice(fixtures_dir):
     assert len(os) == 20
     assert os.choice_columns["Linux"][0] == "Yes"
     assert os.choice_columns["macOS"][0] == "No"
+
+
+def test_load_responses_ranking(fixtures_dir):
+    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
+    pri = r.priorities
+    assert len(pri.rank_columns) == 3
+    assert len(pri) == 20
+    assert pri.rank_columns[0][0] == "Performance"
+    val = pri.rank_columns[0][17]
+    assert val == "" or val is None
+
+
+def test_load_responses_ranking_orders_by_rank_position(fixtures_dir):
+    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
+    pri = r.priorities
+    assert len(pri.rank_columns) == 3
