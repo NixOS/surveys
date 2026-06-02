@@ -170,3 +170,11 @@ def test_load_responses_ranking_orders_by_rank_position(fixtures_dir):
     r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
     pri = r.priorities
     assert len(pri.rank_columns) == 3
+
+
+def test_load_responses_errors_on_missing_csv_column(tmp_path, fixtures_dir):
+    csv = tmp_path / "responses.csv"
+    csv.write_text('"Some other column"\n"value"\n')
+    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    with pytest.raises(ValueError, match="no CSV column matches"):
+        load_responses(csv, schema=schema)
