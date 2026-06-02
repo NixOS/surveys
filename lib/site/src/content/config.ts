@@ -1,0 +1,34 @@
+// lib/site/src/content/config.ts
+import { defineCollection, z } from 'astro:content';
+
+const ChartSpec = z.object({
+  option: z.record(z.any()),
+  height: z.number().int().positive().optional(),
+});
+
+const Row = z.object({
+  id: z.string(),
+  title: z.string(),
+  commentary: z.string(),
+  chart: ChartSpec,
+});
+
+const Section = z.object({
+  id: z.string(),
+  heading: z.string(),
+  rows: z.array(Row),
+});
+
+const Results = z.object({
+  schema_version: z.literal(1),
+  year: z.number().int(),
+  title: z.string(),
+  sections: z.array(Section),
+});
+
+export const collections = {
+  results: defineCollection({
+    type: 'data',
+    schema: Results,
+  }),
+};
