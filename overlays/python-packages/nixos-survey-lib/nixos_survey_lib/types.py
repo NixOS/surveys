@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Literal
+from typing import Iterator, KeysView, Literal
 
 import polars as pl
 
@@ -120,3 +120,41 @@ class TextResponse:
 
     def __len__(self) -> int:
         return len(self.values)
+
+
+ResponseUnion = SingleChoice | MultiChoice | Ranking | TextResponse
+
+
+class Responses:
+    """Container of typed responses indexed by question id.
+
+    Both attribute access (r.country) and item access (r["country"]) work.
+    Missing ids raise KeyError naming the available ids in the message.
+    """
+
+    def __init__(self, *, schema: SurveySchema, by_id: dict[str, ResponseUnion]) -> None:
+        self.schema = schema
+        # Use object.__setattr__ to bypass __setattr__-via-__getattr__ entanglements.
+        object.__setattr__(self, "_by_id", by_id)
+
+    def __getitem__(self, qid: str) -> ResponseUnion:
+        if qid not in self._by_id:
+            available = ", ".join(sorted(self._by_id)) or "(none)"
+            raise KeyError(f"unknown question id {qid!r}; available: {available}")
+        return self._by_id[qid]
+
+    def __getattr__(self, qid: str) -> ResponseUnion:
+        # __getattr__ is only called when normal attribute lookup fails.
+        try:
+            by_id = object.__getattribute__(self, "_by_id")
+        except AttributeError:
+            raise AttributeError(qid) from None
+        if qid in by_id:
+            return by_id[qid]
+        raise AttributeError(f"no question id {qid!r}")
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._by_id)
+
+    def keys(self) -> KeysView[str]:
+        return self._by_id.keys()

@@ -128,3 +128,36 @@ def test_ranking_len():
 def test_text_response_len():
     t = TextResponse(question=_q("a", "text"), values=pl.Series(["v1", "v2", "v3", "v4"]))
     assert len(t) == 4
+
+
+from nixos_survey_lib.types import Responses
+
+
+def test_responses_attribute_access():
+    s = SingleChoice(question=_q("country"), values=pl.Series(["Europe", "Asia"]))
+    schema = SurveySchema(title="t", questions=[_q("country")])
+    r = Responses(schema=schema, by_id={"country": s})
+    assert r.country is s
+
+
+def test_responses_item_access():
+    s = SingleChoice(question=_q("country"), values=pl.Series(["Europe"]))
+    schema = SurveySchema(title="t", questions=[_q("country")])
+    r = Responses(schema=schema, by_id={"country": s})
+    assert r["country"] is s
+
+
+def test_responses_unknown_id_raises():
+    schema = SurveySchema(title="t", questions=[])
+    r = Responses(schema=schema, by_id={})
+    with pytest.raises(KeyError) as exc:
+        r["nope"]
+    assert "nope" in str(exc.value)
+
+
+def test_responses_iter_and_keys():
+    s = SingleChoice(question=_q("country"), values=pl.Series([]))
+    schema = SurveySchema(title="t", questions=[_q("country")])
+    r = Responses(schema=schema, by_id={"country": s})
+    assert list(r) == ["country"]
+    assert "country" in r.keys()
