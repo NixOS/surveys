@@ -1,0 +1,11 @@
+---
+// lib/site/src/components/SectionHeading.astro
+interface Props {
+  id: string;
+  heading: string;
+}
+const { id, heading } = Astro.props;
+---
+<h2 id={id} class="mt-12 mb-6 text-2xl font-bold text-secondary-afghani-blue-45 dark:text-secondary-afghani-blue-75">
+  {heading}
+</h2>
