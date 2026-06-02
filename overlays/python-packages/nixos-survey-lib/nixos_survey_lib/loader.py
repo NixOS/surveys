@@ -1,3 +1,4 @@
+import html
 import re
 from pathlib import Path
 
@@ -20,21 +21,23 @@ _BRACKET_SUFFIX = re.compile(r"^(.*)\s*\[([^\]]+)\]\s*$", re.DOTALL)
 
 def strip_bracket_suffix(header: str) -> tuple[str, str | None]:
     """Split a CSV header into (base_prompt, bracket_contents). If no trailing
-    [bracketed] suffix, returns (header, None)."""
+    [bracketed] suffix, returns (header, None). HTML entities in the bracket
+    content are decoded so values like ``|&gt;`` become ``|>``."""
     m = _BRACKET_SUFFIX.match(header)
     if not m:
         return header, None
-    return m.group(1).rstrip(), m.group(2).strip()
+    return m.group(1).rstrip(), html.unescape(m.group(2).strip())
 
 
 def normalize_prompt(text: str) -> str:
     """Collapse all whitespace runs (newlines, tabs, NBSP) to single spaces,
     remove YAML list-item markers (``- ``), collapse CSV-escaped double-quotes
-    (``""`` → ``"``), and strip leading/trailing whitespace.
+    (``""`` → ``"``), decode HTML entities, and strip leading/trailing whitespace.
 
     Used to compare YAML prompts against CSV column headers, which may differ
     due to survey-platform export artefacts:
     - CSV export doubles internal double-quotes (``""``).
+    - CSV export HTML-entity-escapes characters like ``>`` (``&gt;``).
     - YAML block-scalar list prompts contain ``- `` list-item markers that the
       survey platform strips when building CSV column headers.
     """
@@ -42,6 +45,8 @@ def normalize_prompt(text: str) -> str:
     text = _WS_RUN.sub(" ", text.replace("\u00a0", " "))
     # Collapse doubled double-quotes produced by CSV export (e.g. ""uname -a"")
     text = text.replace('""', '"')
+    # Decode HTML entities (e.g. &gt; → >, &amp; → &).
+    text = html.unescape(text)
     # Remove YAML block-scalar list-item markers that don't appear in CSV headers.
     # Safe: no CSV base-prompt contains ` - ` (verified against this dataset).
     text = text.replace(" - ", " ")
