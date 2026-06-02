@@ -6,6 +6,16 @@ import yaml
 from .types import Question, SurveySchema
 
 _WS_RUN = re.compile(r"\s+", re.UNICODE)
+_BRACKET_SUFFIX = re.compile(r"^(.*)\s*\[([^\]]+)\]\s*$", re.DOTALL)
+
+
+def strip_bracket_suffix(header: str) -> tuple[str, str | None]:
+    """Split a CSV header into (base_prompt, bracket_contents). If no trailing
+    [bracketed] suffix, returns (header, None)."""
+    m = _BRACKET_SUFFIX.match(header)
+    if not m:
+        return header, None
+    return m.group(1).rstrip(), m.group(2).strip()
 
 
 def normalize_prompt(text: str) -> str:

@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from nixos_survey_lib.loader import load_schema, normalize_prompt
+from nixos_survey_lib.loader import load_schema, normalize_prompt, strip_bracket_suffix
 
 
 def _write_yaml(tmp_path, text):
@@ -87,3 +87,27 @@ def test_normalize_prompt_handles_nbsp():
 
 def test_normalize_prompt_idempotent():
     assert normalize_prompt(normalize_prompt("  a  b  ")) == "a b"
+
+
+def test_strip_bracket_suffix_choice():
+    base, suffix = strip_bracket_suffix("Which OS? [GNU/Linux]")
+    assert base == "Which OS?"
+    assert suffix == "GNU/Linux"
+
+
+def test_strip_bracket_suffix_rank():
+    base, suffix = strip_bracket_suffix("Rank priorities. [Rank 3]")
+    assert base == "Rank priorities."
+    assert suffix == "Rank 3"
+
+
+def test_strip_bracket_suffix_no_suffix():
+    base, suffix = strip_bracket_suffix("Where do you live?")
+    assert base == "Where do you live?"
+    assert suffix is None
+
+
+def test_strip_bracket_suffix_only_strips_trailing():
+    base, suffix = strip_bracket_suffix("Some [topic] question. [answer]")
+    assert base == "Some [topic] question."
+    assert suffix == "answer"
