@@ -1,0 +1,30 @@
+---
+// lib/site/src/pages/[year].astro
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import PlotRow from '../components/PlotRow.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('results');
+  return all.map(r => ({
+    params: { year: String(r.data.year) },
+    props: { data: r.data },
+  }));
+}
+
+const { data } = Astro.props;
+---
+<Layout title={data.title}>
+  <h1 class="mb-8 text-4xl font-bold">{data.title}</h1>
+  {data.sections.map(section => (
+    <section>
+      <SectionHeading id={section.id} heading={section.heading} />
+      {section.rows.map(row => <PlotRow row={row} />)}
+    </section>
+  ))}
+  <script>
+    import { initCharts } from '../echarts-init';
+    initCharts();
+  </script>
+</Layout>
