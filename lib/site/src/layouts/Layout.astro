@@ -29,5 +29,23 @@ const { title } = Astro.props;
     <main class="mx-auto max-w-[1168px] px-4 py-12">
       <slot />
     </main>
+    <script>
+      // Heading deep-link UX: clicking an a.heading-link copies its URL to
+      // clipboard. The browser still handles the #id scroll on click; we just
+      // additionally copy. The icon pulses briefly via .heading-link-copied
+      // (style lives in global.css) so the user gets visible feedback.
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const anchor = target.closest<HTMLAnchorElement>('a.heading-link');
+        if (!anchor) return;
+        const url = new URL(anchor.href, window.location.origin);
+        navigator.clipboard.writeText(url.toString()).catch(() => {});
+        const icon = anchor.querySelector('.link-icon');
+        if (icon instanceof SVGElement) {
+          icon.classList.add('heading-link-copied');
+          window.setTimeout(() => icon.classList.remove('heading-link-copied'), 800);
+        }
+      });
+    </script>
   </body>
 </html>
