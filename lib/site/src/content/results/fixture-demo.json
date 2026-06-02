@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "year": 2025,
-  "title": "Fixture Survey Results",
+  "year": 9999,
+  "title": "Fixture Survey Results (demo)",
   "sections": [
     {
       "id": "demographics",
