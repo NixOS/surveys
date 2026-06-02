@@ -38,8 +38,6 @@ function makeTheme(mode: 'light' | 'dark') {
   const axis = resolveColor(mode === 'light' ? colors['primary-black'][75] : colors['primary-black'][35]);
   const grid = resolveColor(mode === 'light' ? colors['primary-black'][85] : colors['primary-black'][25]);
   const bg = resolveColor(mode === 'light' ? colors['primary-white'].DEFAULT : colors['primary-black'][15]);
-  const visMin = resolveColor(mode === 'light' ? colors['secondary-afghani-blue'][95] : colors['secondary-afghani-blue'][25]);
-  const visMax = resolveColor(colors['secondary-afghani-blue'].DEFAULT);
   return {
     color: PALETTE,
     backgroundColor: 'transparent',
@@ -52,23 +50,44 @@ function makeTheme(mode: 'light' | 'dark') {
       borderWidth: 1,
       textStyle: { color: text },
     },
-    visualMap: {
-      inRange: { color: [visMin, visMax] },
-    },
   };
 }
 
 echarts.registerTheme('nixos-light', makeTheme('light'));
 echarts.registerTheme('nixos-dark', makeTheme('dark'));
 
+// Sequential gradient (rate / composition heatmaps, percent 0-100).
+const seqGradient = () => [
+  resolveColor(colors['secondary-afghani-blue'][95]),
+  resolveColor(colors['secondary-afghani-blue'].DEFAULT),
+];
+// Diverging gradient (lift heatmaps, centered at 1.0 with min=0 max=2).
+const liftGradient = () => [
+  resolveColor(colors['accent-persian-orange'][55]),
+  resolveColor(colors['primary-white'].DEFAULT),
+  resolveColor(colors['secondary-afghani-blue'].DEFAULT),
+];
+
 const currentTheme = () =>
   document.documentElement.classList.contains('dark') ? 'nixos-dark' : 'nixos-light';
+
+// ECharts' theme merging replaces a chart's `visualMap` object as a whole when
+// the chart provides one, so the theme's `inRange.color` never reaches the
+// heatmap. Inject the colors per chart here based on the visualMap's range.
+function injectVisualMapColors(option: Record<string, unknown>): void {
+  const vm = option.visualMap as { min?: number; max?: number; inRange?: { color?: unknown[] } } | undefined;
+  if (!vm) return;
+  if (vm.inRange?.color && vm.inRange.color.length > 0) return;
+  const isLift = vm.min === 0 && vm.max === 2;
+  vm.inRange = { color: isLift ? liftGradient() : seqGradient() };
+}
 
 function initChart(card: Element): void {
   const optionScript = card.querySelector('script[type="application/json"]');
   const div = card.querySelector('.echarts-chart');
   if (!optionScript || !div) return;
   const option = JSON.parse(optionScript.textContent ?? '{}');
+  injectVisualMapColors(option);
   echarts.init(div as HTMLElement, currentTheme(), { renderer: 'svg' }).setOption(option);
 }
 
@@ -87,8 +106,9 @@ export function initCharts(): void {
     document.querySelectorAll<HTMLElement>('.echarts-chart').forEach(div => {
       const inst = echarts.getInstanceByDom(div);
       if (!inst) return;
-      const opt = inst.getOption();
+      const opt = inst.getOption() as Record<string, unknown>;
       inst.dispose();
+      injectVisualMapColors(opt);
       echarts.init(div, currentTheme(), { renderer: 'svg' }).setOption(opt);
     });
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
