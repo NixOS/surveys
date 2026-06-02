@@ -88,12 +88,40 @@ function injectVisualMapColors(option: Record<string, unknown>): void {
   vm.inRange = { color: isLift ? liftGradient() : seqGradient() };
 }
 
+// Heatmap tooltips need to look up axis labels by index — that can't be
+// expressed as an ECharts string template, so inject a JS formatter here.
+// Skip if the option already specifies a tooltip (e.g., from Python).
+type HeatmapTooltipParams = { value: [number, number, number] };
+function injectHeatmapTooltip(option: Record<string, unknown>): void {
+  if (option.tooltip) return;
+  const series = option.series as Array<{ type?: string }> | undefined;
+  if (!series || series[0]?.type !== 'heatmap') return;
+  const xAxis = option.xAxis as { data?: string[] } | undefined;
+  const yAxis = option.yAxis as { data?: string[] } | undefined;
+  const xLabels = xAxis?.data ?? [];
+  const yLabels = yAxis?.data ?? [];
+  const vm = option.visualMap as { min?: number; max?: number } | undefined;
+  const isLift = vm?.min === 0 && vm?.max === 2;
+  const unit = isLift ? '\u00d7' : '%';
+  option.tooltip = {
+    trigger: 'item',
+    formatter: (params: HeatmapTooltipParams) => {
+      const [xi, yi, value] = params.value;
+      const xLabel = xLabels[xi] ?? '?';
+      const yLabel = yLabels[yi] ?? '?';
+      const formatted = typeof value === 'number' ? value.toFixed(1) : String(value);
+      return `${xLabel} \u00d7 ${yLabel}<br/>${formatted}${unit}`;
+    },
+  };
+}
+
 function initChart(card: Element): void {
   const optionScript = card.querySelector('script[type="application/json"]');
   const div = card.querySelector('.echarts-chart');
   if (!optionScript || !div) return;
   const option = JSON.parse(optionScript.textContent ?? '{}');
   injectVisualMapColors(option);
+  injectHeatmapTooltip(option);
   echarts.init(div as HTMLElement, currentTheme(), { renderer: 'svg' }).setOption(option);
 }
 
@@ -115,6 +143,7 @@ export function initCharts(): void {
       const opt = inst.getOption() as Record<string, unknown>;
       inst.dispose();
       injectVisualMapColors(opt);
+      injectHeatmapTooltip(opt);
       echarts.init(div, currentTheme(), { renderer: 'svg' }).setOption(opt);
     });
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
