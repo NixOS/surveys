@@ -1,1 +1,13 @@
+# Raw survey response CSVs contain PII (individual answers, free-text fields,
+# granular metadata) and must NEVER be committed. Synthetic test fixtures under
+# overlays/python-packages/nixos-survey-lib/tests/fixtures/ are re-included via
+# a local negation rule in that directory.
 *.csv
+
+# Python bytecode caches
+__pycache__/
+*.pyc
+
+# Nix build outputs
+result
+result-*
