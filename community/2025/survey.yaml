@@ -368,6 +368,7 @@ questions:
   - id: nix_implementations
     prompt: Which of these do you use?
     type: multiple
+    choices:
       - Nix
       - Tvix
       - Lix

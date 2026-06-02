@@ -215,12 +215,16 @@ def crosstab_multi(
     single_totals = {xl: int(df.filter(pl.col("single") == xl).height) for xl in x_labels}
     trait_totals = {t: int((df[t] == "Yes").sum()) for t in trait_labels}
 
+    # Pre-compute per-trait filtered DataFrames to avoid repeated filtering.
+    trait_dfs = {t: df.filter(pl.col(t) == "Yes") for t in trait_labels}
+
+    # cells[xi][yi]: outer index = x_labels (single values), inner = trait_labels (y)
+    # This matches what heatmap() expects: cells[xi][yi].
     cells: list[list[float]] = []
-    for t in trait_labels:
-        trait_df = df.filter(pl.col(t) == "Yes")
-        row: list[float] = []
-        for xl in x_labels:
-            c = int(trait_df.filter(pl.col("single") == xl).height)
+    for xl in x_labels:
+        col_vals: list[float] = []
+        for t in trait_labels:
+            c = int(trait_dfs[t].filter(pl.col("single") == xl).height)
             if denominator == "rate":
                 denom = single_totals[xl]
                 val = (c / denom * 100.0) if denom > 0 else 0.0
@@ -234,8 +238,8 @@ def crosstab_multi(
                     val = (c * total) / (tt * st)
                 else:
                     val = 1.0
-            row.append(val)
-        cells.append(row)
+            col_vals.append(val)
+        cells.append(col_vals)
 
     return CrossTab(x_labels=x_labels, y_labels=trait_labels, cells=cells, cell_kind=kind)
 

@@ -28,10 +28,24 @@ def strip_bracket_suffix(header: str) -> tuple[str, str | None]:
 
 
 def normalize_prompt(text: str) -> str:
-    """Collapse all whitespace runs (newlines, tabs, NBSP) to single spaces
-    and strip leading/trailing whitespace. Used to compare YAML prompts
-    against CSV column headers."""
-    return _WS_RUN.sub(" ", text.replace("\u00a0", " ")).strip()
+    """Collapse all whitespace runs (newlines, tabs, NBSP) to single spaces,
+    remove YAML list-item markers (``- ``), collapse CSV-escaped double-quotes
+    (``""`` → ``"``), and strip leading/trailing whitespace.
+
+    Used to compare YAML prompts against CSV column headers, which may differ
+    due to survey-platform export artefacts:
+    - CSV export doubles internal double-quotes (``""``).
+    - YAML block-scalar list prompts contain ``- `` list-item markers that the
+      survey platform strips when building CSV column headers.
+    """
+    # Collapse whitespace first so YAML list markers become " - " uniformly.
+    text = _WS_RUN.sub(" ", text.replace("\u00a0", " "))
+    # Collapse doubled double-quotes produced by CSV export (e.g. ""uname -a"")
+    text = text.replace('""', '"')
+    # Remove YAML block-scalar list-item markers that don't appear in CSV headers.
+    # Safe: no CSV base-prompt contains ` - ` (verified against this dataset).
+    text = text.replace(" - ", " ")
+    return _WS_RUN.sub(" ", text).strip()
 
 
 def load_schema(yaml_path: Path) -> SurveySchema:

@@ -148,7 +148,8 @@ def test_crosstab_multi_rate():
     m, s = _mc_long()
     ct = crosstab_multi(m, s, denominator="rate", x_order=["Beginner", "Advanced"])
     assert ct.cell_kind == "rate_pct"
-    by_label = {(t, x): ct.cells[i][j] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
+    # cells[xi][yi]: xi indexes x_labels (single values), yi indexes y_labels (traits)
+    by_label = {(t, x): ct.cells[j][i] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
     assert by_label[("trait_A", "Beginner")] == pytest.approx(50.0)
     assert by_label[("trait_A", "Advanced")] == pytest.approx(50.0)
 
@@ -157,7 +158,8 @@ def test_crosstab_multi_composition():
     m, s = _mc_long()
     ct = crosstab_multi(m, s, denominator="composition", x_order=["Beginner", "Advanced"])
     assert ct.cell_kind == "composition_pct"
-    by_label = {(t, x): ct.cells[i][j] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
+    # cells[xi][yi]: xi indexes x_labels (single values), yi indexes y_labels (traits)
+    by_label = {(t, x): ct.cells[j][i] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
     assert by_label[("trait_A", "Beginner")] == pytest.approx(50.0)
     assert by_label[("trait_A", "Advanced")] == pytest.approx(50.0)
 
@@ -166,7 +168,8 @@ def test_crosstab_multi_lift():
     m, s = _mc_long()
     ct = crosstab_multi(m, s, denominator="lift", x_order=["Beginner", "Advanced"])
     assert ct.cell_kind == "lift"
-    by_label = {(t, x): ct.cells[i][j] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
+    # cells[xi][yi]: xi indexes x_labels (single values), yi indexes y_labels (traits)
+    by_label = {(t, x): ct.cells[j][i] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
     assert by_label[("trait_A", "Beginner")] == pytest.approx(1.0)
 
 
