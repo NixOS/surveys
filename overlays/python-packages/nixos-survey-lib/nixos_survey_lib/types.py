@@ -1,5 +1,6 @@
+from collections.abc import Iterator, KeysView
 from dataclasses import dataclass
-from typing import Iterator, KeysView, Literal
+from typing import Any, Literal
 
 import polars as pl
 
@@ -46,7 +47,7 @@ class Ranked:
 
 @dataclass(frozen=True)
 class ChartSpec:
-    option: dict
+    option: dict[str, Any]
     height: int | None = None
 
 
@@ -76,6 +77,9 @@ class Page:
 class SingleChoice:
     """One CSV column, one categorical value per respondent."""
 
+    question: Question
+    values: pl.Series
+
     def __init__(self, *, question: Question, values: pl.Series) -> None:
         self.question = question
         self.values = values
@@ -86,6 +90,9 @@ class SingleChoice:
 
 class MultiChoice:
     """N CSV columns, one per choice, each holding Yes/No/null."""
+
+    question: Question
+    choice_columns: dict[str, pl.Series]
 
     def __init__(self, *, question: Question, choice_columns: dict[str, pl.Series]) -> None:
         self.question = question
@@ -103,6 +110,9 @@ class MultiChoice:
 class Ranking:
     """N CSV columns, one per rank position (1..N), each holding choice names."""
 
+    question: Question
+    rank_columns: list[pl.Series]
+
     def __init__(self, *, question: Question, rank_columns: list[pl.Series]) -> None:
         self.question = question
         self.rank_columns = rank_columns
@@ -113,6 +123,9 @@ class Ranking:
 
 class TextResponse:
     """One CSV column, free-text values."""
+
+    question: Question
+    values: pl.Series
 
     def __init__(self, *, question: Question, values: pl.Series) -> None:
         self.question = question
@@ -132,10 +145,12 @@ class Responses:
     Missing ids raise KeyError naming the available ids in the message.
     """
 
+    schema: SurveySchema
+    _by_id: dict[str, ResponseUnion]
+
     def __init__(self, *, schema: SurveySchema, by_id: dict[str, ResponseUnion]) -> None:
         self.schema = schema
-        # Use object.__setattr__ to bypass __setattr__-via-__getattr__ entanglements.
-        object.__setattr__(self, "_by_id", by_id)
+        self._by_id = by_id
 
     def __getitem__(self, qid: str) -> ResponseUnion:
         if qid not in self._by_id:
@@ -144,9 +159,12 @@ class Responses:
         return self._by_id[qid]
 
     def __getattr__(self, qid: str) -> ResponseUnion:
-        # __getattr__ is only called when normal attribute lookup fails.
+        # __getattr__ is only called when normal attribute lookup fails. Use
+        # object.__getattribute__ to read _by_id without re-triggering this
+        # method, which would happen on the very first call before _by_id is
+        # set during __init__.
         try:
-            by_id = object.__getattribute__(self, "_by_id")
+            by_id: dict[str, ResponseUnion] = object.__getattribute__(self, "_by_id")
         except AttributeError:
             raise AttributeError(qid) from None
         if qid in by_id:
