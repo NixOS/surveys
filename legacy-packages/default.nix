@@ -1,28 +1,13 @@
 inputs:
 
 let
+  inherit (inputs.nixpkgs-lib.lib.attrsets) genAttrs;
 
-  inherit (inputs.nixpkgs)
-    lib
-    ;
-
-  inherit (lib.attrsets)
-    genAttrs
-    ;
-
+  systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
 in
-
-genAttrs
-  [
-    "x86_64-linux"
-    "aarch64-linux"
-    "x86_64-darwin"
-    "aarch64-darwin"
-  ]
-  (
-    system:
-    import inputs.nixpkgs {
-      inherit system;
-      overlays = [ ];
-    }
-  )
+genAttrs systems (system:
+  import inputs.nixpkgs {
+    inherit system;
+    overlays = [ inputs.self.overlays.default ];
+  }
+)
