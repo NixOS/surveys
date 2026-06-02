@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Literal
 
+import polars as pl
+
 
 QuestionType = Literal["single", "multiple", "ranking", "text"]
 
@@ -69,3 +71,52 @@ class Page:
     title: str
     sections: list[Section]
     schema_version: int = 1
+
+
+class SingleChoice:
+    """One CSV column, one categorical value per respondent."""
+
+    def __init__(self, *, question: Question, values: pl.Series) -> None:
+        self.question = question
+        self.values = values
+
+    def __len__(self) -> int:
+        return len(self.values)
+
+
+class MultiChoice:
+    """N CSV columns, one per choice, each holding Yes/No/null."""
+
+    def __init__(self, *, question: Question, choice_columns: dict[str, pl.Series]) -> None:
+        self.question = question
+        self.choice_columns = choice_columns
+
+    def __len__(self) -> int:
+        if not self.choice_columns:
+            return 0
+        return len(next(iter(self.choice_columns.values())))
+
+    def choices(self) -> list[str]:
+        return list(self.choice_columns.keys())
+
+
+class Ranking:
+    """N CSV columns, one per rank position (1..N), each holding choice names."""
+
+    def __init__(self, *, question: Question, rank_columns: list[pl.Series]) -> None:
+        self.question = question
+        self.rank_columns = rank_columns
+
+    def __len__(self) -> int:
+        return len(self.rank_columns[0]) if self.rank_columns else 0
+
+
+class TextResponse:
+    """One CSV column, free-text values."""
+
+    def __init__(self, *, question: Question, values: pl.Series) -> None:
+        self.question = question
+        self.values = values
+
+    def __len__(self) -> int:
+        return len(self.values)

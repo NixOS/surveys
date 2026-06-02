@@ -92,3 +92,39 @@ def test_section_construction():
 def test_page_default_schema_version():
     p = Page(year=2025, title="Test", sections=[])
     assert p.schema_version == 1
+
+
+import polars as pl
+
+from nixos_survey_lib.types import SingleChoice, MultiChoice, Ranking, TextResponse
+
+
+def _q(qid: str, qtype: str = "single") -> Question:
+    return Question(id=qid, prompt=qid, type=qtype, choices=None, csv_columns=[])
+
+
+def test_single_choice_len():
+    s = SingleChoice(question=_q("a"), values=pl.Series(["x", "y", "z"]))
+    assert len(s) == 3
+
+
+def test_multi_choice_choices():
+    m = MultiChoice(
+        question=_q("a", "multiple"),
+        choice_columns={"Linux": pl.Series(["Yes", "No"]), "macOS": pl.Series(["No", "Yes"])},
+    )
+    assert m.choices() == ["Linux", "macOS"]
+    assert len(m) == 2
+
+
+def test_ranking_len():
+    r = Ranking(
+        question=_q("a", "ranking"),
+        rank_columns=[pl.Series(["A", "B"]), pl.Series(["B", "A"])],
+    )
+    assert len(r) == 2
+
+
+def test_text_response_len():
+    t = TextResponse(question=_q("a", "text"), values=pl.Series(["v1", "v2", "v3", "v4"]))
+    assert len(t) == 4
