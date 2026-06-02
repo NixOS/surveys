@@ -92,3 +92,41 @@ def heatmap(
         option["title"] = {"text": title, "left": "left"}
 
     return ChartSpec(option=option, height=height)
+
+
+def ranking_bar(
+    ranked: list[Ranked],
+    *,
+    title: str | None = None,
+    height: int | None = None,
+) -> ChartSpec:
+    """Render a ranking bar chart. Uses different label formatters depending on
+    whether values are avg-rank floats or top-N counts."""
+    reversed_items = list(reversed(ranked))
+    labels = [r.label for r in reversed_items]
+    values = [r.value for r in reversed_items]
+
+    formatter = "{c}"
+
+    option: dict[str, Any] = {
+        "grid": {"left": 200, "right": 80, "top": 40, "bottom": 30},
+        "xAxis": {"type": "value", "show": False, "max": "dataMax"},
+        "yAxis": {
+            "type": "category",
+            "data": labels,
+            "axisLabel": {"width": 180, "overflow": "truncate"},
+            "axisLine": {"show": False},
+            "axisTick": {"show": False},
+        },
+        "series": [{
+            "type": "bar",
+            "data": values,
+            "label": {"show": True, "position": "right", "formatter": formatter},
+            "barWidth": 16,
+            "itemStyle": {"borderRadius": 4},
+        }],
+    }
+    if title is not None:
+        option["title"] = {"text": title, "left": "left"}
+
+    return ChartSpec(option=option, height=height)

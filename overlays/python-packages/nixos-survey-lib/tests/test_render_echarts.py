@@ -63,3 +63,28 @@ def test_heatmap_lift_uses_diverging_visualmap():
     vm = spec.option["visualMap"]
     assert vm["min"] == 0
     assert vm["max"] == 2
+
+
+from nixos_survey_lib.render_echarts import ranking_bar
+from nixos_survey_lib.types import Ranked
+
+
+def test_ranking_bar_avg_rank_formatter():
+    ranked = [
+        Ranked(label="Docs", value=2.28, method="avg_rank"),
+        Ranked(label="Nixpkgs", value=3.47, method="avg_rank"),
+    ]
+    spec = ranking_bar(ranked)
+    opt = spec.option
+    assert opt["yAxis"]["data"] == ["Nixpkgs", "Docs"]
+    assert opt["series"][0]["data"] == [3.47, 2.28]
+
+
+def test_ranking_bar_top_n_count_formatter():
+    ranked = [
+        Ranked(label="Wiki", value=2313, method="top_n_count"),
+        Ranked(label="Manuals", value=1995, method="top_n_count"),
+    ]
+    spec = ranking_bar(ranked)
+    opt = spec.option
+    assert opt["series"][0]["data"] == [1995, 2313]
