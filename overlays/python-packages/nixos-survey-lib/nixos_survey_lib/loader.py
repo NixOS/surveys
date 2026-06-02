@@ -171,3 +171,37 @@ def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
             by_id[q.id] = Ranking(question=updated, rank_columns=rank_cols)
 
     return Responses(schema=schema, by_id=by_id)
+
+
+def load_commentary(path: Path) -> dict[str, str]:
+    """Parse a flat markdown commentary file into {row_id: body}.
+
+    Format: each row's commentary lives under a single `## <row-id>`
+    second-level heading. Headings of other levels are preserved verbatim
+    inside the body. Empty bodies (just the heading with no text) map to
+    an empty string.
+    """
+    text = path.read_text()
+    out: dict[str, str] = {}
+    current_id: str | None = None
+    current_body: list[str] = []
+
+    def flush() -> None:
+        nonlocal current_id, current_body
+        if current_id is None:
+            return
+        body = "\n".join(current_body).strip("\n").strip()
+        out[current_id] = body
+
+    for line in text.splitlines():
+        m = re.match(r"^##\s+([A-Za-z_][A-Za-z0-9_]*)\s*$", line)
+        if m:
+            flush()
+            current_id = m.group(1)
+            current_body = []
+        else:
+            if current_id is not None:
+                current_body.append(line)
+
+    flush()
+    return out

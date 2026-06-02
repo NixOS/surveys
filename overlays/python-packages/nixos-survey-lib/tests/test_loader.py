@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from nixos_survey_lib.loader import load_responses, load_schema, normalize_prompt, strip_bracket_suffix
+from nixos_survey_lib.loader import load_commentary, load_responses, load_schema, normalize_prompt, strip_bracket_suffix
 
 
 def _write_yaml(tmp_path, text):
@@ -178,3 +178,19 @@ def test_load_responses_errors_on_missing_csv_column(tmp_path, fixtures_dir):
     schema = load_schema(fixtures_dir / "tiny_survey.yaml")
     with pytest.raises(ValueError, match="no CSV column matches"):
         load_responses(csv, schema=schema)
+
+
+def test_load_commentary_keyed_by_row_id(fixtures_dir):
+    cm = load_commentary(fixtures_dir / "tiny_commentary.md")
+    assert set(cm.keys()) == {"country", "skill", "os"}
+    assert "Europe leads" in cm["country"]
+
+
+def test_load_commentary_preserves_multiline(fixtures_dir):
+    cm = load_commentary(fixtures_dir / "tiny_commentary.md")
+    assert "Multiline content\nis preserved." in cm["skill"]
+
+
+def test_load_commentary_strips_trailing_blank_lines(fixtures_dir):
+    cm = load_commentary(fixtures_dir / "tiny_commentary.md")
+    assert not cm["country"].endswith("\n\n")
