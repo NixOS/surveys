@@ -142,3 +142,13 @@ def test_load_responses_handles_multiline_yaml_prompt(fixtures_dir):
     r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
     assert "long_prompt_question" in r.keys()
     assert len(r.long_prompt_question) == 20
+
+
+def test_load_responses_multi_choice(fixtures_dir):
+    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
+    os = r.os
+    assert os.choices() == ["Linux", "macOS", "Windows"]
+    assert len(os) == 20
+    assert os.choice_columns["Linux"][0] == "Yes"
+    assert os.choice_columns["macOS"][0] == "No"

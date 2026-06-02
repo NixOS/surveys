@@ -123,6 +123,30 @@ def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
             cleaned = _clean_single_values(df[col])
             by_id[q.id] = TextResponse(question=updated, values=cleaned)
 
-        # multiple and ranking handled in the next task
+        elif q.type == "multiple":
+            matches = bracketed_headers.get(norm_prompt, [])
+            if not matches:
+                raise ValueError(
+                    f"no CSV columns matched question id {q.id!r} (prompt: {q.prompt!r})"
+                )
+            if q.choices is None:
+                choice_order = [suffix for _, suffix in matches]
+            else:
+                by_suffix = {suffix: col for col, suffix in matches}
+                choice_order = [c for c in q.choices if c in by_suffix]
+            choice_columns_dict: dict[str, pl.Series] = {}
+            cols: list[str] = []
+            by_suffix_full = {suffix: col for col, suffix in matches}
+            for c in choice_order:
+                col = by_suffix_full[c]
+                choice_columns_dict[c] = df[col]
+                cols.append(col)
+            updated = Question(
+                id=q.id, prompt=q.prompt, type=q.type,
+                choices=q.choices, csv_columns=cols,
+            )
+            by_id[q.id] = MultiChoice(question=updated, choice_columns=choice_columns_dict)
+
+        # ranking handled in the next task
 
     return Responses(schema=schema, by_id=by_id)
