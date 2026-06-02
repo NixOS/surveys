@@ -36,3 +36,36 @@ def normalize_yes_no(
         csv_columns=r.question.csv_columns,
     )
     return SingleChoice(question=new_q, values=pl.select(out).to_series())
+
+
+SEMVER_MMP_RE = r"(?:^|[^0-9])((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))(?:$|[^0-9])"
+
+
+def extract_first_semver(
+    r: TextResponse,
+    *,
+    skipped_label: str = "Skipped",
+    no_match_label: str = "No Match",
+) -> SingleChoice:
+    """Return a SingleChoice of 'major.minor.patch' extracted from free text.
+    Empty/null -> 'Skipped'; non-matching text -> 'No Match'."""
+    cleaned = (
+        r.values.cast(pl.Utf8)
+        .str.strip_chars()
+        .replace("", None)
+        .fill_null(skipped_label)
+    )
+    extracted = cleaned.str.extract(SEMVER_MMP_RE, group_index=1)
+    out = (
+        pl.when(cleaned == skipped_label)
+        .then(pl.lit(skipped_label))
+        .otherwise(extracted.fill_null(no_match_label))
+    )
+    new_q = Question(
+        id=r.question.id,
+        prompt=r.question.prompt,
+        type="single",
+        choices=None,
+        csv_columns=r.question.csv_columns,
+    )
+    return SingleChoice(question=new_q, values=pl.select(out).to_series())
