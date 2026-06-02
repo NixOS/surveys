@@ -162,3 +162,77 @@ def crosstab(
         cells.append(row)
 
     return CrossTab(x_labels=x_labels, y_labels=y_labels, cells=cells, cell_kind="rate_pct")
+
+
+def crosstab_multi(
+    multi: MultiChoice,
+    single: SingleChoice,
+    *,
+    denominator: Literal["rate", "composition", "lift"],
+    x_order: list[str] | None = None,
+    x_exclude: list[str] | None = None,
+) -> CrossTab:
+    """Cross-tab a multi-choice (rows = traits) against a single-choice
+    (columns = single values). Three denominator modes:
+      rate         — P(trait | single)        ; cell_kind=rate_pct
+      composition  — P(single | trait)        ; cell_kind=composition_pct
+      lift         — composition / baseline   ; cell_kind=lift
+    """
+    excluded = set(x_exclude or [])
+    df = pl.DataFrame({"single": single.values})
+    for choice, series in multi.choice_columns.items():
+        df = df.with_columns(series.alias(choice))
+
+    if excluded:
+        df = df.filter(~pl.col("single").is_in(list(excluded)))
+
+    total = df.height
+    kind = {"rate": "rate_pct", "composition": "composition_pct", "lift": "lift"}[denominator]
+    if total == 0:
+        return CrossTab(x_labels=[], y_labels=[], cells=[], cell_kind=kind)
+
+    actual_single = df["single"].unique().to_list()
+    if x_order is None:
+        x_labels = (
+            df.group_by("single").len()
+            .sort("len", descending=True)["single"].to_list()
+        )
+    else:
+        seen: set[str] = set()
+        x_labels = []
+        for v in x_order:
+            if v in actual_single and v not in seen:
+                x_labels.append(v)
+                seen.add(v)
+        for v in actual_single:
+            if v not in seen:
+                x_labels.append(v)
+
+    trait_labels = list(multi.choice_columns.keys())
+
+    single_totals = {xl: int(df.filter(pl.col("single") == xl).height) for xl in x_labels}
+    trait_totals = {t: int((df[t] == "Yes").sum()) for t in trait_labels}
+
+    cells: list[list[float]] = []
+    for t in trait_labels:
+        trait_df = df.filter(pl.col(t) == "Yes")
+        row: list[float] = []
+        for xl in x_labels:
+            c = int(trait_df.filter(pl.col("single") == xl).height)
+            if denominator == "rate":
+                denom = single_totals[xl]
+                val = (c / denom * 100.0) if denom > 0 else 0.0
+            elif denominator == "composition":
+                denom = trait_totals[t]
+                val = (c / denom * 100.0) if denom > 0 else 0.0
+            else:
+                tt = trait_totals[t]
+                st = single_totals[xl]
+                if tt > 0 and st > 0 and total > 0:
+                    val = (c * total) / (tt * st)
+                else:
+                    val = 1.0
+            row.append(val)
+        cells.append(row)
+
+    return CrossTab(x_labels=x_labels, y_labels=trait_labels, cells=cells, cell_kind=kind)

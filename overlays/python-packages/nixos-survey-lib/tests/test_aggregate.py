@@ -1,7 +1,7 @@
 import polars as pl
 import pytest
 
-from nixos_survey_lib.aggregate import counts_multi, counts_single, crosstab
+from nixos_survey_lib.aggregate import counts_multi, counts_single, crosstab, crosstab_multi
 from nixos_survey_lib.types import Bin, MultiChoice, Question, SingleChoice
 
 
@@ -133,3 +133,38 @@ def test_crosstab_empty_returns_empty():
     assert ct.x_labels == []
     assert ct.y_labels == []
     assert ct.cells == []
+
+
+def _mc_long() -> tuple[MultiChoice, SingleChoice]:
+    m = _mc({
+        "trait_A": ["Yes", "Yes", "No", "No"],
+        "trait_B": ["Yes", "No", "Yes", "No"],
+    })
+    s = _sc(["Beginner", "Advanced", "Beginner", "Advanced"], qid="skill")
+    return m, s
+
+
+def test_crosstab_multi_rate():
+    m, s = _mc_long()
+    ct = crosstab_multi(m, s, denominator="rate", x_order=["Beginner", "Advanced"])
+    assert ct.cell_kind == "rate_pct"
+    by_label = {(t, x): ct.cells[i][j] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
+    assert by_label[("trait_A", "Beginner")] == pytest.approx(50.0)
+    assert by_label[("trait_A", "Advanced")] == pytest.approx(50.0)
+
+
+def test_crosstab_multi_composition():
+    m, s = _mc_long()
+    ct = crosstab_multi(m, s, denominator="composition", x_order=["Beginner", "Advanced"])
+    assert ct.cell_kind == "composition_pct"
+    by_label = {(t, x): ct.cells[i][j] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
+    assert by_label[("trait_A", "Beginner")] == pytest.approx(50.0)
+    assert by_label[("trait_A", "Advanced")] == pytest.approx(50.0)
+
+
+def test_crosstab_multi_lift():
+    m, s = _mc_long()
+    ct = crosstab_multi(m, s, denominator="lift", x_order=["Beginner", "Advanced"])
+    assert ct.cell_kind == "lift"
+    by_label = {(t, x): ct.cells[i][j] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
+    assert by_label[("trait_A", "Beginner")] == pytest.approx(1.0)
