@@ -3,6 +3,16 @@ from typing import Any
 from .types import Bin, ChartSpec, CrossTab, Ranked
 
 
+_BAR_ROW_PX = 28
+_BAR_CHROME_PX = 80
+
+
+def _default_bar_height(n_bars: int) -> int:
+    """Pick a chart height that grows with the number of bars so wide charts
+    don't get squeezed. ~28px per bar plus chrome for title, padding, grid."""
+    return max(240, n_bars * _BAR_ROW_PX + _BAR_CHROME_PX)
+
+
 def horizontal_bar(
     bins: list[Bin],
     *,
@@ -15,7 +25,7 @@ def horizontal_bar(
     """
     reversed_bins = list(reversed(bins))
     labels = [b.label for b in reversed_bins]
-    values = [b.percent for b in reversed_bins]
+    values = [round(b.percent, 1) for b in reversed_bins]
 
     option: dict[str, Any] = {
         "grid": {"left": 200, "right": 80, "top": 40, "bottom": 30},
@@ -38,7 +48,7 @@ def horizontal_bar(
     if title is not None:
         option["title"] = {"text": title, "left": "left"}
 
-    return ChartSpec(option=option, height=height)
+    return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(bins)))
 
 
 def heatmap(
@@ -100,13 +110,15 @@ def ranking_bar(
     title: str | None = None,
     height: int | None = None,
 ) -> ChartSpec:
-    """Render a ranking bar chart. Uses different label formatters depending on
-    whether values are avg-rank floats or top-N counts."""
+    """Render a ranking bar chart. avg_rank values are rounded to 2 decimals;
+    top_n_count values are integers."""
     reversed_items = list(reversed(ranked))
     labels = [r.label for r in reversed_items]
-    values = [r.value for r in reversed_items]
-
-    formatter = "{c}"
+    is_avg_rank = bool(ranked) and ranked[0].method == "avg_rank"
+    if is_avg_rank:
+        values: list[float | int] = [round(r.value, 2) for r in reversed_items]
+    else:
+        values = [int(r.value) for r in reversed_items]
 
     option: dict[str, Any] = {
         "grid": {"left": 200, "right": 80, "top": 40, "bottom": 30},
@@ -121,7 +133,7 @@ def ranking_bar(
         "series": [{
             "type": "bar",
             "data": values,
-            "label": {"show": True, "position": "right", "formatter": formatter},
+            "label": {"show": True, "position": "right", "formatter": "{c}"},
             "barWidth": 16,
             "itemStyle": {"borderRadius": 4},
         }],
@@ -129,4 +141,4 @@ def ranking_bar(
     if title is not None:
         option["title"] = {"text": title, "left": "left"}
 
-    return ChartSpec(option=option, height=height)
+    return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(ranked)))
