@@ -18,3 +18,25 @@ class Question:
 class SurveySchema:
     title: str
     questions: list[Question]
+
+
+@dataclass(frozen=True)
+class Bin:
+    label: str
+    count: int
+    percent: float
+
+
+@dataclass(frozen=True)
+class CrossTab:
+    x_labels: list[str]
+    y_labels: list[str]
+    cells: list[list[float]]
+    cell_kind: Literal["count", "rate_pct", "composition_pct", "lift"]
+
+
+@dataclass(frozen=True)
+class Ranked:
+    label: str
+    value: float
+    method: Literal["avg_rank", "top_n_count"]

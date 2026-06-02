@@ -39,3 +39,30 @@ def test_survey_schema_construction():
     s = SurveySchema(title="Test", questions=[q1, q2])
     assert s.title == "Test"
     assert len(s.questions) == 2
+
+
+from nixos_survey_lib.types import Bin, CrossTab, Ranked
+
+
+def test_bin_construction():
+    b = Bin(label="Linux", count=14, percent=70.0)
+    assert b.label == "Linux"
+    assert b.count == 14
+    assert b.percent == 70.0
+
+
+def test_crosstab_construction():
+    ct = CrossTab(
+        x_labels=["Beginner", "Advanced"],
+        y_labels=["<2 years", "5+ years"],
+        cells=[[10.0, 0.0], [2.0, 8.0]],
+        cell_kind="rate_pct",
+    )
+    assert ct.cell_kind == "rate_pct"
+    assert ct.cells[1][1] == 8.0
+
+
+def test_ranked_construction():
+    r = Ranked(label="Documentation", value=2.28, method="avg_rank")
+    assert r.label == "Documentation"
+    assert r.method == "avg_rank"
