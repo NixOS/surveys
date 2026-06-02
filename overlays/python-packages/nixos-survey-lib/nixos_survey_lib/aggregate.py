@@ -236,3 +236,44 @@ def crosstab_multi(
         cells.append(row)
 
     return CrossTab(x_labels=x_labels, y_labels=trait_labels, cells=cells, cell_kind=kind)
+
+
+def ranking_avg(r: Ranking) -> list[Ranked]:
+    """Compute the mean rank position for each choice. Lower = preferred."""
+    if not r.rank_columns:
+        return []
+
+    choice_ranks: dict[str, list[int]] = {}
+    for pos, series in enumerate(r.rank_columns, start=1):
+        for v in series.to_list():
+            if v is None or v == "":
+                continue
+            choice_ranks.setdefault(str(v), []).append(pos)
+
+    if not choice_ranks:
+        return []
+
+    out = [
+        Ranked(label=c, value=sum(ranks) / len(ranks), method="avg_rank")
+        for c, ranks in choice_ranks.items()
+    ]
+    out.sort(key=lambda x: x.value)
+    return out
+
+
+def ranking_top_n(r: Ranking, *, n: int) -> list[Ranked]:
+    """Count how many respondents placed each choice in their top-n positions."""
+    if not r.rank_columns or n <= 0:
+        return []
+
+    considered = r.rank_columns[:n]
+    counter: dict[str, int] = {}
+    for series in considered:
+        for v in series.to_list():
+            if v is None or v == "":
+                continue
+            counter[str(v)] = counter.get(str(v), 0) + 1
+
+    out = [Ranked(label=c, value=float(v), method="top_n_count") for c, v in counter.items()]
+    out.sort(key=lambda x: x.value, reverse=True)
+    return out

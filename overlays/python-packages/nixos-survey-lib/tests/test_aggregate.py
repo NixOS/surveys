@@ -1,8 +1,8 @@
 import polars as pl
 import pytest
 
-from nixos_survey_lib.aggregate import counts_multi, counts_single, crosstab, crosstab_multi
-from nixos_survey_lib.types import Bin, MultiChoice, Question, SingleChoice
+from nixos_survey_lib.aggregate import counts_multi, counts_single, crosstab, crosstab_multi, ranking_avg, ranking_top_n
+from nixos_survey_lib.types import Bin, MultiChoice, Question, Ranked, Ranking, SingleChoice
 
 
 def _sc(values: list[str], qid: str = "country") -> SingleChoice:
@@ -168,3 +168,51 @@ def test_crosstab_multi_lift():
     assert ct.cell_kind == "lift"
     by_label = {(t, x): ct.cells[i][j] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
     assert by_label[("trait_A", "Beginner")] == pytest.approx(1.0)
+
+
+def _rk(rows: list[list[str | None]]) -> Ranking:
+    n_positions = len(rows[0]) if rows else 0
+    cols = [[r[i] for r in rows] for i in range(n_positions)]
+    q = Question(id="x", prompt="x", type="ranking", choices=None, csv_columns=[])
+    return Ranking(question=q, rank_columns=[pl.Series(c) for c in cols])
+
+
+def test_ranking_avg_sorts_ascending():
+    r = _rk([
+        ["A", "B", "C"],
+        ["B", "A", "C"],
+    ])
+    out = ranking_avg(r)
+    assert all(o.method == "avg_rank" for o in out)
+    by = {o.label: o.value for o in out}
+    assert by["A"] == pytest.approx(1.5)
+    assert by["B"] == pytest.approx(1.5)
+    assert by["C"] == pytest.approx(3.0)
+    assert out[0].value <= out[-1].value
+
+
+def test_ranking_avg_ignores_empty():
+    r = _rk([
+        ["A", "B", None],
+        ["A", None, "B"],
+    ])
+    out = ranking_avg(r)
+    by = {o.label: o.value for o in out}
+    assert by["A"] == pytest.approx(1.0)
+    assert by["B"] == pytest.approx(2.5)
+
+
+def test_ranking_top_n_counts_appearances():
+    r = _rk([
+        ["A", "B", "C"],
+        ["A", "C", "B"],
+        ["B", "A", "C"],
+        ["C", "A", "B"],
+    ])
+    out = ranking_top_n(r, n=2)
+    by = {o.label: o.value for o in out}
+    assert by["A"] == 4
+    assert by["B"] == 2
+    assert by["C"] == 2
+    assert all(o.method == "top_n_count" for o in out)
+    assert out[0].value >= out[-1].value
