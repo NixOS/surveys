@@ -2,21 +2,44 @@
 import * as echarts from 'echarts';
 import colors from '@nixos/branding/colors/tailwind.js';
 
+// ECharts' internal color interpolation (visualMap heatmap gradients) does not
+// handle oklch() strings, so we resolve every theme color to #rrggbb via the
+// browser's CSS engine before handing it to ECharts.
+const _colorCache = new Map<string, string>();
+function resolveColor(input: string): string {
+  const cached = _colorCache.get(input);
+  if (cached) return cached;
+  const probe = document.createElement('span');
+  probe.style.color = input;
+  probe.style.display = 'none';
+  document.documentElement.appendChild(probe);
+  const computed = getComputedStyle(probe).color;
+  probe.remove();
+  const m = computed.match(/rgba?\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)/);
+  const out = m
+    ? '#' + [m[1], m[2], m[3]].map(n => Math.round(parseFloat(n)).toString(16).padStart(2, '0')).join('')
+    : input;
+  _colorCache.set(input, out);
+  return out;
+}
+
 const PALETTE = [
-  colors['secondary-afghani-blue'].DEFAULT,
-  colors['accent-zambian-green'][55],
-  colors['accent-italian-violet'][55],
-  colors['accent-persian-orange'][55],
-  colors['accent-norwegian-pink'][55],
-  colors['accent-chinese-magenta'][55],
-  colors['accent-indian-gold'][55],
+  resolveColor(colors['secondary-afghani-blue'].DEFAULT),
+  resolveColor(colors['accent-zambian-green'][55]),
+  resolveColor(colors['accent-italian-violet'][55]),
+  resolveColor(colors['accent-persian-orange'][55]),
+  resolveColor(colors['accent-norwegian-pink'][55]),
+  resolveColor(colors['accent-chinese-magenta'][55]),
+  resolveColor(colors['accent-indian-gold'][55]),
 ];
 
 function makeTheme(mode: 'light' | 'dark') {
-  const text = mode === 'light' ? colors['primary-black'][15] : colors['primary-white'][85];
-  const axis = mode === 'light' ? colors['primary-black'][75] : colors['primary-black'][35];
-  const grid = mode === 'light' ? colors['primary-black'][85] : colors['primary-black'][25];
-  const bg = mode === 'light' ? colors['primary-white'].DEFAULT : colors['primary-black'][15];
+  const text = resolveColor(mode === 'light' ? colors['primary-black'][15] : colors['primary-white'][85]);
+  const axis = resolveColor(mode === 'light' ? colors['primary-black'][75] : colors['primary-black'][35]);
+  const grid = resolveColor(mode === 'light' ? colors['primary-black'][85] : colors['primary-black'][25]);
+  const bg = resolveColor(mode === 'light' ? colors['primary-white'].DEFAULT : colors['primary-black'][15]);
+  const visMin = resolveColor(mode === 'light' ? colors['secondary-afghani-blue'][95] : colors['secondary-afghani-blue'][25]);
+  const visMax = resolveColor(colors['secondary-afghani-blue'].DEFAULT);
   return {
     color: PALETTE,
     backgroundColor: 'transparent',
@@ -30,7 +53,7 @@ function makeTheme(mode: 'light' | 'dark') {
       textStyle: { color: text },
     },
     visualMap: {
-      inRange: { color: [colors['secondary-afghani-blue'][95], colors['secondary-afghani-blue'].DEFAULT] },
+      inRange: { color: [visMin, visMax] },
     },
   };
 }
