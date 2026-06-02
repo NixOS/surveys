@@ -8,14 +8,60 @@ mapAttrs (system: pkgs: {
     packages = [
       (pkgs.python3.withPackages (ps: [ ps.polars ps.pyyaml ps.pytest ]))
       pkgs.nodejs_22
+      pkgs.watchexec
     ];
 
     shellHook = ''
       export PYTHONPATH=$PWD/overlays/python-packages/nixos-survey-lib:$PYTHONPATH
-      echo "Surveys dev. nixos-survey-lib will be available via Nix once defined; local edits override."
-      echo "Run: python community/2025/process.py <csv> <out.json>"
-      echo "Tests: pytest overlays/python-packages/nixos-survey-lib/tests/"
-      echo "Astro: (cd lib/site && npm install && npm run dev)"
+
+      # `dev` runs the live pipeline in one terminal:
+      #   - builds the nixos-surveys-community-2025-data derivation (which uses
+      #     the requireFile'd CSV from /nix/store, so the raw CSV need NOT live
+      #     in the working tree)
+      #   - watchexec rebuilds it on .py changes
+      #   - Astro dev server serves with HMR; the JSON copy lands in its content
+      #     collection so HMR refreshes the page automatically
+      # Ctrl-C in the Astro foreground cleanly tears watchexec down via EXIT trap.
+      dev() (
+        if [ ! -d "lib/site" ]; then
+          echo "[dev] must be run from the surveys repo root" >&2
+          return 1
+        fi
+
+        data_drv=".#legacyPackages.x86_64-linux.nixos-surveys-community-2025-data"
+        target="lib/site/src/content/results/results-2025.json"
+
+        echo "[dev] building data derivation..."
+        if ! out=$(nix build --no-link --print-out-paths "$data_drv"); then
+          echo "[dev] initial data build failed." >&2
+          echo "      If the survey CSV is missing from /nix/store, add it:" >&2
+          echo "      nix-store --add-fixed sha256 <path-to-CSV>" >&2
+          return 1
+        fi
+        mkdir -p "$(dirname "$target")"
+        cp "$out/results-2025.json" "$target"
+        echo "[dev] data ready at $target"
+
+        watchexec -e py --postpone -- bash -c '
+          out=$(nix build --no-link --print-out-paths .#legacyPackages.x86_64-linux.nixos-surveys-community-2025-data) \
+            && cp "$out/results-2025.json" lib/site/src/content/results/results-2025.json \
+            && echo "[dev] data updated"
+        ' &
+        watch_pid=$!
+        trap 'kill $watch_pid 2>/dev/null' INT TERM EXIT
+
+        if [ ! -d lib/site/node_modules ]; then
+          echo "[dev] installing npm dependencies..."
+          (cd lib/site && npm install --silent)
+        fi
+        (cd lib/site && npm run dev)
+      )
+
+      echo "Surveys dev shell."
+      echo ""
+      echo "Live dev pipeline: dev"
+      echo "Run tests:         pytest overlays/python-packages/nixos-survey-lib/tests/"
+      echo "Build data once:   nix build .#legacyPackages.x86_64-linux.nixos-surveys-community-2025-data"
     '';
   };
 }) inputs.self.legacyPackages
