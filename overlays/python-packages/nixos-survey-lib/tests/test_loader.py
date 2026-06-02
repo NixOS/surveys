@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from nixos_survey_lib.loader import load_schema, normalize_prompt, strip_bracket_suffix
+from nixos_survey_lib.loader import load_responses, load_schema, normalize_prompt, strip_bracket_suffix
 
 
 def _write_yaml(tmp_path, text):
@@ -111,3 +111,34 @@ def test_strip_bracket_suffix_only_strips_trailing():
     base, suffix = strip_bracket_suffix("Some [topic] question. [answer]")
     assert base == "Some [topic] question."
     assert suffix == "answer"
+
+
+def test_load_responses_single_choice(fixtures_dir):
+    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
+    country = r.country
+    assert len(country) == 20
+    assert country.values[0] == "Europe"
+    assert country.question.id == "country"
+
+
+def test_load_responses_text(fixtures_dir):
+    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
+    v = r.nix_version
+    assert len(v) == 20
+    # Empty cell at row 15 (index 14) is normalized to "Skipped"
+    assert v.values[14] == "Skipped"
+
+
+def test_load_responses_handles_trailing_whitespace_in_header(fixtures_dir):
+    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
+    assert "country" in r.keys()
+
+
+def test_load_responses_handles_multiline_yaml_prompt(fixtures_dir):
+    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
+    assert "long_prompt_question" in r.keys()
+    assert len(r.long_prompt_question) == 20
