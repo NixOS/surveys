@@ -3,22 +3,27 @@ import * as echarts from 'echarts';
 import colors from '@nixos/branding/colors/tailwind.js';
 
 // ECharts' internal color interpolation (visualMap heatmap gradients) does not
-// handle oklch() strings, so we resolve every theme color to #rrggbb via the
-// browser's CSS engine before handing it to ECharts.
+// handle oklch() strings, so we resolve every theme color to #rrggbb before
+// handing it to ECharts. Canvas 2D's fillStyle always normalizes to a hex (or
+// rgba) string regardless of browser (whereas getComputedStyle now preserves
+// oklch() in modern Firefox per the CSS Color 4 spec).
 const _colorCache = new Map<string, string>();
+let _canvasCtx: CanvasRenderingContext2D | null = null;
 function resolveColor(input: string): string {
   const cached = _colorCache.get(input);
   if (cached) return cached;
-  const probe = document.createElement('span');
-  probe.style.color = input;
-  probe.style.display = 'none';
-  document.documentElement.appendChild(probe);
-  const computed = getComputedStyle(probe).color;
-  probe.remove();
-  const m = computed.match(/rgba?\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)/);
-  const out = m
-    ? '#' + [m[1], m[2], m[3]].map(n => Math.round(parseFloat(n)).toString(16).padStart(2, '0')).join('')
-    : input;
+  if (!_canvasCtx) {
+    _canvasCtx = document.createElement('canvas').getContext('2d');
+  }
+  if (!_canvasCtx) {
+    _colorCache.set(input, input);
+    return input;
+  }
+  // Reset to a known value before assigning. Canvas fillStyle silently keeps
+  // its previous value if the assigned string is unparseable.
+  _canvasCtx.fillStyle = '#000000';
+  _canvasCtx.fillStyle = input;
+  const out = String(_canvasCtx.fillStyle);
   _colorCache.set(input, out);
   return out;
 }
@@ -67,6 +72,7 @@ const liftGradient = () => [
   resolveColor(colors['primary-white'].DEFAULT),
   resolveColor(colors['secondary-afghani-blue'].DEFAULT),
 ];
+
 
 const currentTheme = () =>
   document.documentElement.classList.contains('dark') ? 'nixos-dark' : 'nixos-light';
