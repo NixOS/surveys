@@ -14,13 +14,12 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
     <script is:inline>
-      // Standalone dark-mode bootstrap. nixos.org's own bootstrap takes precedence
-      // when these components are consumed inside the homepage build, because
-      // <html class="dark"> is already set by then.
+      // Standalone dark-mode bootstrap. Default is light; dark applies only when
+      // explicitly opted into via localStorage. nixos.org's own bootstrap takes
+      // precedence when these components are consumed inside the homepage build,
+      // because <html class="dark"> is already set by then.
       (() => {
-        const stored = localStorage.getItem('theme');
-        const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (stored === 'dark' || (!stored && prefers)) {
+        if (localStorage.getItem('theme') === 'dark') {
           document.documentElement.classList.add('dark');
         }
       })();
