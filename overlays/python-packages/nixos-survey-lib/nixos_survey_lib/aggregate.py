@@ -55,7 +55,9 @@ def counts_single(
         )
         counts_df = counts_df.sort("_rank").drop("_rank")
     else:
-        counts_df = counts_df.sort("count", descending=True)
+        # Sort by count desc, with response label asc as a stable tie-breaker
+        # so equal counts produce a deterministic order across runs.
+        counts_df = counts_df.sort(["count", "response"], descending=[True, False])
 
     rows = counts_df.to_dicts()
     return [
