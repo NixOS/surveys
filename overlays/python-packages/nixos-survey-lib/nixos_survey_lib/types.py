@@ -40,3 +40,32 @@ class Ranked:
     label: str
     value: float
     method: Literal["avg_rank", "top_n_count"]
+
+
+@dataclass(frozen=True)
+class ChartSpec:
+    option: dict
+    height: int | None = None
+
+
+@dataclass(frozen=True)
+class Row:
+    id: str
+    title: str
+    commentary: str
+    chart: ChartSpec
+
+
+@dataclass(frozen=True)
+class Section:
+    id: str
+    heading: str
+    rows: list[Row]
+
+
+@dataclass(frozen=True)
+class Page:
+    year: int
+    title: str
+    sections: list[Section]
+    schema_version: int = 1

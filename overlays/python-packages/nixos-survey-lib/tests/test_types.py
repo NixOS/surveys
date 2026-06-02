@@ -66,3 +66,29 @@ def test_ranked_construction():
     r = Ranked(label="Documentation", value=2.28, method="avg_rank")
     assert r.label == "Documentation"
     assert r.method == "avg_rank"
+
+
+from nixos_survey_lib.types import ChartSpec, Row, Section, Page
+
+
+def test_chartspec_optional_height():
+    c = ChartSpec(option={"series": []})
+    assert c.height is None
+    c2 = ChartSpec(option={"series": []}, height=240)
+    assert c2.height == 240
+
+
+def test_row_construction():
+    r = Row(id="country", title="Country", commentary="X.", chart=ChartSpec(option={}))
+    assert r.id == "country"
+
+
+def test_section_construction():
+    r = Row(id="country", title="Country", commentary="X.", chart=ChartSpec(option={}))
+    s = Section(id="people", heading="People", rows=[r])
+    assert len(s.rows) == 1
+
+
+def test_page_default_schema_version():
+    p = Page(year=2025, title="Test", sections=[])
+    assert p.schema_version == 1
