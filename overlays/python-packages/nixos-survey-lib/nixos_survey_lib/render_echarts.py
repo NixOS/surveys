@@ -1,3 +1,4 @@
+import math
 from typing import Any
 
 from .types import Bin, ChartSpec, CrossTab, Ranked
@@ -70,22 +71,34 @@ def heatmap(
     *,
     title: str | None = None,
     height: int | None = None,
+    vm_min: float | None = None,
+    vm_max: float | None = None,
 ) -> ChartSpec:
     """Render a heatmap ECharts option dict from a CrossTab.
 
-    For lift cell_kind, the visualMap is diverging centered at 1.0 (min=0, max=2).
-    Otherwise it's a sequential 0-100% gradient.
+    For lift cell_kind, the visualMap defaults to diverging centered at 1.0
+    (min=0, max=2). Otherwise it's a sequential gradient that, when vm_min
+    and/or vm_max are unspecified, auto-scales to the data's actual range
+    (rounded to the nearest 10) so the full palette is used.
+
+    Pass ``vm_min=0, vm_max=100`` to force a fixed 0-100 percent scale (e.g.,
+    when comparing several percent heatmaps and you want their colors to mean
+    the same thing across charts).
     """
     data: list[list[float]] = []
+    cell_values: list[float] = []
     for xi, _ in enumerate(table.x_labels):
         for yi, _ in enumerate(table.y_labels):
             value = table.cells[xi][yi]
             data.append([xi, yi, value])
+            cell_values.append(value)
 
     if table.cell_kind == "lift":
+        resolved_min = vm_min if vm_min is not None else 0
+        resolved_max = vm_max if vm_max is not None else 2
         visual_map: dict[str, Any] = {
-            "min": 0,
-            "max": 2,
+            "min": resolved_min,
+            "max": resolved_max,
             "precision": 1,
             "calculable": True,
             "orient": "vertical",
@@ -93,9 +106,22 @@ def heatmap(
             "top": "center",
         }
     else:
+        # Percent (rate / composition): auto-scale to data range when not
+        # explicitly bounded. Round min down and max up to the nearest 10 for
+        # readable legend tick marks.
+        if vm_min is None:
+            data_min = min(cell_values) if cell_values else 0
+            resolved_min = max(0, math.floor(data_min / 10) * 10)
+        else:
+            resolved_min = vm_min
+        if vm_max is None:
+            data_max = max(cell_values) if cell_values else 100
+            resolved_max = min(100, math.ceil(data_max / 10) * 10)
+        else:
+            resolved_max = vm_max
         visual_map = {
-            "min": 0,
-            "max": 100,
+            "min": resolved_min,
+            "max": resolved_max,
             "calculable": True,
             "orient": "vertical",
             "right": 10,

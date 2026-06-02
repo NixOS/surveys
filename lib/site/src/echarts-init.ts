@@ -61,12 +61,19 @@ function makeTheme(mode: 'light' | 'dark') {
 echarts.registerTheme('nixos-light', makeTheme('light'));
 echarts.registerTheme('nixos-dark', makeTheme('dark'));
 
-// Sequential gradient (rate / composition heatmaps, percent 0-100).
+// Both heatmap gradients use the same persian-orange → white → afghani-blue
+// 3-color palette. They're split so the two can diverge later if the percent
+// vs. lift charts ever want different palettes. The semantic difference is in
+// the visualMap range — see callers below:
+//   - seqGradient: applied to percent heatmaps (visualMap min=0, max=100;
+//     white sits at 50%, an arbitrary mid-range neutral)
+//   - liftGradient: applied to lift heatmaps (visualMap min=0, max=2; white
+//     sits at 1.0×, the meaningful "no difference from baseline" midpoint)
 const seqGradient = () => [
-  resolveColor(colors['secondary-afghani-blue'][95]),
+  resolveColor(colors['accent-persian-orange'][55]),
+  resolveColor(colors['primary-white'].DEFAULT),
   resolveColor(colors['secondary-afghani-blue'].DEFAULT),
 ];
-// Diverging gradient (lift heatmaps, centered at 1.0 with min=0 max=2).
 const liftGradient = () => [
   resolveColor(colors['accent-persian-orange'][55]),
   resolveColor(colors['primary-white'].DEFAULT),

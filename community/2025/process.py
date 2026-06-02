@@ -176,7 +176,7 @@ def main(csv_path: str, out_path: str) -> None:
                         denominator="rate",
                         x_order=["Beginner", "Intermediate", "Advanced"],
                         x_exclude=["Skipped", "Prefer not to say", "I have never used Nix"],
-                    ), height=588)),
+                    ), height=588, vm_min=0, vm_max=100)),
                 Row("traits_lift_by_skill", "Trait lift by skill level", commentary=cm["traits_lift_by_skill"],
                     chart=heatmap(crosstab_multi(
                         r.traits, r.skill_level,
@@ -190,7 +190,7 @@ def main(csv_path: str, out_path: str) -> None:
                         denominator="rate",
                         x_order=YEARS_USING_NIX_ORDER,
                         x_exclude=["Skipped", "Prefer not to say", "I don't use Nix"],
-                    ), height=540)),
+                    ), height=540, vm_min=0, vm_max=100)),
                 Row("traits_lift_by_experience", "Trait lift by years using Nix", commentary=cm["traits_lift_by_experience"],
                     chart=heatmap(crosstab_multi(
                         r.traits, r.years_using_nix,
