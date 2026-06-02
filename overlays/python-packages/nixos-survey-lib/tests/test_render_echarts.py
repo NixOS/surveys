@@ -27,3 +27,39 @@ def test_horizontal_bar_empty_bins():
     spec = horizontal_bar([])
     assert spec.option["yAxis"]["data"] == []
     assert spec.option["series"][0]["data"] == []
+
+
+from nixos_survey_lib.render_echarts import heatmap
+from nixos_survey_lib.types import CrossTab
+
+
+def test_heatmap_basic_shape():
+    ct = CrossTab(
+        x_labels=["Beginner", "Advanced"],
+        y_labels=["<2 years", "5+ years"],
+        cells=[[80.0, 10.0], [5.0, 70.0]],
+        cell_kind="rate_pct",
+    )
+    spec = heatmap(ct, title="Skill × Experience")
+    opt = spec.option
+    assert opt["xAxis"]["data"] == ["Beginner", "Advanced"]
+    assert opt["yAxis"]["data"] == ["<2 years", "5+ years"]
+    data = opt["series"][0]["data"]
+    by = {(d[0], d[1]): d[2] for d in data}
+    assert by[(0, 0)] == 80.0
+    assert by[(1, 1)] == 70.0
+    assert opt["series"][0]["type"] == "heatmap"
+    assert opt["title"]["text"] == "Skill × Experience"
+
+
+def test_heatmap_lift_uses_diverging_visualmap():
+    ct = CrossTab(
+        x_labels=["A"],
+        y_labels=["t1"],
+        cells=[[1.5]],
+        cell_kind="lift",
+    )
+    spec = heatmap(ct)
+    vm = spec.option["visualMap"]
+    assert vm["min"] == 0
+    assert vm["max"] == 2

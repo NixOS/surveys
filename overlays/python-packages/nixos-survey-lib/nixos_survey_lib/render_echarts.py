@@ -39,3 +39,56 @@ def horizontal_bar(
         option["title"] = {"text": title, "left": "left"}
 
     return ChartSpec(option=option, height=height)
+
+
+def heatmap(
+    table: CrossTab,
+    *,
+    title: str | None = None,
+    height: int | None = None,
+) -> ChartSpec:
+    """Render a heatmap ECharts option dict from a CrossTab.
+
+    For lift cell_kind, the visualMap is diverging centered at 1.0 (min=0, max=2).
+    Otherwise it's a sequential 0-100% gradient.
+    """
+    data: list[list[float]] = []
+    for xi, _ in enumerate(table.x_labels):
+        for yi, _ in enumerate(table.y_labels):
+            value = table.cells[xi][yi]
+            data.append([xi, yi, value])
+
+    if table.cell_kind == "lift":
+        visual_map: dict[str, Any] = {
+            "min": 0,
+            "max": 2,
+            "calculable": True,
+            "orient": "horizontal",
+            "left": "center",
+            "bottom": 0,
+        }
+    else:
+        visual_map = {
+            "min": 0,
+            "max": 100,
+            "calculable": True,
+            "orient": "horizontal",
+            "left": "center",
+            "bottom": 0,
+        }
+
+    option: dict[str, Any] = {
+        "grid": {"left": 200, "right": 40, "top": 40, "bottom": 80},
+        "xAxis": {"type": "category", "data": table.x_labels, "splitArea": {"show": True}},
+        "yAxis": {"type": "category", "data": table.y_labels, "splitArea": {"show": True}},
+        "visualMap": visual_map,
+        "series": [{
+            "type": "heatmap",
+            "data": data,
+            "label": {"show": False},
+        }],
+    }
+    if title is not None:
+        option["title"] = {"text": title, "left": "left"}
+
+    return ChartSpec(option=option, height=height)
