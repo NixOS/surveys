@@ -18,16 +18,16 @@ interface Props {
 
 const { row, variant = 'neobrutalist' } = Astro.props;
 
-const cardClass: Record<NonNullable<Props['variant']>, string> = {
-  neobrutalist: 'border-2 border-primary-black shadow-[3px_3px_0_theme(colors.primary-black.DEFAULT)] dark:border-primary-white dark:shadow-[3px_3px_0_theme(colors.primary-white.DEFAULT)]',
-  homepage: 'rounded-lg shadow-md bg-primary-white dark:bg-primary-black-15',
+const rowClass: Record<NonNullable<Props['variant']>, string> = {
+  neobrutalist: 'border-2 border-primary-black shadow-[3px_3px_0_theme(colors.primary-black.DEFAULT)] dark:border-primary-white dark:shadow-[3px_3px_0_theme(colors.primary-white.DEFAULT)] md:divide-x-[20px] md:divide-secondary-afghani-blue-45 dark:md:divide-secondary-afghani-blue-75',
+  homepage: 'rounded-lg shadow-md bg-primary-white dark:bg-primary-black-15 md:divide-x-[20px] md:divide-secondary-afghani-blue-45 dark:md:divide-secondary-afghani-blue-75',
   bare: '',
 };
 
 const height = row.chart.height ?? 320;
 ---
-<div class="plot-row grid md:grid-cols-[280px_1fr] gap-5 mb-5">
-  <article class={`p-5 ${cardClass[variant]}`}>
+<div class={`plot-row grid md:grid-cols-[280px_1fr] mb-5 ${rowClass[variant]}`}>
+  <article class="p-5">
     <h3 id={row.id} class="font-bold mb-1">
       <a href={`#${row.id}`} class="heading-link group inline-flex items-center gap-2 no-underline">
         <span>{row.title}</span>
@@ -41,7 +41,7 @@ const height = row.chart.height ?? 320;
     <div set:html={marked.parse(row.commentary)} />
   </article>
   <article
-    class={`p-5 flex flex-col justify-center ${cardClass[variant]}`}
+    class="p-5 flex flex-col justify-center"
     data-echarts-option
   >
     <script type="application/json" set:html={JSON.stringify(row.chart.option)} />
