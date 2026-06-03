@@ -48,6 +48,7 @@ follow.
 ## operating_systems
 
 Linux: 96.9%. Android: 57.8%. Windows: 35.5%. macOS: 24.4%. iOS: 19.6%.
+Categories below 0.5% or with fewer than 5 respondents are combined into the "Other (combined)" bar.
 
 ## target_triple
 
@@ -82,7 +83,7 @@ personal-computer use.
 A lack of response or a an empty string was replaced with "Skipped".
 A SemVer regular expression was used to match against the remaining answers.
 Values that did not match were replaced with "No Match".
-Finally, responses that comprised less that 0.5% were combined and replaced with "Other".
+Categories below 0.1% or with fewer than 5 respondents are combined into the "Other (combined)" bar.
 
 ## nixos_releases
 
@@ -100,6 +101,7 @@ repository: 26.7%. nixos-facter: 3.9%.
 NixOS configurations leads at 81.1% (a meta-result — Nix users using Nix for
 their own systems). Among programming languages: Python 45.8%, Rust 42.9%,
 Bash 36.8%, C 26.7%, JavaScript 23.5%, C++ 22.7%, Go 21.3%.
+Categories below 0.5% or with fewer than 5 respondents are combined into the "Other (combined)" bar.
 
 ## nix_on_os
 
@@ -138,6 +140,7 @@ more common entry point into the ecosystem.
 
 YouTube: 28.3%. Friend or colleague: 15.9%. Don't remember: 12.0%. Blog or
 personal website: 7.3%. Search: 6.7%. Reddit: 4.9%. At work: 4.6%.
+Categories below 0.5% or with fewer than 5 respondents are combined into the "Other (combined)" bar.
 
 ## user_types
 
