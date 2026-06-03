@@ -22,13 +22,20 @@ def counts_single(
     exclude: list[str] | None = None,
     bucket_min_percent: float | None = DEFAULT_BUCKET_MIN_PERCENT,
     bucket_min_count: int | None = DEFAULT_BUCKET_MIN_COUNT,
+    bucket_action: Literal["combine", "drop"] = "combine",
 ) -> list[Bin]:
     """Count distinct values; return ordered bins with count and percent.
 
-    Buckets a value into ``BUCKET_LABEL`` when EITHER threshold fires (logical
-    OR): ``percent < bucket_min_percent`` or ``count < bucket_min_count``.
+    Identifies rare values when EITHER threshold fires (logical OR):
+    ``percent < bucket_min_percent`` or ``count < bucket_min_count``.
     Pass ``None`` to disable that side; pass ``None`` to both to disable
     bucketing entirely.
+
+    ``bucket_action`` controls what happens to rare values:
+      "combine" — aggregate them under ``BUCKET_LABEL``
+      "drop"    — remove them entirely (use for sensitive categories where
+                  publishing an aggregate bar would still leak counts via
+                  the displayed percent)
     """
     excluded = set(exclude or [])
     series = r.values
@@ -61,11 +68,14 @@ def counts_single(
         if rare:
             rare_count = counts_df.filter(pl.col("response").is_in(rare))["count"].sum()
             counts_df = counts_df.filter(~pl.col("response").is_in(rare))
-            other_row = pl.DataFrame({
-                "response": [BUCKET_LABEL],
-                "count": pl.Series([int(rare_count)], dtype=pl.UInt32),
-            })
-            counts_df = pl.concat([counts_df.select(["response", "count"]), other_row])
+            if bucket_action == "combine":
+                other_row = pl.DataFrame({
+                    "response": [BUCKET_LABEL],
+                    "count": pl.Series([int(rare_count)], dtype=pl.UInt32),
+                })
+                counts_df = pl.concat([counts_df.select(["response", "count"]), other_row])
+            else:
+                counts_df = counts_df.select(["response", "count"])
         else:
             counts_df = counts_df.select(["response", "count"])
 
@@ -95,11 +105,13 @@ def counts_multi(
     *,
     bucket_min_percent: float | None = DEFAULT_BUCKET_MIN_PERCENT,
     bucket_min_count: int | None = DEFAULT_BUCKET_MIN_COUNT,
+    bucket_action: Literal["combine", "drop"] = "combine",
 ) -> list[Bin]:
     """For each choice, count 'Yes' responses; percent is relative to total respondents.
 
-    Buckets a choice into ``BUCKET_LABEL`` when EITHER threshold fires (logical
-    OR). See ``counts_single`` for semantics.
+    Identifies rare values when EITHER threshold fires (logical OR). See
+    ``counts_single`` for ``bucket_action`` semantics ("combine" aggregates
+    rare values; "drop" removes them entirely).
     """
     total = len(r)
     if total == 0:
@@ -125,7 +137,7 @@ def counts_multi(
 
         keep = [b for b in bins if not _is_rare(b)]
         rare = [b for b in bins if _is_rare(b)]
-        if rare:
+        if rare and bucket_action == "combine":
             other_count = sum(b.count for b in rare)
             other_pct = sum(b.percent for b in rare)
             keep.append(Bin(label=BUCKET_LABEL, count=other_count, percent=other_pct))

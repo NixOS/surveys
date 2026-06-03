@@ -70,6 +70,22 @@ def test_counts_single_bucket_thresholds_or():
     assert by_label["Other (combined)"].count == 7
 
 
+def test_counts_single_bucket_action_drop_removes_rare():
+    # With bucket_action="drop", rare values vanish from the result instead of
+    # being aggregated under "Other (combined)". Required for sensitive
+    # categories where an aggregate bar would still leak counts via percent.
+    s = _sc(["A"] * 95 + ["B"] * 3 + ["C"] * 2)
+    bins = counts_single(s, bucket_min_percent=None, bucket_min_count=5, bucket_action="drop")
+    by_label = {b.label: b for b in bins}
+    assert "A" in by_label
+    assert "Other (combined)" not in by_label
+    assert "B" not in by_label
+    assert "C" not in by_label
+    # Percent is still computed against the original total (100), so the
+    # remaining bar reflects 95/100 = 95%.
+    assert by_label["A"].percent == 95.0
+
+
 def test_counts_single_does_not_collide_with_literal_other():
     # The data contains a literal "Other" choice; the rare-bucket must not
     # collide with it.
@@ -130,6 +146,17 @@ def test_counts_multi_bucket_min_percent():
     assert "A" in labels
     assert "Other (combined)" in labels
     assert "B" not in labels and "C" not in labels
+
+
+def test_counts_multi_bucket_action_drop_removes_rare():
+    m = _mc({
+        "A": ["Yes"] * 100,
+        "B": ["Yes"] * 4 + ["No"] * 96,
+        "C": ["Yes"] * 2 + ["No"] * 98,
+    })
+    bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=5, bucket_action="drop")
+    labels = {b.label for b in bins}
+    assert labels == {"A"}
 
 
 def test_counts_multi_bucket_min_count():

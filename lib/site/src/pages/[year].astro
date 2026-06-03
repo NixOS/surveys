@@ -19,7 +19,7 @@ const { data } = Astro.props;
   <h1 class="mb-8 text-4xl font-bold">{data.title}</h1>
   {data.sections.map(section => (
     <section>
-      <SectionHeading id={section.id} heading={section.heading} />
+      <SectionHeading id={section.id} heading={section.heading} note={section.note} />
       {section.rows.map(row => <PlotRow row={row} />)}
     </section>
   ))}

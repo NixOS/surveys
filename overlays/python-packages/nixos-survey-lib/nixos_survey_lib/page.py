@@ -28,6 +28,7 @@ def _section_dict(s: Section) -> dict[str, Any]:
     return {
         "id": s.id,
         "heading": s.heading,
+        "note": s.note,
         "rows": [_row_dict(r) for r in s.rows],
     }
 

@@ -64,6 +64,8 @@ class Section:
     id: str
     heading: str
     rows: list[Row]
+    # Optional methodological note rendered under the section heading.
+    note: str | None = None
 
 
 @dataclass(frozen=True)

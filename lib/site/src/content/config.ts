@@ -16,6 +16,7 @@ const Row = z.object({
 const Section = z.object({
   id: z.string(),
   heading: z.string(),
+  note: z.string().nullable().optional(),
   rows: z.array(Row),
 });
 

@@ -6,6 +6,7 @@
     {
       "id": "demographics",
       "heading": "Demographics",
+      "note": null,
       "rows": [
         {
           "id": "country",
@@ -146,6 +147,7 @@
     {
       "id": "tech",
       "heading": "Technology",
+      "note": null,
       "rows": [
         {
           "id": "os",
@@ -284,6 +286,7 @@
     {
       "id": "ranking",
       "heading": "Ranking",
+      "note": null,
       "rows": [
         {
           "id": "priorities",

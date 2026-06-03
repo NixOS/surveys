@@ -3,10 +3,11 @@
 interface Props {
   id: string;
   heading: string;
+  note?: string | null;
 }
-const { id, heading } = Astro.props;
+const { id, heading, note } = Astro.props;
 ---
-<h2 id={id} class="mt-12 mb-6 text-2xl font-bold text-secondary-afghani-blue-45 dark:text-secondary-afghani-blue-75">
+<h2 id={id} class="mt-12 mb-2 text-2xl font-bold text-secondary-afghani-blue-45 dark:text-secondary-afghani-blue-75">
   <a href={`#${id}`} class="heading-link group inline-flex items-center gap-2 no-underline">
     <span>{heading}</span>
     <svg class="link-icon h-5 w-5 shrink-0 opacity-0 group-hover:opacity-50 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -15,3 +16,4 @@ const { id, heading } = Astro.props;
     </svg>
   </a>
 </h2>
+{note && <p class="mb-6 text-sm italic text-primary-black-45 dark:text-primary-white-65">{note}</p>}
