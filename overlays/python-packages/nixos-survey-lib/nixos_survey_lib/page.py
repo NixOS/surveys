@@ -20,6 +20,8 @@ def _page_dict(page: Page) -> dict[str, Any]:
         "schema_version": page.schema_version,
         "year": page.year,
         "title": page.title,
+        "intro_meta": page.intro_meta,
+        "intro_paragraphs": page.intro_paragraphs,
         "sections": [_section_dict(s) for s in page.sections],
     }
 

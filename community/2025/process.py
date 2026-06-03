@@ -99,6 +99,11 @@ def main(csv_path: str, out_path: str) -> None:
     page = Page(
         year=2025,
         title="2025 Survey Results",
+        intro_meta="3,399 responses · September 1 — December 15, 2025",
+        intro_paragraphs=[
+            "The 2025 NixOS Community Survey ran from September 1 to December 15, 2025, drawing 3,399 full responses — a 48% increase over the 2,290 received in 2024.",
+            "The growth reflects a noticeably newer audience: 28.9% of respondents started using Nix in the past year, and 82.5% have under four years of experience. New questions in this year's survey, and the additional charts that accompany them, were added to surface insights into who that new majority is, what tools they use, and where they look for help.",
+        ],
         sections=[
             Section("people", "People", note="Categories with fewer than 5 respondents are not shown.", rows=[
                 Row("country", "Country", question=q("country"), commentary=cm["country"],

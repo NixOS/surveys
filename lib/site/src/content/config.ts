@@ -25,6 +25,8 @@ const Results = z.object({
   schema_version: z.literal(1),
   year: z.number().int(),
   title: z.string(),
+  intro_meta: z.string().nullable().optional(),
+  intro_paragraphs: z.array(z.string()).nullable().optional(),
   sections: z.array(Section),
 });
 

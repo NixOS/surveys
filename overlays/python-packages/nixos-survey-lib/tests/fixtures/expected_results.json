@@ -2,6 +2,8 @@
   "schema_version": 1,
   "year": 2025,
   "title": "Tiny Survey Test",
+  "intro_meta": null,
+  "intro_paragraphs": null,
   "sections": [
     {
       "id": "demographics",

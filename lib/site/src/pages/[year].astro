@@ -18,13 +18,12 @@ const { data } = Astro.props;
 <Layout title={data.title}>
   <p class="mb-3 text-sm uppercase tracking-widest font-semibold text-primary-black-65 dark:text-primary-white-45">NixOS Community · Annual Report</p>
   <h1 class="mb-3 text-5xl md:text-6xl font-bold tracking-tight text-secondary-afghani-blue-45 dark:text-secondary-afghani-blue-75">{data.title}</h1>
-  {data.year === 2025 && (
-    <p class="mb-8 text-base text-primary-black-45 dark:text-primary-white-65">3,399 responses · September 1 — December 15, 2025</p>
+  {data.intro_meta && (
+    <p class="mb-8 text-base text-primary-black-45 dark:text-primary-white-65">{data.intro_meta}</p>
   )}
-  {data.year === 2025 && (
+  {data.intro_paragraphs && data.intro_paragraphs.length > 0 && (
     <div class="max-w-prose space-y-4 text-lg leading-relaxed">
-      <p>The 2025 NixOS Community Survey ran from September 1 to December 15, 2025, drawing 3,399 full responses — a 48% increase over the 2,290 received in 2024.</p>
-      <p>The growth reflects a noticeably newer audience: 28.9% of respondents started using Nix in the past year, and 82.5% have under four years of experience. New questions in this year's survey, and the additional charts that accompany them, were added to surface insights into who that new majority is, what tools they use, and where they look for help.</p>
+      {data.intro_paragraphs.map(p => <p>{p}</p>)}
     </div>
   )}
   <hr class="mt-12 border-primary-black-85 dark:border-primary-black-25" />

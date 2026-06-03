@@ -74,6 +74,9 @@ class Page:
     year: int
     title: str
     sections: list[Section]
+    # Optional front-matter shown above the first section divider.
+    intro_meta: str | None = None
+    intro_paragraphs: list[str] | None = None
     schema_version: int = 1
 
 
