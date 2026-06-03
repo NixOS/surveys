@@ -1,6 +1,11 @@
 // lib/site/src/echarts-init.ts
-import * as echarts from 'echarts';
+import * as echarts from 'echarts/core';
+import { BarChart, HeatmapChart } from 'echarts/charts';
+import { GridComponent, TooltipComponent, VisualMapComponent } from 'echarts/components';
+import { SVGRenderer } from 'echarts/renderers';
 import colors from '@nixos/branding/colors/tailwind.js';
+
+echarts.use([BarChart, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent, SVGRenderer]);
 
 // ECharts' internal color interpolation (visualMap heatmap gradients) does not
 // handle oklch() strings, so we resolve every theme color to #rrggbb before
