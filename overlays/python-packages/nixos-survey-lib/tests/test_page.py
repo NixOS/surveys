@@ -10,7 +10,7 @@ def _sample_page() -> Page:
         title="Test",
         sections=[
             Section(id="people", heading="People", rows=[
-                Row(id="country", title="Country", commentary="Europe leads.",
+                Row(id="country", title="Country", question="Where?", commentary="Europe leads.",
                     chart=ChartSpec(option={"series": [{"type": "bar", "data": [1]}]}, height=240)),
             ]),
         ],
@@ -33,7 +33,7 @@ def test_page_to_json_structure():
 def test_page_to_json_omits_optional_height_when_none():
     p = Page(year=2026, title="t", sections=[
         Section(id="s", heading="S", rows=[
-            Row(id="r", title="R", commentary="",
+            Row(id="r", title="R", question="?", commentary="",
                 chart=ChartSpec(option={}, height=None)),
         ]),
     ])

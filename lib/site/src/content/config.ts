@@ -9,6 +9,7 @@ const ChartSpec = z.object({
 const Row = z.object({
   id: z.string(),
   title: z.string(),
+  question: z.string(),
   commentary: z.string(),
   chart: ChartSpec,
 });

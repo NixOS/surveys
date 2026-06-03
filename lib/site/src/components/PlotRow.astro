@@ -6,6 +6,7 @@ interface Props {
   row: {
     id: string;
     title: string;
+    question: string;
     commentary: string;
     chart: {
       option: Record<string, unknown>;
@@ -27,7 +28,7 @@ const height = row.chart.height ?? 320;
 ---
 <div class="plot-row grid md:grid-cols-[280px_1fr] gap-5 mb-5">
   <article class={`p-5 ${cardClass[variant]}`}>
-    <h3 id={row.id} class="font-bold mb-2">
+    <h3 id={row.id} class="font-bold mb-1">
       <a href={`#${row.id}`} class="heading-link group inline-flex items-center gap-2 no-underline">
         <span>{row.title}</span>
         <svg class="link-icon h-4 w-4 shrink-0 opacity-0 group-hover:opacity-50 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -36,6 +37,7 @@ const height = row.chart.height ?? 320;
         </svg>
       </a>
     </h3>
+    <p class="mb-3 text-sm italic text-primary-black-65 dark:text-primary-white-45">{row.question}</p>
     <div set:html={marked.parse(row.commentary)} />
   </article>
   <article

@@ -10,6 +10,7 @@
         {
           "id": "country",
           "title": "Country",
+          "question": "Where do you live?",
           "commentary": "Europe leads in this fixture, with North America second.",
           "chart": {
             "option": {

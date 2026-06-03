@@ -55,6 +55,7 @@ class ChartSpec:
 class Row:
     id: str
     title: str
+    question: str
     commentary: str
     chart: ChartSpec
 

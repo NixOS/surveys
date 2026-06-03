@@ -11,6 +11,7 @@
         {
           "id": "country",
           "title": "Country",
+          "question": "Where do you live?",
           "commentary": "Europe leads in the synthetic fixture.",
           "chart": {
             "option": {
@@ -80,6 +81,7 @@
         {
           "id": "skill",
           "title": "Skill",
+          "question": "How would you describe your skill level with Nix?",
           "commentary": "Distribution across three buckets.",
           "chart": {
             "option": {
@@ -152,6 +154,7 @@
         {
           "id": "os",
           "title": "Operating systems",
+          "question": "Which operating systems do you use?",
           "commentary": "Linux universal.",
           "chart": {
             "option": {
@@ -217,6 +220,7 @@
         {
           "id": "nix_version",
           "title": "Nix version",
+          "question": "Which version of Nix do you use most often?",
           "commentary": "Extracted from free-text.",
           "chart": {
             "option": {
@@ -291,6 +295,7 @@
         {
           "id": "priorities",
           "title": "Priorities (top-1 appearances)",
+          "question": "Rank your priorities.",
           "commentary": "Quick ranking test.",
           "chart": {
             "option": {
