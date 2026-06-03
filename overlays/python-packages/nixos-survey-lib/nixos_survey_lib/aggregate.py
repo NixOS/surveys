@@ -6,6 +6,9 @@ from .types import Bin, CrossTab, MultiChoice, Ranked, Ranking, SingleChoice
 
 
 DEFAULT_BUCKET_MIN_PERCENT: float = 0.5
+# Label used for the rare-aggregation bucket. Distinct from a literal "Other"
+# choice in the source data (e.g. Role/Industry have "Other" as a real category).
+BUCKET_LABEL: str = "Other (combined)"
 
 
 def counts_single(
@@ -14,8 +17,15 @@ def counts_single(
     order: list[str] | None = None,
     exclude: list[str] | None = None,
     bucket_min_percent: float | None = DEFAULT_BUCKET_MIN_PERCENT,
+    bucket_min_count: int | None = None,
 ) -> list[Bin]:
-    """Count distinct values; return ordered bins with count and percent."""
+    """Count distinct values; return ordered bins with count and percent.
+
+    Buckets a value into ``BUCKET_LABEL`` when EITHER threshold fires (logical
+    OR): ``percent < bucket_min_percent`` or ``count < bucket_min_count``.
+    Pass ``None`` to disable that side; pass ``None`` to both to disable
+    bucketing entirely.
+    """
     excluded = set(exclude or [])
     series = r.values
     if excluded:
@@ -32,15 +42,25 @@ def counts_single(
         .rename({"len": "count"})
     )
 
-    if bucket_min_percent is not None and bucket_min_percent > 0:
+    pct_active = bucket_min_percent is not None and bucket_min_percent > 0
+    count_active = bucket_min_count is not None and bucket_min_count > 0
+    if pct_active or count_active:
         counts_df = counts_df.with_columns(
             (pl.col("count") / pl.lit(float(total)) * 100.0).alias("pct")
         )
-        rare = counts_df.filter(pl.col("pct") < bucket_min_percent)["response"].to_list()
+        rare_mask = pl.lit(False)
+        if pct_active:
+            rare_mask = rare_mask | (pl.col("pct") < bucket_min_percent)
+        if count_active:
+            rare_mask = rare_mask | (pl.col("count") < bucket_min_count)
+        rare = counts_df.filter(rare_mask)["response"].to_list()
         if rare:
             rare_count = counts_df.filter(pl.col("response").is_in(rare))["count"].sum()
             counts_df = counts_df.filter(~pl.col("response").is_in(rare))
-            other_row = pl.DataFrame({"response": ["Other"], "count": pl.Series([int(rare_count)], dtype=pl.UInt32)})
+            other_row = pl.DataFrame({
+                "response": [BUCKET_LABEL],
+                "count": pl.Series([int(rare_count)], dtype=pl.UInt32),
+            })
             counts_df = pl.concat([counts_df.select(["response", "count"]), other_row])
         else:
             counts_df = counts_df.select(["response", "count"])
@@ -70,8 +90,13 @@ def counts_multi(
     r: MultiChoice,
     *,
     bucket_min_percent: float | None = DEFAULT_BUCKET_MIN_PERCENT,
+    bucket_min_count: int | None = None,
 ) -> list[Bin]:
-    """For each choice, count 'Yes' responses; percent is relative to total respondents."""
+    """For each choice, count 'Yes' responses; percent is relative to total respondents.
+
+    Buckets a choice into ``BUCKET_LABEL`` when EITHER threshold fires (logical
+    OR). See ``counts_single`` for semantics.
+    """
     total = len(r)
     if total == 0:
         return []
@@ -84,13 +109,22 @@ def counts_multi(
     bins = [Bin(label=c, count=n, percent=n / total * 100.0) for c, n in rows]
     bins.sort(key=lambda b: b.percent, reverse=True)
 
-    if bucket_min_percent is not None and bucket_min_percent > 0:
-        keep = [b for b in bins if b.percent >= bucket_min_percent]
-        rare = [b for b in bins if b.percent < bucket_min_percent]
+    pct_active = bucket_min_percent is not None and bucket_min_percent > 0
+    count_active = bucket_min_count is not None and bucket_min_count > 0
+    if pct_active or count_active:
+        def _is_rare(b: Bin) -> bool:
+            if pct_active and b.percent < bucket_min_percent:
+                return True
+            if count_active and b.count < bucket_min_count:
+                return True
+            return False
+
+        keep = [b for b in bins if not _is_rare(b)]
+        rare = [b for b in bins if _is_rare(b)]
         if rare:
             other_count = sum(b.count for b in rare)
             other_pct = sum(b.percent for b in rare)
-            keep.append(Bin(label="Other", count=other_count, percent=other_pct))
+            keep.append(Bin(label=BUCKET_LABEL, count=other_count, percent=other_pct))
         bins = keep
 
     return bins

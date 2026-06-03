@@ -40,8 +40,46 @@ def test_counts_single_bucket_min_percent():
     bins = counts_single(s, bucket_min_percent=5.0)
     by_label = {b.label: b for b in bins}
     assert "A" in by_label
+    assert "Other (combined)" in by_label
+    assert by_label["Other (combined)"].count == 5
+
+
+def test_counts_single_bucket_min_count():
+    s = _sc(["A"] * 95 + ["B"] * 3 + ["C"] * 2)
+    bins = counts_single(s, bucket_min_percent=None, bucket_min_count=4)
+    by_label = {b.label: b for b in bins}
+    assert "A" in by_label
+    # B (3) and C (2) are both below count threshold of 4 → combined.
+    assert "Other (combined)" in by_label
+    assert by_label["Other (combined)"].count == 5
+    assert "B" not in by_label
+    assert "C" not in by_label
+
+
+def test_counts_single_bucket_thresholds_or():
+    # Thresholds: percent=2%, count=10. Total respondents = 107.
+    # A (100, ~93.5%) is above both — kept.
+    # B (5, ~4.7%) — above percent (2%), below count (10) → rare via count only.
+    # C (2, ~1.9%) — below percent (2%), below count (10) → rare via both.
+    # Both B and C end up bucketed because EITHER threshold fires (OR).
+    s = _sc(["A"] * 100 + ["B"] * 5 + ["C"] * 2)
+    bins = counts_single(s, bucket_min_percent=2.0, bucket_min_count=10)
+    by_label = {b.label: b for b in bins}
+    assert "A" in by_label
+    assert "Other (combined)" in by_label
+    assert by_label["Other (combined)"].count == 7
+
+
+def test_counts_single_does_not_collide_with_literal_other():
+    # The data contains a literal "Other" choice; the rare-bucket must not
+    # collide with it.
+    s = _sc(["Other"] * 50 + ["Linux"] * 50 + ["BSD"] * 2)
+    bins = counts_single(s, bucket_min_percent=5.0)
+    by_label = {b.label: b for b in bins}
     assert "Other" in by_label
-    assert by_label["Other"].count == 5
+    assert by_label["Other"].count == 50
+    assert "Other (combined)" in by_label
+    assert by_label["Other (combined)"].count == 2
 
 
 def test_counts_single_empty():
@@ -90,7 +128,21 @@ def test_counts_multi_bucket_min_percent():
     bins = counts_multi(m, bucket_min_percent=5.0)
     labels = {b.label for b in bins}
     assert "A" in labels
-    assert "Other" in labels
+    assert "Other (combined)" in labels
+    assert "B" not in labels and "C" not in labels
+
+
+def test_counts_multi_bucket_min_count():
+    m = _mc({
+        "A": ["Yes"] * 100,
+        "B": ["Yes"] * 4 + ["No"] * 96,
+        "C": ["Yes"] * 2 + ["No"] * 98,
+    })
+    bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=5)
+    labels = {b.label for b in bins}
+    assert "A" in labels
+    # B (4) and C (2) both below count threshold of 5.
+    assert "Other (combined)" in labels
     assert "B" not in labels and "C" not in labels
 
 
