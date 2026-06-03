@@ -41,7 +41,7 @@ const height = row.chart.height ?? 320;
     <div set:html={marked.parse(row.commentary)} />
   </article>
   <article
-    class="p-5 flex flex-col justify-center"
+    class="p-5 flex flex-col justify-center min-w-0"
     data-echarts-option
   >
     <script type="application/json" set:html={JSON.stringify(row.chart.option)} />

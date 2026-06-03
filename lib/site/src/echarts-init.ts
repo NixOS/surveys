@@ -134,6 +134,36 @@ function injectHeatmapTooltip(option: Record<string, unknown>): void {
   };
 }
 
+// Shared observer: reflow each chart when its container's size changes (e.g.,
+// browser window resize changes the grid column width). Fires only when the
+// observed element's box actually changes, so no debouncing needed.
+// Batch resize calls into a single requestAnimationFrame so a drag-resize
+// generating many observer events per frame only triggers one resize per
+// chart per frame, not one resize per event. The first observation event
+// for each chart is skipped: the chart was just initialized at exactly
+// that size, and calling resize() then would interrupt the entry animation.
+const seenResizeTargets = new WeakSet<Element>();
+const pendingResizeTargets = new Set<HTMLElement>();
+let scheduledFrame: number | null = null;
+const resizeObserver = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    if (!seenResizeTargets.has(entry.target)) {
+      seenResizeTargets.add(entry.target);
+      continue;
+    }
+    pendingResizeTargets.add(entry.target as HTMLElement);
+  }
+  if (pendingResizeTargets.size === 0 || scheduledFrame !== null) return;
+  scheduledFrame = requestAnimationFrame(() => {
+    for (const target of pendingResizeTargets) {
+      const inst = echarts.getInstanceByDom(target);
+      if (inst) inst.resize();
+    }
+    pendingResizeTargets.clear();
+    scheduledFrame = null;
+  });
+});
+
 function initChart(card: Element): void {
   const optionScript = card.querySelector('script[type="application/json"]');
   const div = card.querySelector('.echarts-chart');
@@ -142,6 +172,7 @@ function initChart(card: Element): void {
   injectVisualMapColors(option);
   injectHeatmapTooltip(option);
   echarts.init(div as HTMLElement, currentTheme(), { renderer: 'svg' }).setOption(option);
+  resizeObserver.observe(div as HTMLElement);
 }
 
 export function initCharts(): void {
