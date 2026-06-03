@@ -12,7 +12,7 @@ def _sc(values: list[str], qid: str = "country") -> SingleChoice:
 
 def test_counts_single_basic():
     s = _sc(["Europe", "Europe", "Asia", "Europe"])
-    bins = counts_single(s, bucket_min_percent=None)
+    bins = counts_single(s, bucket_min_percent=None, bucket_min_count=None)
     by_label = {b.label: b for b in bins}
     assert by_label["Europe"].count == 3
     assert by_label["Europe"].percent == 75.0
@@ -22,13 +22,13 @@ def test_counts_single_basic():
 
 def test_counts_single_respects_order():
     s = _sc(["Asia", "Europe", "Asia", "Europe"])
-    bins = counts_single(s, order=["Europe", "Asia"], bucket_min_percent=None)
+    bins = counts_single(s, order=["Europe", "Asia"], bucket_min_percent=None, bucket_min_count=None)
     assert [b.label for b in bins] == ["Europe", "Asia"]
 
 
 def test_counts_single_exclude():
     s = _sc(["Europe", "Skipped", "Asia", "Skipped"])
-    bins = counts_single(s, exclude=["Skipped"], bucket_min_percent=None)
+    bins = counts_single(s, exclude=["Skipped"], bucket_min_percent=None, bucket_min_count=None)
     labels = {b.label for b in bins}
     assert "Skipped" not in labels
     by_label = {b.label: b for b in bins}
@@ -99,7 +99,7 @@ def test_counts_multi_basic():
         "macOS": ["No", "Yes", "Yes", "No"],
         "Windows": ["No", "No", "No", "Yes"],
     })
-    bins = counts_multi(m, bucket_min_percent=None)
+    bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=None)
     by_label = {b.label: b for b in bins}
     assert by_label["Linux"].count == 4
     assert by_label["Linux"].percent == 100.0
@@ -115,7 +115,7 @@ def test_counts_multi_sorted_by_percent_desc():
         "B": ["Yes", "Yes"],
         "C": ["No", "No"],
     })
-    bins = counts_multi(m, bucket_min_percent=None)
+    bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=None)
     assert [b.label for b in bins] == ["B", "A", "C"]
 
 

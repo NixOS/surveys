@@ -48,8 +48,6 @@ follow.
 ## operating_systems
 
 Linux: 96.9%. Android: 57.8%. Windows: 35.5%. macOS: 24.4%. iOS: 19.6%.
-The question covers all devices, so Android and iOS counts likely include
-phone use rather than Nix deployments.
 
 ## target_triple
 

@@ -6,6 +6,10 @@ from .types import Bin, CrossTab, MultiChoice, Ranked, Ranking, SingleChoice
 
 
 DEFAULT_BUCKET_MIN_PERCENT: float = 0.5
+# `5` matches the minimum-cell-size floor used by NCHS, California CHHS,
+# Statistics Canada, Eurostat, and the UNECE SDC Handbook for protecting
+# respondent identity in published frequency tables.
+DEFAULT_BUCKET_MIN_COUNT: int = 5
 # Label used for the rare-aggregation bucket. Distinct from a literal "Other"
 # choice in the source data (e.g. Role/Industry have "Other" as a real category).
 BUCKET_LABEL: str = "Other (combined)"
@@ -17,7 +21,7 @@ def counts_single(
     order: list[str] | None = None,
     exclude: list[str] | None = None,
     bucket_min_percent: float | None = DEFAULT_BUCKET_MIN_PERCENT,
-    bucket_min_count: int | None = None,
+    bucket_min_count: int | None = DEFAULT_BUCKET_MIN_COUNT,
 ) -> list[Bin]:
     """Count distinct values; return ordered bins with count and percent.
 
@@ -90,7 +94,7 @@ def counts_multi(
     r: MultiChoice,
     *,
     bucket_min_percent: float | None = DEFAULT_BUCKET_MIN_PERCENT,
-    bucket_min_count: int | None = None,
+    bucket_min_count: int | None = DEFAULT_BUCKET_MIN_COUNT,
 ) -> list[Bin]:
     """For each choice, count 'Yes' responses; percent is relative to total respondents.
 
