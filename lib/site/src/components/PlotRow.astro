@@ -41,11 +41,10 @@ const height = row.chart.height ?? 320;
     <div set:html={marked.parse(row.commentary)} />
   </article>
   <article
-    class={`p-5 ${cardClass[variant]}`}
+    class={`p-5 flex flex-col justify-center ${cardClass[variant]}`}
     data-echarts-option
-    style={`height: ${height}px`}
   >
     <script type="application/json" set:html={JSON.stringify(row.chart.option)} />
-    <div class="echarts-chart w-full h-full"></div>
+    <div class="echarts-chart w-full" style={`height: ${height}px`}></div>
   </article>
 </div>
