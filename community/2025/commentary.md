@@ -52,8 +52,8 @@ Categories below 0.5% or with fewer than 5 respondents are combined into the "Ot
 
 ## target_triple
 
-x86_64-linux-gnu: 94.5%. ARM combined (aarch64-linux-gnu 17.4% +
-aarch64-apple-darwin 16.2%) reaches 33.6%. RISC-V: 2.0%.
+`x86_64-linux-gnu`: 94.5%. ARM combined (`aarch64-linux-gnu` 17.4% +
+`aarch64-apple-darwin` 16.2%) reaches 33.6%. RISC-V: 2.0%.
 
 ## experimental_features
 
@@ -64,7 +64,7 @@ experimental features; 7.9% are not sure.
 ## install_method
 
 NixOS preinstall: 78.4%. Official install script from nixos.org: 36.0%.
-DeterminateSystems/nix-installer: 15.8%. Other package manager: 9.7%.
+`DeterminateSystems/nix-installer`: 15.8%. Other package manager: 9.7%.
 Built from source: 3.9%.
 
 ## nix_implementations
@@ -93,8 +93,8 @@ many respondents run more than one release across machines. 24.11: 6.6%.
 
 ## hardware_configuration
 
-nixos-generate-config: 68.6%. Manual configuration: 39.0%. nixos-hardware
-repository: 26.7%. nixos-facter: 3.9%.
+`nixos-generate-config`: 68.6%. Manual configuration: 39.0%. `nixos-hardware`
+repository: 26.7%. `nixos-facter`: 3.9%.
 
 ## software_ecosystems
 
