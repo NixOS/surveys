@@ -19,8 +19,8 @@ interface Props {
 const { row, variant = 'neobrutalist' } = Astro.props;
 
 const rowClass: Record<NonNullable<Props['variant']>, string> = {
-  neobrutalist: 'border-2 border-primary-black shadow-[3px_3px_0_theme(colors.primary-black.DEFAULT)] dark:border-primary-white dark:shadow-[3px_3px_0_theme(colors.primary-white.DEFAULT)] md:divide-x-[20px] md:divide-secondary-afghani-blue-45 dark:md:divide-secondary-afghani-blue-75',
-  homepage: 'rounded-lg shadow-md bg-primary-white dark:bg-primary-black-15 md:divide-x-[20px] md:divide-secondary-afghani-blue-45 dark:md:divide-secondary-afghani-blue-75',
+  neobrutalist: 'rounded-xl overflow-hidden border border-primary-black-85 dark:border-primary-black-25 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200 md:divide-x-[20px] md:divide-secondary-afghani-blue-45 dark:md:divide-secondary-afghani-blue-75',
+  homepage: 'rounded-xl overflow-hidden border border-primary-black-85 dark:border-primary-black-25 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200 md:divide-x-[20px] md:divide-secondary-afghani-blue-45 dark:md:divide-secondary-afghani-blue-75',
   bare: '',
 };
 

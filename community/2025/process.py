@@ -98,7 +98,7 @@ def main(csv_path: str, out_path: str) -> None:
 
     page = Page(
         year=2025,
-        title="NixOS Community Survey 2025 Results",
+        title="2025 Survey Results",
         sections=[
             Section("people", "People", note="Categories with fewer than 5 respondents are not shown.", rows=[
                 Row("country", "Country", question=q("country"), commentary=cm["country"],

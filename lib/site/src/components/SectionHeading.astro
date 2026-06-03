@@ -7,13 +7,13 @@ interface Props {
 }
 const { id, heading, note } = Astro.props;
 ---
-<h2 id={id} class="mt-20 mb-3 text-3xl font-bold tracking-tight text-secondary-afghani-blue-45 dark:text-secondary-afghani-blue-75">
+<h2 id={id} class="mt-20 mb-3 border-l-4 border-secondary-afghani-blue-45 dark:border-secondary-afghani-blue-75 pl-4 text-3xl font-bold tracking-tight text-secondary-afghani-blue-45 dark:text-secondary-afghani-blue-75">
   <a href={`#${id}`} class="heading-link group inline-flex items-center gap-2 no-underline">
     <span>{heading}</span>
-    <svg class="link-icon h-5 w-5 shrink-0 opacity-0 group-hover:opacity-50 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <svg class="link-icon h-5 w-5 shrink-0 opacity-0 group-hover:opacity-50 transition duration-200 ease-out" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
       <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
     </svg>
   </a>
 </h2>
-{note && <p class="mb-6 text-sm italic text-primary-black-45 dark:text-primary-white-65">{note}</p>}
+{note && <p class="mb-6 ml-5 text-sm italic text-primary-black-45 dark:text-primary-white-65">{note}</p>}
