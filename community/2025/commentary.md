@@ -75,8 +75,7 @@ Snix: 1.2%. Tvix: 0.8%.
 ## infrastructure
 
 Personal computer: 90.3%. Workstation: 55.8%. Home server: 52.6%.
-Production server: 21.4% and CI: 20.5% — roughly one-quarter the rate of
-personal-computer use.
+Production server: 21.4% and CI: 20.5%.
 
 ## nix_version
 
@@ -203,6 +202,14 @@ Intermediate peaks at 1-2 years (43.3%) and extends through 3-4 years
 2.0% of Advanced respondents report <1 year using Nix and 2.3% of Beginners
 report 5+ years.
 
+## experience_x_skill
+
+The complement of the previous chart: each row (a tenure cohort) sums
+to 100%, showing how self-described skill distributes within that
+cohort. Useful for the dual question — "what does this experience level
+look like in skill terms?" rather than "what experience does this skill
+level have?"
+
 ## traits_rate_by_skill
 
 Each cell: of respondents at this skill level, what percent picked this trait.
@@ -296,8 +303,8 @@ feedback unhelpful. Employer policy is rarely a blocker (0.6%).
 
 ## workplace_uses_nix
 
-Free-text answers normalized to Yes / No / Other / Skipped.
+Free-text answers normalized to Yes / No / Other.
 
 ## workplace_decision
 
-Free-text answers normalized to Yes / No / Other / Skipped.
+Free-text answers normalized to Yes / No / Other.
