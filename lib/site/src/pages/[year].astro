@@ -16,7 +16,7 @@ export async function getStaticPaths() {
 const { data } = Astro.props;
 ---
 <Layout title={data.title}>
-  <h1 class="mb-8 text-4xl font-bold">{data.title}</h1>
+  <h1 class="mb-12 text-5xl md:text-6xl font-bold tracking-tight">{data.title}</h1>
   {data.sections.map(section => (
     <section>
       <SectionHeading id={section.id} heading={section.heading} note={section.note} />

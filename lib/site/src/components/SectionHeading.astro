@@ -7,7 +7,7 @@ interface Props {
 }
 const { id, heading, note } = Astro.props;
 ---
-<h2 id={id} class="mt-12 mb-2 text-2xl font-bold text-secondary-afghani-blue-45 dark:text-secondary-afghani-blue-75">
+<h2 id={id} class="mt-20 mb-3 text-3xl font-bold tracking-tight text-secondary-afghani-blue-45 dark:text-secondary-afghani-blue-75">
   <a href={`#${id}`} class="heading-link group inline-flex items-center gap-2 no-underline">
     <span>{heading}</span>
     <svg class="link-icon h-5 w-5 shrink-0 opacity-0 group-hover:opacity-50 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

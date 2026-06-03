@@ -28,7 +28,7 @@ const height = row.chart.height ?? 320;
 ---
 <div class={`plot-row grid md:grid-cols-[280px_1fr] mb-5 ${rowClass[variant]}`}>
   <article class="p-5">
-    <h3 id={row.id} class="font-bold mb-1">
+    <h3 id={row.id} class="text-lg font-bold mb-1">
       <a href={`#${row.id}`} class="heading-link group inline-flex items-center gap-2 no-underline">
         <span>{row.title}</span>
         <svg class="link-icon h-4 w-4 shrink-0 opacity-0 group-hover:opacity-50 transition" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
