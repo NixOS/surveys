@@ -11,3 +11,9 @@ __pycache__/
 # Nix build outputs
 result
 result-*
+
+# Override a common user-global `result*` ignore so the Astro content
+# collection directory is tracked. The per-year JSON inside it is still
+# a build artifact (copied from a Nix derivation) and stays ignored.
+!lib/site/src/content/results/
+lib/site/src/content/results/results-*.json
