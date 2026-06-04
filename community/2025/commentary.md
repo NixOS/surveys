@@ -1,35 +1,40 @@
 ## country
 
-European responses increased from 52% to 60%.
-North American responses decreased from 27.5% to 21.3%.
-The remaining responses changed less than 1% from the previous year.
+European responses climbed to 60.0%, up from 52% a year earlier, while
+North America slipped from 27.5% to 21.3%. The remaining regions each
+moved by less than a point.
 
 ## age
 
-The curve has flattened and shifted.
-The largest age group of 25-34 decreased from 35.6% to 30.7%.
-The 35-44 age group also decreased from 22.7% to 19.4%.
-Age groups under 25 or over 44 increased between 0.4% and 3.1%.
+The age curve flattened. The 25-34 cohort, still the largest, fell from
+35.6% to 30.7%, and 35-44 dropped from 22.7% to 19.4%. Every group
+under 25 or over 44 grew, by between 0.4 and 3.1 points — a modest but
+broad-based widening.
 
 ## gender_identity
 
-Man: 78.3%. Woman: 7.2%. Prefer not to say: 6.6%. Non-binary or
-non-conforming: 5.9%.
+The community is overwhelmingly male: 78.3% of respondents identify
+as men. Women account for 7.2% and non-binary respondents 5.9%; a
+further 6.6% declined to answer.
 
 ## transgender
 
-No: 81.8%. Yes: 9.8%. Prefer not to say: 7.2%.
+A majority (81.8%) do not identify as transgender; 9.8% do, and 7.2%
+declined to answer.
 
 ## years_programming
 
-There are more fine grained bins for 10+ years of experience compared to previous years.
-The groups with 4 or less years of experience have increased.
-The groups with 5 or more years of experience have decreased.
+Reported programming experience leans long: most respondents fall in
+the 1–14 year bands. Groups with four or fewer years of experience
+grew compared with the prior year, while groups with five or more
+years shrank. This year's instrument also splits the 10+ bracket into
+finer bins, surfacing more detail at the experienced end.
 
 ## role
 
-Students lead at 24.0%, ahead of full-stack (13.4%), back-end (10.7%), and
-"Other" (10.3%). Sysadmin trails at 4.8%.
+Students lead at 24.0%, followed by full-stack (13.4%) and back-end
+developers (10.7%); system and network administrators trail at 4.8%.
+A further 10.3% selected "Other".
 
 ## industry
 
@@ -47,8 +52,9 @@ follow.
 
 ## operating_systems
 
-Linux: 96.9%. Android: 57.8%. Windows: 35.5%. macOS: 24.4%. iOS: 19.6%.
-Categories below 0.5% or with fewer than 5 respondents are combined into the "Other (combined)" bar.
+Nearly all respondents — 96.9% — use Linux on at least one device.
+Android (57.8%) and Windows (35.5%) are next, with macOS at 24.4% and
+iOS at 19.6%.
 
 ## target_triple
 
@@ -63,37 +69,48 @@ experimental features; 7.9% are not sure.
 
 ## install_method
 
-NixOS preinstall: 78.4%. Official install script from nixos.org: 36.0%.
-`DeterminateSystems/nix-installer`: 15.8%. Other package manager: 9.7%.
-Built from source: 3.9%.
+Most respondents (78.4%) first met Nix through a NixOS installation.
+The official install script accounts for another 36.0%, followed by
+the `DeterminateSystems/nix-installer` at 15.8%. Self-built and
+third-party-packaged installations together cover the remaining 13.6%.
 
 ## nix_implementations
 
-Upstream Nix: 87.5%. Lix: 14.8%. Determinate Nix: 9.8%. None: 4.2%.
-Snix: 1.2%. Tvix: 0.8%.
+Upstream Nix remains the default by a wide margin (87.5%). Lix (14.8%)
+and Determinate Nix (9.8%) are the most-used alternatives. Tvix (0.8%)
+and Snix (1.2%) are still in single digits.
 
 ## infrastructure
 
-Personal computer: 90.3%. Workstation: 55.8%. Home server: 52.6%.
-Production server: 21.4% and CI: 20.5%.
+Personal computers (90.3%) are the dominant target. Workstations
+(55.8%) and home servers (52.6%) follow. Production servers (21.4%)
+and CI environments (20.5%) are used at roughly a quarter the rate
+of personal machines.
 
 ## nix_version
 
-A lack of response or a an empty string was replaced with "Skipped".
-A SemVer regular expression was used to match against the remaining answers.
-Values that did not match were replaced with "No Match".
-Categories below 0.1% or with fewer than 5 respondents are combined into the "Other (combined)" bar.
+The 2.28 series dominates the answers that could be parsed: 2.28.5
+alone accounts for 21.7%, with 2.28.4 at 10.5%. Roughly a third of
+respondents skipped the question; a further 6.4% gave an unparseable
+answer.
+
+Versions are extracted with a SemVer regex against the free-text
+response. Unparseable answers are labelled "No Match" and bins below
+0.1% or 5 respondents are folded into "Other (combined)".
 
 ## nixos_releases
 
-25.05 (current stable): 61.6%. Unstable: 56.8%. Sum exceeds 100%, indicating
-many respondents run more than one release across machines. 24.11: 6.6%.
-24.05: 2.2%. 23.11 or older: 1.4%.
+25.05 (the current stable) leads at 61.6%, followed closely by
+unstable at 56.8%. The two combined exceed 100%, indicating many
+respondents run more than one release across their machines. Older
+releases drop off sharply: 24.11 at 6.6%, 24.05 at 2.2%, and 23.11 or
+earlier at 1.4%.
 
 ## hardware_configuration
 
-`nixos-generate-config`: 68.6%. Manual configuration: 39.0%. `nixos-hardware`
-repository: 26.7%. `nixos-facter`: 3.9%.
+`nixos-generate-config` is still the dominant entry point at 68.6%,
+with manual configuration cited by 39.0% and the `nixos-hardware`
+repository by 26.7%. `nixos-facter` lands at 3.9%.
 
 ## software_ecosystems
 
@@ -104,48 +121,64 @@ Categories below 0.5% or with fewer than 5 respondents are combined into the "Ot
 
 ## nix_on_os
 
-NixOS: 90.0%. Other GNU/Linux: 26.5%. macOS: 18.1%. Windows (via WSL):
-11.0%. Android: 7.5%. 3.7% do not use Nix.
+Among respondents who use Nix, NixOS itself is the primary host
+(90.0%). Other GNU/Linux distributions (26.5%), macOS (18.1%), and
+Windows via WSL (11.0%) round out the meaningful platforms. 3.7%
+report not using Nix at all.
 
 ## stable_upgrade
 
-No issues: 37.4%. Minor issues: 19.5%. Moderate: 4.4%. Severe but resolved:
-1.8%. Severe and unresolved: 0.9%. Not upgraded: 12.8%. Did not know about
-the release: 5.5%. Skipped: 17.7%.
+Most respondents who upgraded had a clean experience: 37.4% report no
+issues and 19.5% only minor ones, while moderate, severe-resolved, and
+severe-unresolved issues together account for 7.1%. A further 12.8%
+had not yet upgraded at survey time, and 5.5% were unaware a new
+stable release existed.
 
 ## involvement
 
-I use NixOS: 87.1%. Install software with Nix: 66.7%. Maintain machines
-running NixOS: 58.1%. Develop software with Nix: 48.8%. Contribute packages
-or patches to Nixpkgs: 22.8%. Develop tools or infrastructure: 17.9%.
-Maintain packages in Nixpkgs: 15.5%. Have merge access to Nixpkgs: 2.9%.
+Nearly every respondent uses NixOS (87.1%), and two-thirds (66.7%)
+install software with Nix more broadly. Roughly half maintain NixOS
+machines (58.1%) or develop software on Nix (48.8%). Direct
+contribution to Nixpkgs is much narrower: 22.8% have submitted
+packages or patches, 15.5% maintain packages, and 2.9% hold merge
+access.
 
 ## years_using_nix
 
-Less than 1 year: 28.9%. 1-2 years: 34.0%. 3-4 years: 19.6%. 82.5% of
-respondents have used Nix for under 4 years. 5+ years: 11.7%.
+The community skews new: 28.9% have used Nix for less than a year,
+34.0% for one to two years, and 19.6% for three to four. Combined,
+82.5% of respondents have under four years of Nix experience. Only
+12.3% have used Nix for five or more years.
 
 ## skill_level
 
-Intermediate 45.6%, Beginner 38.9%, Advanced 10.2%.
-About the same as last year.
+Self-described skill remains roughly stable year over year:
+Intermediate (45.6%) is the largest group, followed by Beginner
+(38.9%) and Advanced (10.2%).
 
 ## first_heard_which
 
-NixOS: 70.8%. Nix: 20.0%. Don't remember: 7.6%. The operating system is the
-more common entry point into the ecosystem.
+NixOS is the more common entry point into the ecosystem: 70.8% of
+respondents heard about it first, against 20.0% who heard of Nix
+first. 7.6% no longer remember.
 
 ## first_heard_how
 
-YouTube: 28.3%. Friend or colleague: 15.9%. Don't remember: 12.0%. Blog or
-personal website: 7.3%. Search: 6.7%. Reddit: 4.9%. At work: 4.6%.
-Categories below 0.5% or with fewer than 5 respondents are combined into the "Other (combined)" bar.
+YouTube is the single largest channel (28.3%), well ahead of
+word-of-mouth from a friend or colleague (15.9%). 12.0% no longer
+remember. Blogs (7.3%), search (6.7%), Reddit (4.9%), and work
+introductions (4.6%) make up the next tier. Categories below 0.5% or
+fewer than 5 respondents are folded into "Other (combined)".
 
 ## user_types
 
-A "love the idea": 85.3%. C "get things done": 51.2%. B "curious": 44.2%.
-D "want to work on Nix": 31.3%. E "decision-maker": 14.8%. Multi-choice,
-so respondents can identify with several personas at once.
+"Love the idea" (A) is by far the most-claimed identity, picked by
+85.3% of respondents. Roughly half (51.2%) also identify as "get
+things done" pragmatists (C), and 44.2% as curious learners (B).
+Aspiring or active contributors (D) account for 31.3%, and strategic
+decision-makers (E) for 14.8%. Because the question allows multiple
+selections, respondents often combine personas — e.g., enthusiast and
+pragmatist.
 
 **Persona definitions** (from the survey prompt):
 
@@ -178,20 +211,32 @@ administrator.
 
 ## traits
 
+Respondents pick the traits that describe their relationship with Nix
+across a 12-item checklist. Tutorial reliance leads at 62.5%, followed
+by using the module system for one's own configuration (56.3%) and
+having used overlays (53.7%). The share that feels comfortable
+contributing upstream (23.3%), reads the Nix source (19.4%), or
+claims to understand every error message (4.0%) drops sharply.
+
 ## improvements
 
-Flakes: 50.3%. Error messages: 47.6%. Improve the reference manual: 41.5%.
-Performance: 39.2%. Language usability: 31.2%. Security: 20.2%. Make other
-features non-experimental: 19.4%. Windows support: 6.4%. FreeBSD: 3.5%.
+Asked to pick about three areas they would improve, respondents
+prioritise flakes (50.3%) — the most-cited single area — alongside
+error messages (47.6%) and the reference manual (41.5%). Performance
+(39.2%) and language usability (31.2%) form the next tier. Platform
+expansion (Windows 6.4%, FreeBSD 3.5%) ranks low.
 
 ## regular_toolset
 
-Yes: 81.1%. No: 15.2%. Skipped: 3.7%.
+A clear majority — 81.1% — consider Nix part of their regular toolset.
+15.2% do not, and 3.7% skipped the question.
 
 ## help_success_frequency
 
-Often: 48.8%. Sometimes: 30.4%. Always: 6.7%. Rarely: 4.5%. Never: 0.3%.
-Skipped: 9.3%.
+Respondents largely find what they need: 48.8% say they reach a useful
+answer "often" and another 6.7% "always". 30.4% land on "sometimes",
+while only a small minority report rare success (4.5%) or none at all
+(0.3%).
 
 ## skill_x_experience
 
@@ -303,8 +348,16 @@ feedback unhelpful. Employer policy is rarely a blocker (0.6%).
 
 ## workplace_uses_nix
 
-Free-text answers normalized to Yes / No / Other.
+Among respondents whose free-text answers could be normalised, 12.8%
+reported their workplace uses Nix and 29.2% said it does not. A
+majority — 57.9% — gave answers that fell into the "Other" category.
+
+Free-text answers normalised to Yes / No / Other.
 
 ## workplace_decision
 
-Free-text answers normalized to Yes / No / Other.
+Of respondents in a Nix-using workplace, 15.7% report having made the
+adoption decision themselves; 23.9% did not. The largest share
+(60.4%) again falls into "Other".
+
+Free-text answers normalised to Yes / No / Other.
