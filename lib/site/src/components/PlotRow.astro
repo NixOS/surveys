@@ -19,14 +19,14 @@ interface Props {
 const { row, variant = 'neobrutalist' } = Astro.props;
 
 const rowClass: Record<NonNullable<Props['variant']>, string> = {
-  neobrutalist: 'rounded-xl overflow-hidden border border-primary-black-85 dark:border-primary-black-25 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200 md:divide-x-[20px] md:divide-secondary-afghani-blue-45 dark:md:divide-secondary-afghani-blue-75',
-  homepage: 'rounded-xl overflow-hidden border border-primary-black-85 dark:border-primary-black-25 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200 md:divide-x-[20px] md:divide-secondary-afghani-blue-45 dark:md:divide-secondary-afghani-blue-75',
+  neobrutalist: 'rounded-xl overflow-hidden border border-primary-black-85 dark:border-primary-black-25 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200',
+  homepage: 'rounded-xl overflow-hidden border border-primary-black-85 dark:border-primary-black-25 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200',
   bare: '',
 };
 
 const height = row.chart.height ?? 320;
 ---
-<div class={`plot-row grid md:grid-cols-[280px_1fr] mb-5 ${rowClass[variant]}`}>
+<div class={`plot-row mb-5 ${rowClass[variant]}`}>
   <article class="p-5">
     <h3 id={row.id} class="text-lg font-bold mb-1 font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">
       <a href={`#${row.id}`} class="heading-link group inline-flex items-center gap-2 no-underline">
@@ -38,12 +38,9 @@ const height = row.chart.height ?? 320;
       </a>
     </h3>
     <p class="mb-3 text-sm italic text-primary-black-65 dark:text-primary-white-45">{row.question}</p>
-    <div set:html={marked.parse(row.commentary)} />
+    <div class="max-w-prose" set:html={marked.parse(row.commentary)} />
   </article>
-  <article
-    class="p-5 flex flex-col justify-center min-w-0"
-    data-echarts-option
-  >
+  <article class="p-5" data-echarts-option>
     <script type="application/json" set:html={JSON.stringify(row.chart.option)} />
     <div class="echarts-chart w-full" style={`height: ${height}px`}></div>
   </article>
