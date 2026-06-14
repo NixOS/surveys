@@ -39,12 +39,17 @@ mapAttrs (system: pkgs: {
           return 1
         fi
         mkdir -p "$(dirname "$target")"
-        cp "$out/results-2025.json" "$target"
+        # install (not cp) so the target stays writable — the source lives in the
+        # read-only /nix/store, and a plain cp onto a read-only target fails.
+        install -m 0644 "$out/results-2025.json" "$target"
         echo "[dev] data ready at $target"
 
-        watchexec -e py --postpone -- bash -c '
+        # Watch the data sources: the Python lib + this year's process.py,
+        # commentary.md, and survey.yaml. .md/.yaml matter because commentary and
+        # the schema feed the page; without them, prose edits never hot-reload.
+        watchexec -e py,md,yaml -w community/2025 -w overlays/python-packages/nixos-survey-lib --postpone -- bash -c '
           out=$(nix build --no-link --print-out-paths .#legacyPackages.x86_64-linux.nixos-surveys-community-2025-data) \
-            && cp "$out/results-2025.json" lib/site/src/content/results/results-2025.json \
+            && install -m 0644 "$out/results-2025.json" lib/site/src/content/results/results-2025.json \
             && echo "[dev] data updated"
         ' &
         watch_pid=$!
