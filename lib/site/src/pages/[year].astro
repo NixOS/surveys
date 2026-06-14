@@ -17,7 +17,7 @@ const { data } = Astro.props;
 ---
 <Layout title={data.title}>
   <p class="mb-3 text-sm uppercase tracking-widest font-semibold text-primary-black-65 dark:text-primary-white-45">NixOS Community · Annual Report</p>
-  <h1 class="mb-3 text-5xl md:text-6xl font-bold tracking-tight text-secondary-afghani-blue-45 dark:text-secondary-afghani-blue-75">{data.title}</h1>
+  <h1 class="mb-3 text-5xl md:text-6xl font-bold tracking-tight font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">{data.title}</h1>
   {data.intro_meta && (
     <p class="mb-8 text-base text-primary-black-45 dark:text-primary-white-65">{data.intro_meta}</p>
   )}

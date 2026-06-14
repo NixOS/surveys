@@ -6,11 +6,11 @@ const all = await getCollection('results');
 const years = all.map(r => r.data.year).sort((a, b) => b - a);
 ---
 <Layout title="NixOS Community Survey Results">
-  <h1 class="mb-8 text-4xl font-bold">NixOS Community Survey Results</h1>
+  <h1 class="mb-8 text-4xl font-bold font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">NixOS Community Survey Results</h1>
   <ul class="space-y-2">
     {years.map(y => (
       <li>
-        <a href={`/${y}/`} class="text-secondary-afghani-blue-45 hover:underline">
+        <a href={`/${y}/`} class="text-secondary-afghani-blue hover:underline">
           {y} results
         </a>
       </li>
