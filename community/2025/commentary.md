@@ -52,9 +52,10 @@ follow.
 
 ## operating_systems
 
-Nearly all respondents — 96.9% — use Linux on at least one device.
-Android (57.8%) and Windows (35.5%) are next, with macOS at 24.4% and
-iOS at 19.6%.
+Nearly all respondents — 96.9% — use Linux on at least one device. Android
+(57.8%) and Windows (35.5%) are next, with macOS at 24.4% and iOS at 19.6%.
+Categories below 0.5% or with fewer than 5 respondents are combined into the
+"Other (combined)" bar.
 
 ## target_triple
 
