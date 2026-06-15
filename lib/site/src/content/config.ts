@@ -11,7 +11,7 @@ const Row = z.object({
   title: z.string(),
   question: z.string(),
   commentary: z.string(),
-  chart: ChartSpec,
+  charts: z.array(ChartSpec),
 });
 
 const Section = z.object({
