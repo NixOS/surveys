@@ -154,6 +154,21 @@ function injectHeatmapTooltip(option: Record<string, unknown>): void {
   };
 }
 
+// Sankey tooltips need toFixed(1) formatting — can't be expressed as a string
+// template, so inject a JS formatter here.
+type SankeyTooltipParams = { dataType: 'edge' | 'node'; name: string; value: number; data: { source: string; target: string } };
+function injectSankeyTooltip(option: Record<string, unknown>): void {
+  if ((option.series as any[])?.[0]?.type !== 'sankey') return;
+  option.tooltip = {
+    trigger: 'item',
+    formatter: (p: SankeyTooltipParams) => {
+      const v = Number(p.value).toFixed(1) + '%';
+      if (p.dataType === 'edge') return `${p.data.source} → ${p.data.target}: ${v}`;
+      return `${p.name}: ${v}`;
+    },
+  };
+}
+
 // Shared observer: reflow each chart when its container's size changes (e.g.,
 // browser window resize changes the grid column width). Fires only when the
 // observed element's box actually changes, so no debouncing needed.
@@ -191,6 +206,7 @@ function initChart(card: Element): void {
   const option = JSON.parse(optionScript.textContent ?? '{}');
   injectVisualMapColors(option);
   injectHeatmapTooltip(option);
+  injectSankeyTooltip(option);
   echarts.init(div as HTMLElement, currentTheme(), { renderer: 'svg' }).setOption(option);
   resizeObserver.observe(div as HTMLElement);
 }
@@ -214,6 +230,7 @@ export function initCharts(): void {
       inst.dispose();
       injectVisualMapColors(opt);
       injectHeatmapTooltip(opt);
+      injectSankeyTooltip(opt);
       echarts.init(div, currentTheme(), { renderer: 'svg' }).setOption(opt);
     });
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });

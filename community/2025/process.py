@@ -142,17 +142,19 @@ def main(csv_path: str, out_path: str) -> None:
         x_exclude=["Skipped", "Prefer not to say", "I don't use Nix"],
     )
 
-    su_funnel_nodes, su_funnel_links = sankey_funnel(r.stable_upgrade)
+    su_funnel_nodes, su_funnel_links = sankey_funnel(r.stable_upgrade, as_percent=True)
     su_cross_nodes, su_cross_links = sankey_links(
         r.years_using_nix, r.stable_upgrade,
         x_band=YEARS_USING_NIX_BAND,
         y_map=STABLE_UPGRADE_OUTCOME_MAP,
         exclude=STABLE_UPGRADE_CROSS_EXCLUDE,
+        as_percent=True,
     )
     discovery_nodes, discovery_links = sankey_links(
         r.first_heard_which, r.first_heard_how,
         x_band={"I don’t remember": "Don’t recall (Nix vs NixOS)"},
         exclude=["Skipped"],
+        as_percent=True,
     )
 
     page = Page(

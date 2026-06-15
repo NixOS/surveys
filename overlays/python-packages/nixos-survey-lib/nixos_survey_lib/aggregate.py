@@ -298,12 +298,17 @@ def sankey_funnel(
     r: SingleChoice,
     *,
     min_count: int = DEFAULT_BUCKET_MIN_COUNT,
+    as_percent: bool = False,
 ) -> tuple[list[str], list[dict[str, object]]]:
     """Stage the single ``stable_upgrade`` column into a Sankey funnel.
 
     Stages: All -> Knew/Didn't know; Knew -> Upgraded/Did not upgrade;
     Upgraded -> severity. ``Skipped`` is excluded. Links below ``min_count``
     are dropped, and nodes left with no surviving link are omitted.
+
+    When ``as_percent=True`` each surviving link's value is expressed as a
+    percent of total respondents (excluding Skipped). Privacy suppression
+    (``min_count``) is applied to raw counts before conversion.
 
     DERIVED-INFERENCE CAVEAT: the Knew / Did not upgrade staging is an analyst
     interpretation, not a survey field — the single column cannot distinguish
@@ -331,6 +336,7 @@ def sankey_funnel(
     }
     upgraded = sum(severity.values())
     knew = upgraded + did_not_upgrade
+    total = knew + didnt_know  # all respondents excluding Skipped
 
     candidate_links: list[dict[str, object]] = [
         {"source": "All", "target": "Knew", "value": knew},
@@ -343,7 +349,14 @@ def sankey_funnel(
             {"source": "Upgraded", "target": sev_name, "value": sev_count}
         )
 
+    # Apply min_count suppression on raw counts before any conversion.
     links = [l for l in candidate_links if int(l["value"]) >= min_count]
+
+    if as_percent and total > 0:
+        links = [
+            {**l, "value": round(int(l["value"]) / total * 100, 1)}
+            for l in links
+        ]
 
     node_order = [
         "All", "Knew", "Didn't know", "Upgraded", "Did not upgrade",
@@ -366,6 +379,7 @@ def sankey_links(
     y_map: dict[str, str] | None = None,
     exclude: list[str] | None = None,
     min_count: int = DEFAULT_BUCKET_MIN_COUNT,
+    as_percent: bool = False,
 ) -> tuple[list[str], list[dict[str, object]]]:
     """Co-occurrence Sankey between two single-choice columns.
 
@@ -375,6 +389,11 @@ def sankey_links(
     through). Links below ``min_count`` are dropped (privacy floor); a node
     appears only if it touches a surviving link. x-nodes precede y-nodes in
     first-seen order.
+
+    When ``as_percent=True`` each surviving link's value is expressed as a
+    percent of included rows (rows with both x and y present after exclusions).
+    Privacy suppression (``min_count``) is applied to raw counts before
+    conversion.
     """
     excluded = set(exclude or [])
     x_raw = x.values.to_list()
@@ -383,12 +402,14 @@ def sankey_links(
     pair_counts: dict[tuple[str, str], int] = {}
     x_seen: list[str] = []
     y_seen: list[str] = []
+    total = 0
     for xv, yv in zip(x_raw, y_raw):
         if xv is None or yv is None:
             continue
         xs, ys = str(xv), str(yv)
         if xs in excluded or ys in excluded:
             continue
+        total += 1
         mx = x_band.get(xs, xs) if x_band else xs
         my = y_map.get(ys, ys) if y_map else ys
         if mx not in x_seen:
@@ -408,12 +429,24 @@ def sankey_links(
 
     x_index = {n: i for i, n in enumerate(x_seen)}
     y_index = {n: i for i, n in enumerate(y_seen)}
-    surviving = [
-        {"source": mx, "target": my, "value": c}
+    # Apply min_count suppression on raw counts before any conversion.
+    surviving_raw = [
+        (mx, my, c)
         for (mx, my), c in pair_counts.items()
         if c >= min_count
     ]
-    surviving.sort(key=lambda l: (x_index[str(l["source"])], y_index[str(l["target"])]))
+    surviving_raw.sort(key=lambda t: (x_index[t[0]], y_index[t[1]]))
+
+    if as_percent and total > 0:
+        surviving: list[dict[str, object]] = [
+            {"source": mx, "target": my, "value": round(c / total * 100, 1)}
+            for mx, my, c in surviving_raw
+        ]
+    else:
+        surviving = [
+            {"source": mx, "target": my, "value": c}
+            for mx, my, c in surviving_raw
+        ]
 
     used: set[str] = set()
     for l in surviving:

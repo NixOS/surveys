@@ -514,3 +514,54 @@ def test_sankey_links_x_band_resolves_collision():
     assert "Shared" in nodes
     assert links[0]["source"] == "Shared (x side)"
     assert links[0]["target"] == "Shared"
+
+
+def test_sankey_funnel_as_percent_root_links_sum_to_100():
+    # _stable() has 93 non-Skipped respondents: knew=86, didnt_know=7.
+    # As percent of 93: Knew≈92.5, Didn't know≈7.5 → sum ≈ 100.
+    nodes, links = sankey_funnel(_stable(), as_percent=True)
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    root_sum = by[("All", "Knew")] + by[("All", "Didn't know")]
+    assert abs(root_sum - 100.0) <= 0.2, f"root-stage out-links sum {root_sum}, expected ~100"
+    # All values are floats ≤ 100, not raw counts (max raw count was 86).
+    for l in links:
+        assert isinstance(l["value"], float)
+        assert l["value"] <= 100.0
+
+
+def test_sankey_funnel_as_percent_sub5_suppressed():
+    # Severe (stuck) has count=2; should be suppressed even in percent mode.
+    values = (
+        ["I had no issues."] * 30
+        + ["I had severe issues and could not make the upgrade."] * 2
+        + ["I have not upgraded."] * 12
+        + ["I did not know there was a new stable release."] * 7
+    )
+    nodes, links = sankey_funnel(_sc(values, qid="stable_upgrade"), as_percent=True)
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert ("Upgraded", "Severe (stuck)") not in by
+    assert "Severe (stuck)" not in nodes
+
+
+def test_sankey_links_as_percent_values_are_percent():
+    # 12 rows total (no exclusions): 6 → (A, X), 6 → (B, Y).
+    # Each link is 6/12*100 = 50.0.
+    x = _sc(["A"] * 6 + ["B"] * 6, qid="q1")
+    y = _sc(["X"] * 6 + ["Y"] * 6, qid="q2")
+    nodes, links = sankey_links(x, y, min_count=5, as_percent=True)
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert by[("A", "X")] == 50.0
+    assert by[("B", "Y")] == 50.0
+    total_pct = sum(l["value"] for l in links)
+    assert abs(total_pct - 100.0) <= 0.2
+
+
+def test_sankey_links_as_percent_sub5_suppressed():
+    # (B, Y) has count=2, below min_count=5 → suppressed before percent conversion.
+    x = _sc(["A"] * 6 + ["B"] * 2, qid="q1")
+    y = _sc(["X"] * 6 + ["Y"] * 2, qid="q2")
+    nodes, links = sankey_links(x, y, min_count=5, as_percent=True)
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert ("B", "Y") not in by
+    # (A, X) is 6/8*100 = 75.0 (total rows = 8).
+    assert by[("A", "X")] == 75.0
