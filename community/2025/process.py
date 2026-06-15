@@ -143,6 +143,8 @@ def main(csv_path: str, out_path: str) -> None:
             Section("technology", "Technology", rows=[
                 Row("operating_systems", "Operating Systems", question=q("operating_systems"), commentary=cm["operating_systems"],
                     charts=[horizontal_bar(counts_multi(r.operating_systems))]),
+                Row("nix_on_os", "Operating systems running Nix", question=q("nix_on_os"), commentary=cm["nix_on_os"],
+                    charts=[horizontal_bar(counts_multi(r.nix_on_os))]),
                 Row("target_triple", "Target Triple", question=q("target_triple"), commentary=cm["target_triple"],
                     charts=[horizontal_bar(counts_multi(r.target_triple))]),
                 Row("experimental_features", "Experimental Features", question=q("experimental_features"), commentary=cm["experimental_features"],
@@ -161,8 +163,6 @@ def main(csv_path: str, out_path: str) -> None:
                     charts=[horizontal_bar(counts_multi(r.hardware_configuration))]),
                 Row("software_ecosystems", "Software Ecosystems", question=q("software_ecosystems"), commentary=cm["software_ecosystems"],
                     charts=[lollipop(counts_multi(r.software_ecosystems))]),
-                Row("nix_on_os", "Operating systems running Nix", question=q("nix_on_os"), commentary=cm["nix_on_os"],
-                    charts=[horizontal_bar(counts_multi(r.nix_on_os))]),
             ]),
             Section("experience", "Experience", rows=[
                 Row("stable_upgrade", "Stable Upgrade", question=q("stable_upgrade"), commentary=cm["stable_upgrade"],
