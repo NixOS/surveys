@@ -2,7 +2,7 @@ from typing import Literal
 
 import polars as pl
 
-from .types import Bin, CrossTab, MultiChoice, RankDistribution, RankDistItem, Ranking, SingleChoice
+from .types import Bin, Combination, CrossTab, MultiChoice, RankDistribution, RankDistItem, Ranking, SingleChoice
 
 
 DEFAULT_BUCKET_MIN_PERCENT: float = 0.5
@@ -527,4 +527,65 @@ def rank_distribution(
     # Sort by average rank ascending (most-preferred first); label asc as tiebreak.
     items.sort(key=lambda it: (avg_rank[it.label], it.label))
     return RankDistribution(segment_labels=segment_labels, items=items)
+
+
+def upset_combinations(
+    multi: MultiChoice,
+    *,
+    min_size: int = 5,
+    max_combos: int = 20,
+) -> tuple[list[Combination], list[tuple[str, int]], int]:
+    """Compute UpSet-plot inputs for a multi-select question.
+
+    For each respondent, their *membership* is the tuple of choices answered
+    "Yes", ordered by the set order (``multi.choice_columns`` key order). The
+    exclusive-membership size of a combination is the number of respondents
+    whose membership is exactly that tuple. Respondents who selected nothing
+    form the empty membership and are never reported as a combination.
+
+    Returns ``(combos, set_totals, dropped_count)``:
+      - ``combos``: combinations with size >= ``min_size``, sorted by size
+        descending (ties broken by members ascending), capped to ``max_combos``.
+      - ``set_totals``: ``(set_label, total_yes_count)`` per set in set order.
+      - ``dropped_count``: how many distinct non-empty combinations were
+        excluded — either below ``min_size`` or beyond the ``max_combos`` cap.
+        No silent truncation: this number drives the chart's subtext.
+    """
+    set_labels = list(multi.choice_columns.keys())
+    n = len(multi)
+
+    set_totals: list[tuple[str, int]] = [
+        (label, int((multi.choice_columns[label] == "Yes").sum()))
+        for label in set_labels
+    ]
+
+    # Build each respondent's membership tuple in set order.
+    membership_counts: dict[tuple[str, ...], int] = {}
+    for i in range(n):
+        members = tuple(
+            label for label in set_labels
+            if multi.choice_columns[label][i] == "Yes"
+        )
+        if not members:
+            continue  # empty membership is never a combination
+        membership_counts[members] = membership_counts.get(members, 0) + 1
+
+    # Total distinct non-empty combinations that actually occurred.
+    total_combos = len(membership_counts)
+
+    # Drop below the privacy floor.
+    above_floor = [
+        Combination(members=members, size=size)
+        for members, size in membership_counts.items()
+        if size >= min_size
+    ]
+    # Sort by size desc, then members asc for determinism.
+    above_floor.sort(key=lambda c: (-c.size, c.members))
+
+    # Cap to max_combos.
+    combos = above_floor[:max_combos]
+
+    dropped_count = total_combos - len(combos)
+
+    return combos, set_totals, dropped_count
 

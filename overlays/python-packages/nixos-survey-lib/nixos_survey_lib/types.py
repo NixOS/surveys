@@ -51,6 +51,12 @@ class RankDistribution:
 
 
 @dataclass(frozen=True)
+class Combination:
+    members: tuple[str, ...]
+    size: int
+
+
+@dataclass(frozen=True)
 class ChartSpec:
     option: dict[str, Any]
     height: int | None = None

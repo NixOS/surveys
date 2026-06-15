@@ -1,8 +1,11 @@
 import polars as pl
 import pytest
 
-from nixos_survey_lib.aggregate import counts_multi, counts_single, crosstab, crosstab_multi
-from nixos_survey_lib.types import Bin, MultiChoice, Question, Ranking, SingleChoice
+from nixos_survey_lib.aggregate import (
+    counts_multi, counts_single, crosstab, crosstab_multi,
+    upset_combinations,
+)
+from nixos_survey_lib.types import Bin, Combination, MultiChoice, Question, Ranking, SingleChoice
 
 
 def _sc(values: list[str], qid: str = "country") -> SingleChoice:
@@ -565,3 +568,56 @@ def test_sankey_links_as_percent_sub5_suppressed():
     assert ("B", "Y") not in by
     # (A, X) is 6/8*100 = 75.0 (total rows = 8).
     assert by[("A", "X")] == 75.0
+
+
+def test_upset_combinations_exclusive_membership_sizes():
+    # 6 respondents over sets A, B, C:
+    #   r0: A only
+    #   r1: A only
+    #   r2: A & B
+    #   r3: B only
+    #   r4: A & B & C
+    #   r5: (none selected)
+    m = _mc({
+        "A": ["Yes", "Yes", "Yes", "No",  "Yes", "No"],
+        "B": ["No",  "No",  "Yes", "Yes", "Yes", "No"],
+        "C": ["No",  "No",  "No",  "No",  "Yes", "No"],
+    })
+    combos, set_totals, dropped = upset_combinations(
+        m, min_size=1, max_combos=20,
+    )
+
+    # Exclusive memberships and their sizes:
+    #   (A,)      -> 2   (r0, r1)
+    #   (A, B)    -> 1   (r2)
+    #   (B,)      -> 1   (r3)
+    #   (A, B, C) -> 1   (r4)
+    # The empty membership (r5) is never a combination.
+    by_members = {c.members: c.size for c in combos}
+    assert by_members == {
+        ("A",): 2,
+        ("A", "B"): 1,
+        ("B",): 1,
+        ("A", "B", "C"): 1,
+    }
+    # Sorted by size desc; (A,) with size 2 is first.
+    assert combos[0].members == ("A",)
+    assert combos[0].size == 2
+    # Per-set totals follow choice_columns order A, B, C.
+    # A: r0, r1, r2, r4 = 4 Yes; B: r2, r3, r4 = 3 Yes; C: r4 = 1 Yes.
+    assert set_totals == [("A", 4), ("B", 3), ("C", 1)]
+    assert dropped == 0
+
+
+def test_upset_combinations_members_in_set_order_not_selection_order():
+    # Even though respondent "selected" via columns, members must be ordered
+    # by the set order (choice_columns key order), here A, B, C.
+    m = _mc({
+        "A": ["Yes"],
+        "B": ["Yes"],
+        "C": ["Yes"],
+    })
+    combos, _set_totals, _dropped = upset_combinations(m, min_size=1, max_combos=20)
+    assert len(combos) == 1
+    assert combos[0].members == ("A", "B", "C")
+    assert combos[0].size == 1
