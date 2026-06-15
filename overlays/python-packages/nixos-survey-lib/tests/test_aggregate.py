@@ -621,3 +621,53 @@ def test_upset_combinations_members_in_set_order_not_selection_order():
     assert len(combos) == 1
     assert combos[0].members == ("A", "B", "C")
     assert combos[0].size == 1
+
+
+def test_upset_combinations_drops_below_min_size():
+    # Sizes: (A,)=6, (B,)=3, (A,B)=2.  min_size=5 keeps only (A,).
+    # 2 non-empty combinations are dropped -> dropped == 2.
+    m = _mc({
+        "A": ["Yes"] * 6 + ["No"] * 3 + ["Yes"] * 2,
+        "B": ["No"] * 6 + ["Yes"] * 3 + ["Yes"] * 2,
+    })
+    combos, _set_totals, dropped = upset_combinations(m, min_size=5, max_combos=20)
+    assert [c.members for c in combos] == [("A",)]
+    assert combos[0].size == 6
+    assert dropped == 2
+
+
+def test_upset_combinations_cap_counts_dropped():
+    # Three distinct combinations all above the floor, but max_combos=2 keeps
+    # the two largest and reports the third as dropped.
+    #   (A,)      size 5
+    #   (B,)      size 6
+    #   (A, B)    size 7
+    m = _mc({
+        "A": ["Yes"] * 5 + ["No"] * 6 + ["Yes"] * 7,
+        "B": ["No"] * 5 + ["Yes"] * 6 + ["Yes"] * 7,
+    })
+    combos, _set_totals, dropped = upset_combinations(m, min_size=5, max_combos=2)
+    # Largest two by size: (A,B)=7, (B,)=6.
+    assert [c.members for c in combos] == [("A", "B"), ("B",)]
+    assert dropped == 1
+
+
+def test_upset_combinations_default_min_size_is_five():
+    # Defaults: min_size=5, max_combos=20. (A,) size 4 is below the default
+    # floor and must be dropped without passing min_size explicitly.
+    m = _mc({"A": ["Yes"] * 4 + ["No"] * 1})
+    combos, _set_totals, dropped = upset_combinations(m)
+    assert combos == []
+    assert dropped == 1
+
+
+def test_upset_combinations_set_totals_full_order():
+    # set_totals always lists every set in choice order, even sets that never
+    # appear in any kept combination.
+    m = _mc({
+        "A": ["Yes"] * 6,
+        "B": ["No"] * 6,
+        "C": ["No"] * 6,
+    })
+    _combos, set_totals, _dropped = upset_combinations(m, min_size=5, max_combos=20)
+    assert set_totals == [("A", 6), ("B", 0), ("C", 0)]
