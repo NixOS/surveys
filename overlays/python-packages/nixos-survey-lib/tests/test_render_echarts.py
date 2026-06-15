@@ -52,6 +52,20 @@ def test_heatmap_basic_shape():
     assert opt["title"]["text"] == "Skill × Experience"
 
 
+def test_heatmap_data_values_rounded_to_one_decimal():
+    # Cell values with more than 1 decimal place must be rounded in the data
+    # array so annotation labels (e.g. "{@[2]}%") display "41.4%" not "41.378378%".
+    ct = CrossTab(
+        x_labels=["A"],
+        y_labels=["t1"],
+        cells=[[41.378378]],
+        cell_kind="rate_pct",
+    )
+    spec = heatmap(ct, annotate=True)
+    data = spec.option["series"][0]["data"]
+    assert data[0][2] == 41.4
+
+
 def test_heatmap_lift_uses_diverging_visualmap():
     ct = CrossTab(
         x_labels=["A"],
@@ -219,15 +233,25 @@ def test_lollipop_shape():
     opt = spec.option
     # Reversed so largest is at the top, like horizontal_bar.
     assert opt["yAxis"]["data"] == ["Windows", "macOS", "Linux"]
-    series = opt["series"][0]
-    assert series["type"] == "pictorialBar"
-    assert series["symbol"] == "circle"
-    assert series["symbolPosition"] == "end"
-    assert series["data"] == [10.0, 30.0, 90.0]
-    assert series["label"]["formatter"] == "{c}%"
-    # No explicit color.
-    assert "color" not in series
-    assert "itemStyle" not in series
+    # Two series: stem (bar) first, then dot (pictorialBar) on top.
+    assert len(opt["series"]) == 2
+    stem, dot = opt["series"]
+    # Stem: thin bar series.
+    assert stem["type"] == "bar"
+    assert stem["barWidth"] == 2
+    assert stem["itemStyle"]["color"] == "#4d6fb7"
+    assert stem["data"] == [10.0, 30.0, 90.0]
+    assert stem["silent"] is True
+    # Dot: pictorialBar carrying the label.
+    assert dot["type"] == "pictorialBar"
+    assert dot["symbol"] == "circle"
+    assert dot["symbolPosition"] == "end"
+    assert dot["data"] == [10.0, 30.0, 90.0]
+    assert dot["itemStyle"]["color"] == "#4d6fb7"
+    assert dot["label"]["show"] is True
+    assert dot["label"]["formatter"] == "{c}%"
+    # Tooltip uses item trigger so two series don't produce duplicate rows.
+    assert opt["tooltip"]["trigger"] == "item"
 
 
 from nixos_survey_lib.render_echarts import rank_distribution_bar

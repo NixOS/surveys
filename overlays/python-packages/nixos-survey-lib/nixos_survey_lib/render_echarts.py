@@ -111,7 +111,7 @@ def heatmap(
     for xi, _ in enumerate(table.x_labels):
         for yi, _ in enumerate(table.y_labels):
             value = table.cells[xi][yi]
-            data.append([xi, yi, value])
+            data.append([xi, yi, round(value, 1)])
             cell_values.append(value)
 
     if table.cell_kind == "lift":
@@ -384,19 +384,27 @@ def lollipop(
             "axisTick": {"show": False},
         },
         "tooltip": {
-            "trigger": "axis",
-            "axisPointer": {"type": "shadow"},
+            "trigger": "item",
             "formatter": "{b}: {c}%",
         },
-        "series": [{
-            "type": "pictorialBar",
-            "data": values,
-            "symbol": "circle",
-            "symbolPosition": "end",
-            "symbolSize": 14,
-            "barWidth": 4,
-            "label": {"show": True, "position": "right", "formatter": "{c}%"},
-        }],
+        "series": [
+            {
+                "type": "bar",
+                "data": values,
+                "barWidth": 2,
+                "itemStyle": {"color": _PALETTE_HEX["blue_default"]},
+                "silent": True,
+            },
+            {
+                "type": "pictorialBar",
+                "data": values,
+                "symbol": "circle",
+                "symbolPosition": "end",
+                "symbolSize": 14,
+                "itemStyle": {"color": _PALETTE_HEX["blue_default"]},
+                "label": {"show": True, "position": "right", "formatter": "{c}%"},
+            },
+        ],
     }
     if title is not None:
         option["title"] = {"text": title, "left": "left"}
