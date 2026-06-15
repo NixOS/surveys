@@ -303,10 +303,10 @@
       "note": null,
       "rows": [
         {
-          "id": "priorities",
-          "title": "Priorities (top-1 appearances)",
-          "question": "Rank your priorities.",
-          "commentary": "Quick ranking test.",
+          "id": "os2",
+          "title": "Operating systems (again)",
+          "question": "Which operating systems do you use?",
+          "commentary": "Reuse os as a non-ranking placeholder.",
           "charts": [
             {
               "option": {
@@ -324,9 +324,9 @@
                 "yAxis": {
                   "type": "category",
                   "data": [
-                    "Documentation",
-                    "Security",
-                    "Performance"
+                    "Windows",
+                    "macOS",
+                    "Linux"
                   ],
                   "axisLabel": {
                     "width": 180,
@@ -344,20 +344,20 @@
                   "axisPointer": {
                     "type": "shadow"
                   },
-                  "formatter": "{b}: {c}"
+                  "formatter": "{b}: {c}%"
                 },
                 "series": [
                   {
                     "type": "bar",
                     "data": [
-                      3,
-                      4,
-                      12
+                      15.0,
+                      30.0,
+                      95.0
                     ],
                     "label": {
                       "show": true,
                       "position": "right",
-                      "formatter": "{c}"
+                      "formatter": "{c}%"
                     },
                     "barWidth": 16,
                     "itemStyle": {

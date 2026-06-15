@@ -2,7 +2,7 @@ from typing import Literal
 
 import polars as pl
 
-from .types import Bin, CrossTab, MultiChoice, RankDistribution, RankDistItem, Ranked, Ranking, SingleChoice
+from .types import Bin, CrossTab, MultiChoice, RankDistribution, RankDistItem, Ranking, SingleChoice
 
 
 DEFAULT_BUCKET_MIN_PERCENT: float = 0.5
@@ -360,43 +360,3 @@ def rank_distribution(
     items.sort(key=lambda it: (-it.percents[0], it.label))
     return RankDistribution(segment_labels=segment_labels, items=items)
 
-
-def ranking_avg(r: Ranking) -> list[Ranked]:
-    """Compute the mean rank position for each choice. Lower = preferred."""
-    if not r.rank_columns:
-        return []
-
-    choice_ranks: dict[str, list[int]] = {}
-    for pos, series in enumerate(r.rank_columns, start=1):
-        for v in series.to_list():
-            if v is None or v == "":
-                continue
-            choice_ranks.setdefault(str(v), []).append(pos)
-
-    if not choice_ranks:
-        return []
-
-    out = [
-        Ranked(label=c, value=sum(ranks) / len(ranks), method="avg_rank")
-        for c, ranks in choice_ranks.items()
-    ]
-    out.sort(key=lambda x: x.value)
-    return out
-
-
-def ranking_top_n(r: Ranking, *, n: int) -> list[Ranked]:
-    """Count how many respondents placed each choice in their top-n positions."""
-    if not r.rank_columns or n <= 0:
-        return []
-
-    considered = r.rank_columns[:n]
-    counter: dict[str, int] = {}
-    for series in considered:
-        for v in series.to_list():
-            if v is None or v == "":
-                continue
-            counter[str(v)] = counter.get(str(v), 0) + 1
-
-    out = [Ranked(label=c, value=float(v), method="top_n_count") for c, v in counter.items()]
-    out.sort(key=lambda x: x.value, reverse=True)
-    return out

@@ -39,13 +39,6 @@ class CrossTab:
 
 
 @dataclass(frozen=True)
-class Ranked:
-    label: str
-    value: float
-    method: Literal["avg_rank", "top_n_count"]
-
-
-@dataclass(frozen=True)
 class RankDistItem:
     label: str
     percents: list[float]

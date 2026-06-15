@@ -41,7 +41,7 @@ def test_survey_schema_construction():
     assert len(s.questions) == 2
 
 
-from nixos_survey_lib.types import Bin, CrossTab, Ranked
+from nixos_survey_lib.types import Bin, CrossTab
 
 
 def test_bin_construction():
@@ -61,11 +61,6 @@ def test_crosstab_construction():
     assert ct.cell_kind == "rate_pct"
     assert ct.cells[1][1] == 8.0
 
-
-def test_ranked_construction():
-    r = Ranked(label="Documentation", value=2.28, method="avg_rank")
-    assert r.label == "Documentation"
-    assert r.method == "avg_rank"
 
 
 from nixos_survey_lib.types import ChartSpec, Row, Section, Page

@@ -3,14 +3,12 @@ import json
 from nixos_survey_lib.aggregate import (
     counts_multi,
     counts_single,
-    ranking_top_n,
 )
 from nixos_survey_lib.loader import load_responses, load_schema
 from nixos_survey_lib.normalize import extract_first_semver
 from nixos_survey_lib.page import page_to_json
 from nixos_survey_lib.render_echarts import (
     horizontal_bar,
-    ranking_bar,
 )
 from nixos_survey_lib.types import Page, Row, Section
 
@@ -51,10 +49,10 @@ def test_e2e_pipeline_against_fixtures(fixtures_dir):
                         counts_single(nix_versions, bucket_min_percent=None, bucket_min_count=None))]),
             ]),
             Section("ranking", "Ranking", rows=[
-                Row("priorities", "Priorities (top-1 appearances)",
-                    question=r.priorities.question.prompt,
-                    commentary="Quick ranking test.",
-                    charts=[ranking_bar(ranking_top_n(r.priorities, n=1))]),
+                Row("os2", "Operating systems (again)",
+                    question=r.os.question.prompt,
+                    commentary="Reuse os as a non-ranking placeholder.",
+                    charts=[horizontal_bar(counts_multi(r.os, bucket_min_percent=None, bucket_min_count=None))]),
             ]),
         ],
     )

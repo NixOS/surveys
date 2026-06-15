@@ -1,7 +1,7 @@
 import math
 from typing import Any
 
-from .types import Bin, ChartSpec, CrossTab, RankDistribution, Ranked
+from .types import Bin, ChartSpec, CrossTab, RankDistribution
 
 
 _BAR_ROW_PX = 28
@@ -474,47 +474,3 @@ def rank_distribution_bar(
         height=height if height is not None else _default_bar_height(len(dist.items)),
     )
 
-
-def ranking_bar(
-    ranked: list[Ranked],
-    *,
-    title: str | None = None,
-    height: int | None = None,
-) -> ChartSpec:
-    """Render a ranking bar chart. avg_rank values are rounded to 2 decimals;
-    top_n_count values are integers."""
-    reversed_items = list(reversed(ranked))
-    labels = [r.label for r in reversed_items]
-    is_avg_rank = bool(ranked) and ranked[0].method == "avg_rank"
-    if is_avg_rank:
-        values: list[float | int] = [round(r.value, 2) for r in reversed_items]
-    else:
-        values = [int(r.value) for r in reversed_items]
-
-    option: dict[str, Any] = {
-        "grid": {"left": 200, "right": 80, "top": 40, "bottom": 30},
-        "xAxis": {"type": "value", "show": False, "max": "dataMax"},
-        "yAxis": {
-            "type": "category",
-            "data": labels,
-            "axisLabel": {"width": 180, "overflow": "truncate"},
-            "axisLine": {"show": False},
-            "axisTick": {"show": False},
-        },
-        "tooltip": {
-            "trigger": "axis",
-            "axisPointer": {"type": "shadow"},
-            "formatter": "{b}: {c}",
-        },
-        "series": [{
-            "type": "bar",
-            "data": values,
-            "label": {"show": True, "position": "right", "formatter": "{c}"},
-            "barWidth": 16,
-            "itemStyle": {"borderRadius": 4},
-        }],
-    }
-    if title is not None:
-        option["title"] = {"text": title, "left": "left"}
-
-    return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(ranked)))
