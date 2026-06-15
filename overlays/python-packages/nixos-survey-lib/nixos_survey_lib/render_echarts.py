@@ -284,6 +284,43 @@ def diverging_bar(
     return ChartSpec(option=option, height=height if height is not None else 200)
 
 
+def line_chart(
+    table: CrossTab,
+    *,
+    title: str | None = None,
+    height: int | None = None,
+) -> ChartSpec:
+    """One line series per y_label over the x_labels axis. Cell values are
+    cells[xi][yi]. Emits no explicit color (inherits the theme palette)."""
+    unit = "×" if table.cell_kind == "lift" else "%"
+    series: list[dict[str, Any]] = []
+    for yi, y_label in enumerate(table.y_labels):
+        values = [round(table.cells[xi][yi], 1) for xi in range(len(table.x_labels))]
+        series.append({
+            "name": y_label,
+            "type": "line",
+            "data": values,
+            "smooth": False,
+        })
+
+    option: dict[str, Any] = {
+        "grid": {"left": 60, "right": 40, "top": 40, "bottom": 60},
+        "legend": {"top": 0, "type": "scroll"},
+        "tooltip": {"trigger": "axis"},
+        "xAxis": {
+            "type": "category",
+            "data": table.x_labels,
+            "axisLabel": {"interval": 0, "rotate": 30},
+        },
+        "yAxis": {"type": "value", "axisLabel": {"formatter": "{value}" + unit}},
+        "series": series,
+    }
+    if title is not None:
+        option["title"] = {"text": title, "left": "left"}
+
+    return ChartSpec(option=option, height=height if height is not None else 360)
+
+
 def ranking_bar(
     ranked: list[Ranked],
     *,

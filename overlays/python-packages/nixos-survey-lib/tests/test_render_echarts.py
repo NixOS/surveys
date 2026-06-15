@@ -147,6 +147,28 @@ def test_diverging_bar_shape_and_colors():
     assert series["Did not know"]["stack"] == "neutral"
 
 
+from nixos_survey_lib.render_echarts import line_chart
+
+
+def test_line_chart_series_per_y_label():
+    ct = CrossTab(
+        x_labels=["<1y", "1-2y", "3-4y"],
+        y_labels=["Beginner", "Advanced"],
+        cells=[[80.0, 20.0], [50.0, 50.0], [10.0, 90.0]],
+        cell_kind="rate_pct",
+    )
+    spec = line_chart(ct)
+    opt = spec.option
+    assert opt["xAxis"]["data"] == ["<1y", "1-2y", "3-4y"]
+    series = {s["name"]: s for s in opt["series"]}
+    assert series["Beginner"]["type"] == "line"
+    assert series["Beginner"]["data"] == [80.0, 50.0, 10.0]
+    assert series["Advanced"]["data"] == [20.0, 50.0, 90.0]
+    # No explicit color (inherits theme palette).
+    assert "color" not in series["Beginner"]
+    assert "itemStyle" not in series["Beginner"]
+
+
 from nixos_survey_lib.render_echarts import ranking_bar
 from nixos_survey_lib.types import Ranked
 
