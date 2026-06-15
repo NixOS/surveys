@@ -8,10 +8,10 @@ interface Props {
     title: string;
     question: string;
     commentary: string;
-    chart: {
+    charts: Array<{
       option: Record<string, unknown>;
       height?: number;
-    };
+    }>;
   };
   variant?: 'neobrutalist' | 'homepage' | 'bare';
 }
@@ -24,7 +24,6 @@ const rowClass: Record<NonNullable<Props['variant']>, string> = {
   bare: '',
 };
 
-const height = row.chart.height ?? 320;
 ---
 <div class={`plot-row mb-5 ${rowClass[variant]}`}>
   <article class="p-5">
@@ -40,8 +39,12 @@ const height = row.chart.height ?? 320;
     <p class="mb-3 text-sm italic text-primary-black-65 dark:text-primary-white-45">{row.question}</p>
     <div class="max-w-prose" set:html={marked.parse(row.commentary)} />
   </article>
-  <article class="p-5" data-echarts-option>
-    <script type="application/json" set:html={JSON.stringify(row.chart.option)} />
-    <div class="echarts-chart w-full" style={`height: ${height}px`}></div>
-  </article>
+  {row.charts.map((chart, i) => (
+    <article class={`p-5 ${i > 0 ? 'pt-0' : ''}`} data-echarts-option>
+      <div class={i > 0 ? 'border-t border-secondary-afghani-blue/20 dark:border-secondary-afghani-blue-75/20 pt-5' : ''}>
+        <script type="application/json" set:html={JSON.stringify(chart.option)} />
+        <div class="echarts-chart w-full" style={`height: ${chart.height ?? 320}px`}></div>
+      </div>
+    </article>
+  ))}
 </div>
