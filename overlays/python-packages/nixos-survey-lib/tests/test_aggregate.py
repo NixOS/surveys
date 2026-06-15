@@ -494,3 +494,23 @@ def test_sankey_links_node_order_x_then_y():
     # x-nodes precede y-nodes.
     assert nodes.index("1-2y") < nodes.index("No issues")
     assert nodes.index("3-4y") < nodes.index("No issues")
+
+
+def test_sankey_links_raises_on_x_y_collision():
+    # x and y share a node name "Shared" → must raise ValueError.
+    x = _sc(["Shared"] * 6, qid="x")
+    y = _sc(["Shared"] * 6, qid="y")
+    import pytest
+    with pytest.raises(ValueError, match="collide"):
+        sankey_links(x, y, min_count=1)
+
+
+def test_sankey_links_x_band_resolves_collision():
+    # After renaming via x_band the collision disappears → no error, link produced.
+    x = _sc(["Shared"] * 6, qid="x")
+    y = _sc(["Shared"] * 6, qid="y")
+    nodes, links = sankey_links(x, y, x_band={"Shared": "Shared (x side)"}, min_count=1)
+    assert "Shared (x side)" in nodes
+    assert "Shared" in nodes
+    assert links[0]["source"] == "Shared (x side)"
+    assert links[0]["target"] == "Shared"

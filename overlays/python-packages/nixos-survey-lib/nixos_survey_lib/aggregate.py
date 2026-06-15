@@ -398,6 +398,14 @@ def sankey_links(
         key = (mx, my)
         pair_counts[key] = pair_counts.get(key, 0) + 1
 
+    collisions = set(x_seen) & set(y_seen)
+    if collisions:
+        quoted = ", ".join(f'"{v}"' for v in sorted(collisions))
+        raise ValueError(
+            f"sankey_links: x-node name(s) collide with y-node name(s): {quoted}. "
+            "Use x_band or y_map to rename colliding values before they reach the graph."
+        )
+
     x_index = {n: i for i, n in enumerate(x_seen)}
     y_index = {n: i for i, n in enumerate(y_seen)}
     surviving = [

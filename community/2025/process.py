@@ -151,6 +151,7 @@ def main(csv_path: str, out_path: str) -> None:
     )
     discovery_nodes, discovery_links = sankey_links(
         r.first_heard_which, r.first_heard_how,
+        x_band={"I don’t remember": "Don’t recall (Nix vs NixOS)"},
         exclude=["Skipped"],
     )
 
