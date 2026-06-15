@@ -149,6 +149,10 @@ def main(csv_path: str, out_path: str) -> None:
         y_map=STABLE_UPGRADE_OUTCOME_MAP,
         exclude=STABLE_UPGRADE_CROSS_EXCLUDE,
     )
+    discovery_nodes, discovery_links = sankey_links(
+        r.first_heard_which, r.first_heard_how,
+        exclude=["Skipped"],
+    )
 
     page = Page(
         year=2025,
@@ -232,6 +236,10 @@ def main(csv_path: str, out_path: str) -> None:
                     charts=[horizontal_bar(counts_single(r.first_heard_which))]),
                 Row("first_heard_how", "First-exposure channel", question=q("first_heard_how"), commentary=cm["first_heard_how"],
                     charts=[horizontal_bar(counts_single(r.first_heard_how))]),
+                Row("discovery_flow", "Discovery flow",
+                    question=f"{q('first_heard_which')} → {q('first_heard_how')}",
+                    commentary=cm["discovery_flow"],
+                    charts=[sankey(discovery_nodes, discovery_links)]),
                 Row("user_types", "User types",
                     question="Which user types do you identify with?",
                     commentary=cm["user_types"],

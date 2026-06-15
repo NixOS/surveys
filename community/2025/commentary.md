@@ -171,6 +171,15 @@ remember. Blogs (7.3%), search (6.7%), Reddit (4.9%), and work
 introductions (4.6%) make up the next tier. Categories below 0.5% or
 fewer than 5 respondents are folded into "Other (combined)".
 
+## discovery_flow
+
+This alluvial view links whether respondents first heard of Nix or NixOS
+(left) to the channel that introduced them (right). It re-expresses the two
+discovery questions as a single flow: NixOS-first respondents dominate every
+channel, and YouTube and word-of-mouth carry the heaviest streams. Channels
+reaching fewer than 5 respondents in a given flow are dropped, so only the
+substantial paths are drawn.
+
 ## user_types
 
 "Love the idea" (A) is by far the most-claimed identity, picked by
