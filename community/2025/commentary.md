@@ -347,6 +347,14 @@ my own" and "with community help"). Feedback friction shows up at modest rates:
 7.0% report slow feedback, 5.8% got stuck after starting, 2.1% found received
 feedback unhelpful. Employer policy is rarely a blocker (0.6%).
 
+## involvement_x_experience
+
+Two views of how involvement roles vary with experience. The left heatmap shows
+the rate — among respondents in each experience band, the share reporting each
+involvement role. The right heatmap shows lift — how much more (or less) likely
+each role is within a band relative to the overall baseline (1.0× = no
+difference). Bands exclude non-users and undisclosed experience.
+
 ## workplace_uses_nix
 
 Among respondents whose free-text answers could be normalised, 12.8%

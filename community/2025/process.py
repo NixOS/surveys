@@ -158,6 +158,23 @@ def main(csv_path: str, out_path: str) -> None:
                     charts=[horizontal_bar(counts_single(r.stable_upgrade, order=STABLE_UPGRADE_ORDER, bucket_min_percent=None))]),
                 Row("involvement", "Involvement", question=q("involvement"), commentary=cm["involvement"],
                     charts=[horizontal_bar(counts_multi(r.involvement))]),
+                Row("involvement_x_experience", "Involvement by experience",
+                    question=f"{q('involvement')} × {q('years_using_nix')}",
+                    commentary=cm["involvement_x_experience"],
+                    charts=[
+                        heatmap(crosstab_multi(
+                            r.involvement, r.years_using_nix,
+                            denominator="rate",
+                            x_order=YEARS_USING_NIX_ORDER,
+                            x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
+                        ), annotate=True),
+                        heatmap(crosstab_multi(
+                            r.involvement, r.years_using_nix,
+                            denominator="lift",
+                            x_order=YEARS_USING_NIX_ORDER,
+                            x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
+                        ), annotate=True),
+                    ]),
                 Row("years_using_nix", "Years using Nix", question=q("years_using_nix"), commentary=cm["years_using_nix"],
                     charts=[horizontal_bar(counts_single(r.years_using_nix, order=YEARS_USING_NIX_ORDER, bucket_min_percent=None))]),
                 Row("skill_level", "Nix Skill Level", question=q("skill_level"), commentary=cm["skill_level"],
