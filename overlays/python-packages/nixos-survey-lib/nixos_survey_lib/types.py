@@ -57,7 +57,7 @@ class Row:
     title: str
     question: str
     commentary: str
-    chart: ChartSpec
+    charts: list[ChartSpec]
 
 
 @dataclass(frozen=True)

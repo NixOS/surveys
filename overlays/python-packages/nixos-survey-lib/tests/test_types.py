@@ -79,12 +79,13 @@ def test_chartspec_optional_height():
 
 
 def test_row_construction():
-    r = Row(id="country", title="Country", question="Where?", commentary="X.", chart=ChartSpec(option={}))
+    r = Row(id="country", title="Country", question="Where?", commentary="X.", charts=[ChartSpec(option={})])
     assert r.id == "country"
+    assert len(r.charts) == 1
 
 
 def test_section_construction():
-    r = Row(id="country", title="Country", question="Where?", commentary="X.", chart=ChartSpec(option={}))
+    r = Row(id="country", title="Country", question="Where?", commentary="X.", charts=[ChartSpec(option={})])
     s = Section(id="people", heading="People", rows=[r])
     assert len(s.rows) == 1
 
