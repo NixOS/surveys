@@ -135,6 +135,15 @@ severe-unresolved issues together account for 7.1%. A further 12.8%
 had not yet upgraded at survey time, and 5.5% were unaware a new
 stable release existed.
 
+The Sankey funnel below re-stages these responses as a flow — from all
+respondents, to whether they knew a new stable release existed, to whether
+they upgraded, to the severity they hit. This staging is a derived analyst
+interpretation, not a survey field: the single question cannot truly separate
+"knew but chose not to upgrade" from other reasons for staying put, so the
+funnel is exploratory and meant to be read visually rather than as exact
+sub-populations. The companion Sankey links experience (years using Nix) to
+the upgrade outcome.
+
 ## involvement
 
 Nearly every respondent uses NixOS (87.1%), and two-thirds (66.7%)
