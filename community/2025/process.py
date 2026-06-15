@@ -169,7 +169,23 @@ def main(csv_path: str, out_path: str) -> None:
             ]),
             Section("experience", "Experience", rows=[
                 Row("stable_upgrade", "Stable Upgrade", question=q("stable_upgrade"), commentary=cm["stable_upgrade"],
-                    charts=[horizontal_bar(counts_single(r.stable_upgrade, order=STABLE_UPGRADE_ORDER, bucket_min_percent=None))]),
+                    charts=[
+                        diverging_bar(
+                            counts_single(r.stable_upgrade, order=STABLE_UPGRADE_ORDER,
+                                          exclude=["Skipped"], bucket_min_percent=None),
+                            positive=["I had no issues.", "I had minor issues."],
+                            negative=[
+                                "I had moderate issues.",
+                                "I had severe issues but figured it out after some time.",
+                                "I had severe issues and could not make the upgrade.",
+                            ],
+                            neutral=[
+                                "I did not know there was a new stable release.",
+                                "I have not upgraded.",
+                            ],
+                        ),
+                        horizontal_bar(counts_single(r.stable_upgrade, order=STABLE_UPGRADE_ORDER, bucket_min_percent=None)),
+                    ]),
                 Row("involvement", "Involvement", question=q("involvement"), commentary=cm["involvement"],
                     charts=[horizontal_bar(counts_multi(r.involvement))]),
                 Row("involvement_x_experience", "Involvement by experience",
