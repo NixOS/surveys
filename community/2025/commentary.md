@@ -197,7 +197,11 @@ things done" pragmatists (C), and 44.2% as curious learners (B).
 Aspiring or active contributors (D) account for 31.3%, and strategic
 decision-makers (E) for 14.8%. Because the question allows multiple
 selections, respondents often combine personas — e.g., enthusiast and
-pragmatist.
+pragmatist. The UpSet chart below the bars makes these combinations explicit:
+each column is one exact set of personas, the connected dots show which
+personas it contains, and the bar above counts how many respondents chose
+exactly that combination. Combinations with fewer than 5 respondents are not
+shown.
 
 **Persona definitions** (from the survey prompt):
 
@@ -359,7 +363,11 @@ another 36% want to contribute now but don't know how to get started or how
 to join existing efforts. Roughly 31% have actually contributed (combining "on
 my own" and "with community help"). Feedback friction shows up at modest rates:
 7.0% report slow feedback, 5.8% got stuck after starting, 2.1% found received
-feedback unhelpful. Employer policy is rarely a blocker (0.6%).
+feedback unhelpful. Employer policy is rarely a blocker (0.6%). The UpSet
+chart shows which of these experiences co-occur for the same respondent —
+each column is one exact combination of selected statements, sized by the bar
+above. Only the most common combinations are shown; rarer ones (and any with
+fewer than 5 respondents) are omitted and counted in the chart's caption.
 
 ## involvement_x_experience
 
