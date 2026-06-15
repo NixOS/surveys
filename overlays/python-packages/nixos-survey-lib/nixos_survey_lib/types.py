@@ -46,6 +46,18 @@ class Ranked:
 
 
 @dataclass(frozen=True)
+class RankDistItem:
+    label: str
+    percents: list[float]
+
+
+@dataclass(frozen=True)
+class RankDistribution:
+    segment_labels: list[str]
+    items: list["RankDistItem"]
+
+
+@dataclass(frozen=True)
 class ChartSpec:
     option: dict[str, Any]
     height: int | None = None

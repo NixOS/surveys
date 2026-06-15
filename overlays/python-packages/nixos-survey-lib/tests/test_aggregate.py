@@ -298,3 +298,67 @@ def test_ranking_top_n_counts_appearances():
     assert by["C"] == 2
     assert all(o.method == "top_n_count" for o in out)
     assert out[0].value >= out[-1].value
+
+
+from nixos_survey_lib.aggregate import rank_distribution
+from nixos_survey_lib.types import RankDistribution
+
+
+def test_rank_distribution_per_position_basic():
+    # 4 respondents, 3 positions.
+    r = _rk([
+        ["A", "B", "C"],
+        ["A", "C", "B"],
+        ["B", "A", "C"],
+        ["C", "A", "B"],
+    ])
+    dist = rank_distribution(r, min_count=1)
+    assert isinstance(dist, RankDistribution)
+    assert dist.segment_labels == ["#1", "#2", "#3", "Unranked"]
+    by = {it.label: it.percents for it in dist.items}
+    # A: rank1 x2 (50%), rank2 x2 (50%), rank3 x0, unranked 0.
+    assert by["A"] == [50.0, 50.0, 0.0, 0.0]
+    # B: rank1 x1 (25%), rank2 x1 (25%), rank3 x2 (50%), unranked 0.
+    assert by["B"] == [25.0, 25.0, 50.0, 0.0]
+    # Sorted by top segment (#1) desc: A (50) before B (25) and C (25).
+    assert dist.items[0].label == "A"
+
+
+def test_rank_distribution_unranked_share():
+    # 2 respondents; choice D only appears for one of them, never for the other.
+    r = _rk([
+        ["A", "D"],
+        ["A", "B"],
+    ])
+    dist = rank_distribution(r, min_count=1)
+    by = {it.label: it.percents for it in dist.items}
+    # D: rank2 x1 (50%), unranked = 100 - 50 = 50%.
+    assert by["D"] == [0.0, 50.0, 50.0]
+    assert dist.segment_labels == ["#1", "#2", "Unranked"]
+
+
+def test_rank_distribution_suppresses_below_min_count():
+    # A ranked by 5 respondents, B by only 2.
+    rows = [["A", "B"]] * 2 + [["A", "C"]] * 3
+    r = _rk(rows)
+    dist = rank_distribution(r, min_count=5)
+    labels = {it.label for it in dist.items}
+    assert "A" in labels
+    # B (2) and C (3) both below min_count=5 -> suppressed.
+    assert "B" not in labels
+    assert "C" not in labels
+
+
+def test_rank_distribution_bands_collapse_tail_to_unranked():
+    # 1 respondent ranking 4 positions; bands (1,2),(3,3); position 4 folds to unranked.
+    r = _rk([
+        ["A", "B", "C", "D"],
+    ])
+    dist = rank_distribution(r, bands=[(1, 2), (3, 3)], min_count=1)
+    assert dist.segment_labels == ["1-2", "3", "Unranked"]
+    by = {it.label: it.percents for it in dist.items}
+    # A pos1 -> band "1-2" (100%); B pos2 -> band "1-2" (100%);
+    # C pos3 -> band "3" (100%); D pos4 -> past last band -> unranked (100%).
+    assert by["A"] == [100.0, 0.0, 0.0]
+    assert by["C"] == [0.0, 100.0, 0.0]
+    assert by["D"] == [0.0, 0.0, 100.0]

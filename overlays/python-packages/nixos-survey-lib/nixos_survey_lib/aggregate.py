@@ -2,7 +2,7 @@ from typing import Literal
 
 import polars as pl
 
-from .types import Bin, CrossTab, MultiChoice, Ranked, Ranking, SingleChoice
+from .types import Bin, CrossTab, MultiChoice, RankDistribution, RankDistItem, Ranked, Ranking, SingleChoice
 
 
 DEFAULT_BUCKET_MIN_PERCENT: float = 0.5
@@ -292,6 +292,73 @@ def crosstab_multi(
         cells.append(col_vals)
 
     return CrossTab(x_labels=x_labels, y_labels=trait_labels, cells=cells, cell_kind=kind)
+
+
+def rank_distribution(
+    r: Ranking,
+    *,
+    bands: list[tuple[int, int]] | None = None,
+    min_count: int = DEFAULT_BUCKET_MIN_COUNT,
+) -> RankDistribution:
+    """Per choice, % of respondents placing it at each rank position (or band),
+    plus an "Unranked" remainder. Positions past the last band fold into
+    "Unranked". Items with total ranked count < ``min_count`` are suppressed
+    (privacy floor). Items are sorted by their top segment's share descending.
+    """
+    total = len(r)
+    n_positions = len(r.rank_columns)
+    if total == 0 or n_positions == 0:
+        return RankDistribution(segment_labels=[], items=[])
+
+    # Map each 1-based position to a segment index, and build segment labels.
+    if bands is None:
+        segment_labels = [f"#{p}" for p in range(1, n_positions + 1)] + ["Unranked"]
+        # position p (1-based) -> segment index p-1
+        def seg_index(pos: int) -> int | None:
+            return pos - 1 if 1 <= pos <= n_positions else None
+        n_segments = n_positions
+    else:
+        segment_labels = [
+            (f"{lo}-{hi}" if lo != hi else f"{lo}") for (lo, hi) in bands
+        ] + ["Unranked"]
+        def seg_index(pos: int) -> int | None:
+            for i, (lo, hi) in enumerate(bands):
+                if lo <= pos <= hi:
+                    return i
+            return None  # past the last band -> unranked
+        n_segments = len(bands)
+
+    # Per choice: counts per segment, and total ranked count.
+    seg_counts: dict[str, list[int]] = {}
+    ranked_total: dict[str, int] = {}
+    for pos, series in enumerate(r.rank_columns, start=1):
+        si = seg_index(pos)
+        for v in series.to_list():
+            if v is None or v == "":
+                continue
+            label = str(v)
+            ranked_total[label] = ranked_total.get(label, 0) + 1
+            if si is None:
+                continue  # collapses into unranked (not counted in any segment)
+            counts = seg_counts.setdefault(label, [0] * n_segments)
+            counts[si] += 1
+
+    items: list[RankDistItem] = []
+    for label, rtotal in ranked_total.items():
+        if rtotal < min_count:
+            continue
+        counts = seg_counts.get(label, [0] * n_segments)
+        percents = [c / total * 100.0 for c in counts]
+        unranked_pct = 100.0 - sum(percents)
+        # Clamp tiny negative float drift to 0.
+        if -1e-9 < unranked_pct < 0:
+            unranked_pct = 0.0
+        percents.append(unranked_pct)
+        items.append(RankDistItem(label=label, percents=percents))
+
+    # Sort by the top segment's share descending; label asc as a stable tiebreak.
+    items.sort(key=lambda it: (-it.percents[0], it.label))
+    return RankDistribution(segment_labels=segment_labels, items=items)
 
 
 def ranking_avg(r: Ranking) -> list[Ranked]:
