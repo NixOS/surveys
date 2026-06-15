@@ -466,6 +466,7 @@ def sankey(
     nodes: list[str],
     links: list[dict[str, Any]],
     *,
+    title: str | None = None,
     height: int | None = None,
 ) -> ChartSpec:
     """Render a Sankey/alluvial ECharts option dict.
@@ -488,5 +489,7 @@ def sankey(
             "label": {"overflow": "truncate"},
         }],
     }
+    if title is not None:
+        option["title"] = {"text": title, "left": "left", "top": 0}
     return ChartSpec(option=option, height=height if height is not None else 480)
 

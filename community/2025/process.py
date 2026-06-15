@@ -19,6 +19,8 @@ from nixos_survey_lib.aggregate import (
     crosstab,
     crosstab_multi,
     rank_distribution,
+    sankey_funnel,
+    sankey_links,
 )
 from nixos_survey_lib.loader import (
     load_commentary,
@@ -37,6 +39,7 @@ from nixos_survey_lib.render_echarts import (
     line_chart,
     lollipop,
     rank_distribution_bar,
+    sankey,
 )
 from nixos_survey_lib.types import Page, Row, Section
 
@@ -81,6 +84,33 @@ HELP_FREQUENCY_ORDER = [
     "Always", "Often", "Sometimes", "Rarely", "Never", "Skipped",
 ]
 
+# Phase 3 Sankey staging. Straight apostrophes throughout to match CSV values.
+YEARS_USING_NIX_BAND = {
+    "Less than 1 year": "<1y",
+    "1 to 2 years": "1-2y",
+    "3 to 4 years": "3-4y",
+    "5 to 6 years": "5-6y",
+    "7 to 8 years": "7-10y",
+    "9 to 10 years": "7-10y",
+    "11 or more years": "11y+",
+}
+
+STABLE_UPGRADE_OUTCOME_MAP = {
+    "I had no issues.": "No issues",
+    "I had minor issues.": "Minor",
+    "I had moderate issues.": "Problems",
+    "I had severe issues but figured it out after some time.": "Problems",
+    "I had severe issues and could not make the upgrade.": "Problems",
+    "I have not upgraded.": "Did not upgrade",
+}
+
+STABLE_UPGRADE_CROSS_EXCLUDE = [
+    "I don't use Nix",
+    "Prefer not to say",
+    "Skipped",
+    "I did not know there was a new stable release.",
+]
+
 
 def main(csv_path: str, out_path: str) -> None:
     here = Path(__file__).resolve().parent
@@ -110,6 +140,14 @@ def main(csv_path: str, out_path: str) -> None:
         denominator="rate",
         x_order=YEARS_USING_NIX_ORDER,
         x_exclude=["Skipped", "Prefer not to say", "I don't use Nix"],
+    )
+
+    su_funnel_nodes, su_funnel_links = sankey_funnel(r.stable_upgrade)
+    su_cross_nodes, su_cross_links = sankey_links(
+        r.years_using_nix, r.stable_upgrade,
+        x_band=YEARS_USING_NIX_BAND,
+        y_map=STABLE_UPGRADE_OUTCOME_MAP,
+        exclude=STABLE_UPGRADE_CROSS_EXCLUDE,
     )
 
     page = Page(
@@ -181,8 +219,8 @@ def main(csv_path: str, out_path: str) -> None:
                             ],
                             title="Outcome mix (100%)",
                         ),
-                        horizontal_bar(counts_single(r.stable_upgrade, order=STABLE_UPGRADE_ORDER, bucket_min_percent=None),
-                                       title="By category"),
+                        sankey(su_funnel_nodes, su_funnel_links, title="Decision funnel"),
+                        sankey(su_cross_nodes, su_cross_links, title="Upgrade outcome by experience"),
                     ]),
                 Row("involvement", "Involvement", question=q("involvement"), commentary=cm["involvement"],
                     charts=[horizontal_bar(counts_multi(r.involvement))]),
