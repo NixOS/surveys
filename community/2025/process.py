@@ -254,14 +254,7 @@ def main(csv_path: str, out_path: str) -> None:
                             *upset_combinations(r.user_types),
                             height=560,
                             set_labels={
-                                c: c.split(".")[0]
-                                for c in [
-                                    "A. I love the idea behind Nix",
-                                    "B. I’m curious how Nix works",
-                                    "C. I use Nix to get things done",
-                                    "D. I (want to) work on Nix",
-                                    "E. I’m a decision-maker",
-                                ]
+                                c: c.split(".", 1)[0] for c in r.user_types.choices()
                             },
                         ),
                     ]),
