@@ -461,3 +461,32 @@ def rank_distribution_bar(
         height=height if height is not None else _default_bar_height(len(dist.items)),
     )
 
+
+def sankey(
+    nodes: list[str],
+    links: list[dict[str, Any]],
+    *,
+    height: int | None = None,
+) -> ChartSpec:
+    """Render a Sankey/alluvial ECharts option dict.
+
+    ``nodes`` is a list of node names; ``links`` is a list of
+    ``{"source", "target", "value"}`` dicts. No grid/axes and no explicit
+    colors — the chart inherits the theme palette. A tooltip is included.
+    """
+    option: dict[str, Any] = {
+        "tooltip": {
+            "trigger": "item",
+            "triggerOn": "mousemove",
+        },
+        "series": [{
+            "type": "sankey",
+            "data": [{"name": n} for n in nodes],
+            "links": links,
+            "emphasis": {"focus": "adjacency"},
+            "lineStyle": {"color": "gradient", "curveness": 0.5},
+            "label": {"overflow": "truncate"},
+        }],
+    }
+    return ChartSpec(option=option, height=height if height is not None else 480)
+

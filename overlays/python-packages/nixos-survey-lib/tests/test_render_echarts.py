@@ -412,3 +412,55 @@ def test_likert_bar_all_segment_colors_distinct():
     assert len(colors) == 7
     assert len(set(colors)) == 7, f"Duplicate colors found: {colors}"
 
+
+from nixos_survey_lib.render_echarts import sankey
+
+
+def test_sankey_basic_shape():
+    nodes = ["All", "Knew", "Didn't know"]
+    links = [
+        {"source": "All", "target": "Knew", "value": 90},
+        {"source": "All", "target": "Didn't know", "value": 10},
+    ]
+    spec = sankey(nodes, links)
+    opt = spec.option
+    assert opt["series"][0]["type"] == "sankey"
+    assert opt["series"][0]["data"] == [
+        {"name": "All"},
+        {"name": "Knew"},
+        {"name": "Didn't know"},
+    ]
+    assert opt["series"][0]["links"] == [
+        {"source": "All", "target": "Knew", "value": 90},
+        {"source": "All", "target": "Didn't know", "value": 10},
+    ]
+
+
+def test_sankey_has_tooltip_and_no_axes():
+    spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}])
+    opt = spec.option
+    assert "tooltip" in opt
+    assert "grid" not in opt
+    assert "xAxis" not in opt
+    assert "yAxis" not in opt
+
+
+def test_sankey_emits_no_explicit_colors():
+    spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}])
+    series = spec.option["series"][0]
+    # Theme palette is inherited; the renderer must not pin colors.
+    assert "color" not in spec.option
+    assert "color" not in series
+    for node in series["data"]:
+        assert "itemStyle" not in node
+
+
+def test_sankey_respects_provided_height():
+    spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}], height=520)
+    assert spec.height == 520
+
+
+def test_sankey_default_height():
+    spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}])
+    assert spec.height == 480
+
