@@ -231,42 +231,6 @@ def test_line_chart_series_per_y_label():
     assert "itemStyle" not in series["Beginner"]
 
 
-from nixos_survey_lib.render_echarts import slope_chart
-
-
-def test_slope_chart_first_vs_last_column():
-    ct = CrossTab(
-        x_labels=["<1y", "1-2y", "3-4y"],
-        y_labels=["Trait A", "Trait B"],
-        cells=[[10.0, 90.0], [50.0, 50.0], [80.0, 20.0]],
-        cell_kind="rate_pct",
-    )
-    spec = slope_chart(ct)
-    opt = spec.option
-    # Only first and last x columns appear.
-    assert opt["xAxis"]["data"] == ["<1y", "3-4y"]
-    series = {s["name"]: s for s in opt["series"]}
-    assert series["Trait A"]["type"] == "line"
-    assert series["Trait A"]["data"] == [10.0, 80.0]
-    assert series["Trait B"]["data"] == [90.0, 20.0]
-    # Endpoint labels shown.
-    assert series["Trait A"]["label"]["show"] is True
-    # No explicit color.
-    assert "color" not in series["Trait A"]
-
-
-def test_slope_chart_single_column_degrades():
-    ct = CrossTab(
-        x_labels=["only"],
-        y_labels=["Trait A"],
-        cells=[[42.0]],
-        cell_kind="rate_pct",
-    )
-    spec = slope_chart(ct)
-    # First and last are the same column.
-    assert spec.option["xAxis"]["data"] == ["only", "only"]
-    assert spec.option["series"][0]["data"] == [42.0, 42.0]
-
 
 from nixos_survey_lib.render_echarts import lollipop
 
@@ -327,7 +291,7 @@ def test_rank_distribution_bar_shape_and_colors():
     assert series["#1"]["data"] == [20.0, 60.0]
     assert series["Unranked"]["data"] == [60.0, 10.0]
     # Hex colors; top rank darkest blue (well-separated from later ranks), Unranked gray.
-    assert series["#1"]["itemStyle"]["color"] == "#4d6fb7"
+    assert series["#1"]["itemStyle"]["color"] == "#15213a"
     assert series["Unranked"]["itemStyle"]["color"] == "#aeaeae"
     # Rank bands must be visually distinct from each other and from gray_light.
     rank1_color = series["#1"]["itemStyle"]["color"]
@@ -342,4 +306,109 @@ def test_rank_distribution_bar_empty():
     spec = rank_distribution_bar(dist)
     assert spec.option["series"] == []
     assert spec.option["yAxis"]["data"] == []
+
+
+def _hex_to_rgb(h: str) -> tuple[int, int, int]:
+    h = h.lstrip("#")
+    return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+
+
+def _perceived_lightness(h: str) -> float:
+    """Approximate perceived lightness (0–1) using sRGB luminance formula."""
+    r, g, b = _hex_to_rgb(h)
+    return 0.2126 * (r / 255) + 0.7152 * (g / 255) + 0.0722 * (b / 255)
+
+
+def test_rank_distribution_bar_monotonic_lightness_n3():
+    """3 ranked + 1 unranked: the 3 ranked colors must be strictly darker→lighter."""
+    dist = RankDistribution(
+        segment_labels=["#1", "#2", "#3", "Unranked"],
+        items=[RankDistItem(label="X", percents=[25.0, 25.0, 25.0, 25.0])],
+    )
+    spec = rank_distribution_bar(dist)
+    series = {s["name"]: s for s in spec.option["series"]}
+    ranked = ["#1", "#2", "#3"]
+    lightness = [_perceived_lightness(series[r]["itemStyle"]["color"]) for r in ranked]
+    # Each successive rank must be strictly lighter.
+    for i in range(len(lightness) - 1):
+        assert lightness[i] < lightness[i + 1], (
+            f"rank {i+1} ({lightness[i]:.3f}) not darker than rank {i+2} ({lightness[i+1]:.3f})"
+        )
+    # Rank 1 is the darkest of all ranked colors.
+    assert lightness[0] == min(lightness)
+
+
+def test_rank_distribution_bar_monotonic_lightness_n5():
+    """5 ranked + 1 unranked: ranked colors must be strictly darker→lighter."""
+    dist = RankDistribution(
+        segment_labels=["#1", "#2", "#3", "#4", "#5", "Unranked"],
+        items=[RankDistItem(label="X", percents=[16.0, 16.0, 16.0, 16.0, 16.0, 20.0])],
+    )
+    spec = rank_distribution_bar(dist)
+    series = {s["name"]: s for s in spec.option["series"]}
+    ranked = ["#1", "#2", "#3", "#4", "#5"]
+    lightness = [_perceived_lightness(series[r]["itemStyle"]["color"]) for r in ranked]
+    for i in range(len(lightness) - 1):
+        assert lightness[i] < lightness[i + 1], (
+            f"rank {i+1} ({lightness[i]:.3f}) not darker than rank {i+2} ({lightness[i+1]:.3f})"
+        )
+    assert lightness[0] == min(lightness)
+
+
+def test_rank_distribution_bar_even_spacing_n3():
+    """For N=3 ranked segments, even spacing picks ramp indices 0, 3, 6 (first, middle, last)."""
+    from nixos_survey_lib.render_echarts import _RANK_DIST_BLUES
+    dist = RankDistribution(
+        segment_labels=["#1", "#2", "#3", "Unranked"],
+        items=[RankDistItem(label="X", percents=[25.0, 25.0, 25.0, 25.0])],
+    )
+    spec = rank_distribution_bar(dist)
+    series_by_name = {s["name"]: s for s in spec.option["series"]}
+    ramp = _RANK_DIST_BLUES
+    n = len(ramp)
+    N = 3
+    expected = [ramp[round(i * (n - 1) / max(N - 1, 1))] for i in range(N)]
+    assert series_by_name["#1"]["itemStyle"]["color"] == expected[0]
+    assert series_by_name["#2"]["itemStyle"]["color"] == expected[1]
+    assert series_by_name["#3"]["itemStyle"]["color"] == expected[2]
+
+
+def test_rank_distribution_bar_even_spacing_n5():
+    """For N=5 ranked segments, even spacing picks ramp indices 0, 1~2, 3~4, 5, 6."""
+    from nixos_survey_lib.render_echarts import _RANK_DIST_BLUES
+    dist = RankDistribution(
+        segment_labels=["#1", "#2", "#3", "#4", "#5", "Unranked"],
+        items=[RankDistItem(label="X", percents=[16.0, 16.0, 16.0, 16.0, 16.0, 20.0])],
+    )
+    spec = rank_distribution_bar(dist)
+    series_by_name = {s["name"]: s for s in spec.option["series"]}
+    ramp = _RANK_DIST_BLUES
+    n = len(ramp)
+    N = 5
+    expected = [ramp[round(i * (n - 1) / max(N - 1, 1))] for i in range(N)]
+    ranked = ["#1", "#2", "#3", "#4", "#5"]
+    for rank, exp_color in zip(ranked, expected):
+        assert series_by_name[rank]["itemStyle"]["color"] == exp_color
+
+
+def test_likert_bar_all_segment_colors_distinct():
+    """2-positive / 3-negative / 2-neutral: all 7 segment colors must be unique."""
+    bins = [
+        Bin(label="No issues", count=30, percent=30.0),
+        Bin(label="Minor issues", count=20, percent=20.0),
+        Bin(label="Moderate issues", count=15, percent=15.0),
+        Bin(label="Severe resolved", count=10, percent=10.0),
+        Bin(label="Severe stuck", count=10, percent=10.0),
+        Bin(label="N/A", count=8, percent=8.0),
+        Bin(label="Unknown", count=7, percent=7.0),
+    ]
+    spec = likert_bar(
+        bins,
+        positive=["No issues", "Minor issues"],
+        negative=["Moderate issues", "Severe resolved", "Severe stuck"],
+        neutral=["N/A", "Unknown"],
+    )
+    colors = [s["itemStyle"]["color"] for s in spec.option["series"]]
+    assert len(colors) == 7
+    assert len(set(colors)) == 7, f"Duplicate colors found: {colors}"
 

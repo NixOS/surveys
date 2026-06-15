@@ -205,9 +205,11 @@ _LIKERT_POSITIVE_COLORS = [
     _PALETTE_HEX["blue_default"],
     _PALETTE_HEX["blue_75"],
 ]
-# Negative (disagreement) labels use orange shades: lightest = mildest.
+# Negative (disagreement) labels use orange shades: lightest = mildest → darkest = worst.
+# Three distinct shades so 3-category negative scales never repeat a color.
 _LIKERT_NEGATIVE_COLORS = [
     _PALETTE_HEX["orange_75"],
+    _PALETTE_HEX["orange_55"],
     _PALETTE_HEX["orange_45"],
 ]
 # Neutral labels use two distinct grays.
@@ -319,44 +321,6 @@ def line_chart(
     return ChartSpec(option=option, height=height if height is not None else 360)
 
 
-def slope_chart(
-    table: CrossTab,
-    *,
-    title: str | None = None,
-    height: int | None = None,
-) -> ChartSpec:
-    """Two-point slope chart: first vs last x_label column, one line per
-    y_label, labeled at both ends. No explicit color (inherits theme palette)."""
-    unit = "×" if table.cell_kind == "lift" else "%"
-    first_i = 0
-    last_i = len(table.x_labels) - 1 if table.x_labels else 0
-    x_data = [table.x_labels[first_i], table.x_labels[last_i]] if table.x_labels else []
-
-    series: list[dict[str, Any]] = []
-    for yi, y_label in enumerate(table.y_labels):
-        start = round(table.cells[first_i][yi], 1)
-        end = round(table.cells[last_i][yi], 1)
-        series.append({
-            "name": y_label,
-            "type": "line",
-            "data": [start, end],
-            "smooth": False,
-            "label": {"show": True, "formatter": "{c}" + unit},
-        })
-
-    option: dict[str, Any] = {
-        "grid": {"left": 60, "right": 120, "top": 40, "bottom": 40},
-        "legend": {"top": 0},
-        "tooltip": {"trigger": "item", "formatter": "{a}: {c}" + unit},
-        "xAxis": {"type": "category", "data": x_data, "boundaryGap": True},
-        "yAxis": {"type": "value", "axisLabel": {"formatter": "{value}" + unit}},
-        "series": series,
-    }
-    if title is not None:
-        option["title"] = {"text": title, "left": "left"}
-
-    return ChartSpec(option=option, height=height if height is not None else 420)
-
 
 def lollipop(
     bins: list[Bin],
@@ -410,16 +374,18 @@ def lollipop(
     return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(bins)))
 
 
-# Sequential blue ramp for rank-distribution segments: rank 1 (top) is darkest.
-# Index 0 = top rank/band; later segments lighten. Shades are well-separated
-# so 3–5 bands are clearly distinguishable. The "Unranked" tail segment always
-# uses gray_light (#aeaeae), which is distinct from all blues here.
+# Sequential blue ramp for rank-distribution segments: monotonically dark→light.
+# Index 0 = darkest (rank 1); later indices lighten strictly.
+# 7 shades give good even-spacing for any N from 1 to 7.
+# The "Unranked" tail segment always uses gray_light (#aeaeae), separate from this ramp.
 _RANK_DIST_BLUES = [
+    _PALETTE_HEX["blue_25"],
+    _PALETTE_HEX["blue_35"],
+    _PALETTE_HEX["blue_45"],
     _PALETTE_HEX["blue_default"],
     _PALETTE_HEX["blue_65"],
-    _PALETTE_HEX["blue_85"],
     _PALETTE_HEX["blue_75"],
-    _PALETTE_HEX["blue_45"],
+    _PALETTE_HEX["blue_85"],
 ]
 
 
@@ -442,13 +408,20 @@ def rank_distribution_bar(
     labels = [it.label for it in items]
 
     n_segments = len(dist.segment_labels)
+    # Number of ranked (non-Unranked) segments is n_segments - 1 when there is
+    # an Unranked tail; we treat the last segment as Unranked (gray) always.
+    n_ranked = n_segments - 1 if n_segments > 0 else 0
     series: list[dict[str, Any]] = []
     for si, seg_label in enumerate(dist.segment_labels):
         is_last = si == n_segments - 1
         if is_last:
             color = _PALETTE_HEX["gray_light"]
         else:
-            color = _RANK_DIST_BLUES[min(si, len(_RANK_DIST_BLUES) - 1)]
+            # Even spacing across the ramp so rank 1 = darkest, rank N = lightest,
+            # with uniform perceptual distance regardless of how many ranks there are.
+            ramp = _RANK_DIST_BLUES
+            idx = round(si * (len(ramp) - 1) / max(n_ranked - 1, 1))
+            color = ramp[idx]
         series.append({
             "name": seg_label,
             "type": "bar",
