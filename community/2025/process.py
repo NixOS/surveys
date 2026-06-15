@@ -102,6 +102,20 @@ def main(csv_path: str, out_path: str) -> None:
     def q(qid: str) -> str:
         return r[qid].question.prompt
 
+    _skill_x_exp_ct = crosstab(
+        r.years_using_nix, r.skill_level,
+        normalize="y",
+        x_order=YEARS_USING_NIX_ORDER, y_order=SKILL_ORDER,
+        x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
+        y_exclude=["I have never used Nix", "Prefer not to say", "Skipped"],
+    )
+    _traits_rate_exp_ct = crosstab_multi(
+        r.traits, r.years_using_nix,
+        denominator="rate",
+        x_order=YEARS_USING_NIX_ORDER,
+        x_exclude=["Skipped", "Prefer not to say", "I don't use Nix"],
+    )
+
     page = Page(
         year=2025,
         title="2025 Survey Results",
@@ -198,13 +212,10 @@ def main(csv_path: str, out_path: str) -> None:
                 Row("skill_x_experience", "Expertise vs Experience",
                     question=f"{q('skill_level')} × {q('years_using_nix')}",
                     commentary=cm["skill_x_experience"],
-                    charts=[heatmap(crosstab(
-                        r.years_using_nix, r.skill_level,
-                        normalize="y",
-                        x_order=YEARS_USING_NIX_ORDER, y_order=SKILL_ORDER,
-                        x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
-                        y_exclude=["I have never used Nix", "Prefer not to say", "Skipped"],
-                    ), height=356)]),
+                    charts=[
+                        heatmap(_skill_x_exp_ct, annotate=True, height=356),
+                        line_chart(_skill_x_exp_ct),
+                    ]),
                 Row("experience_x_skill", "Experience vs Expertise",
                     question=f"{q('years_using_nix')} × {q('skill_level')}",
                     commentary=cm["experience_x_skill"],
@@ -236,12 +247,10 @@ def main(csv_path: str, out_path: str) -> None:
                 Row("traits_rate_by_experience", "Trait rate by years using Nix",
                     question=f"{q('traits')} × {q('years_using_nix')}",
                     commentary=cm["traits_rate_by_experience"],
-                    charts=[heatmap(crosstab_multi(
-                        r.traits, r.years_using_nix,
-                        denominator="rate",
-                        x_order=YEARS_USING_NIX_ORDER,
-                        x_exclude=["Skipped", "Prefer not to say", "I don't use Nix"],
-                    ), height=540, vm_min=0, vm_max=100)]),
+                    charts=[
+                        heatmap(_traits_rate_exp_ct, annotate=True, height=540, vm_min=0, vm_max=100),
+                        slope_chart(_traits_rate_exp_ct),
+                    ]),
                 Row("traits_lift_by_experience", "Trait lift by years using Nix",
                     question=f"{q('traits')} × {q('years_using_nix')}",
                     commentary=cm["traits_lift_by_experience"],
