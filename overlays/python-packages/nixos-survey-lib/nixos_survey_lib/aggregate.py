@@ -328,9 +328,11 @@ def rank_distribution(
             return None  # past the last band -> unranked
         n_segments = len(bands)
 
-    # Per choice: counts per segment, and total ranked count.
+    # Per choice: counts per segment, total ranked count, and raw position sum
+    # for computing average rank (used for sort order).
     seg_counts: dict[str, list[int]] = {}
     ranked_total: dict[str, int] = {}
+    rank_pos_sum: dict[str, int] = {}  # sum of 1-based positions for avg rank
     for pos, series in enumerate(r.rank_columns, start=1):
         si = seg_index(pos)
         for v in series.to_list():
@@ -338,12 +340,14 @@ def rank_distribution(
                 continue
             label = str(v)
             ranked_total[label] = ranked_total.get(label, 0) + 1
+            rank_pos_sum[label] = rank_pos_sum.get(label, 0) + pos
             if si is None:
                 continue  # collapses into unranked (not counted in any segment)
             counts = seg_counts.setdefault(label, [0] * n_segments)
             counts[si] += 1
 
     items: list[RankDistItem] = []
+    avg_rank: dict[str, float] = {}
     for label, rtotal in ranked_total.items():
         if rtotal < min_count:
             continue
@@ -355,8 +359,9 @@ def rank_distribution(
             unranked_pct = 0.0
         percents.append(unranked_pct)
         items.append(RankDistItem(label=label, percents=percents))
+        avg_rank[label] = rank_pos_sum[label] / rtotal
 
-    # Sort by the top segment's share descending; label asc as a stable tiebreak.
-    items.sort(key=lambda it: (-it.percents[0], it.label))
+    # Sort by average rank ascending (most-preferred first); label asc as tiebreak.
+    items.sort(key=lambda it: (avg_rank[it.label], it.label))
     return RankDistribution(segment_labels=segment_labels, items=items)
 

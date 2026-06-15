@@ -280,8 +280,32 @@ def test_rank_distribution_per_position_basic():
     assert by["A"] == [50.0, 50.0, 0.0, 0.0]
     # B: rank1 x1 (25%), rank2 x1 (25%), rank3 x2 (50%), unranked 0.
     assert by["B"] == [25.0, 25.0, 50.0, 0.0]
-    # Sorted by top segment (#1) desc: A (50) before B (25) and C (25).
+    # Sorted by average rank ascending: A avg=1.5 < B avg=2.25 = C avg=2.25 (tie -> label asc).
     assert dist.items[0].label == "A"
+    assert dist.items[1].label == "B"
+    assert dist.items[2].label == "C"
+
+
+def test_rank_distribution_sorted_by_avg_rank_not_top_share():
+    # P is always ranked #2 (avg rank 2.0, top-band share 0%).
+    # Q is ranked #1 by one respondent but #3 by the other three
+    #   (avg rank 2.5, top-band share 25%).
+    # Old sort (top-band desc) would put Q first.
+    # New sort (avg rank asc) must put P first because 2.0 < 2.5.
+    r = _rk([
+        ["Q", "P", None],  # Q@1, P@2
+        ["X", "P", "Q"],   # X@1, P@2, Q@3
+        ["X", "P", "Q"],   # X@1, P@2, Q@3
+        ["X", "P", "Q"],   # X@1, P@2, Q@3
+    ])
+    dist = rank_distribution(r, min_count=1)
+    labels = [it.label for it in dist.items]
+    p_idx = labels.index("P")
+    q_idx = labels.index("Q")
+    assert p_idx < q_idx, (
+        f"P (avg rank 2.0) should sort before Q (avg rank 2.5), "
+        f"but got order {labels}"
+    )
 
 
 def test_rank_distribution_unranked_share():
