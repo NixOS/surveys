@@ -93,6 +93,7 @@ def heatmap(
     height: int | None = None,
     vm_min: float | None = None,
     vm_max: float | None = None,
+    annotate: bool = False,
 ) -> ChartSpec:
     """Render a heatmap ECharts option dict from a CrossTab.
 
@@ -173,7 +174,14 @@ def heatmap(
         "series": [{
             "type": "heatmap",
             "data": data,
-            "label": {"show": False},
+            "label": (
+                {
+                    "show": True,
+                    "formatter": "{@[2]}×" if table.cell_kind == "lift" else "{@[2]}%",
+                }
+                if annotate
+                else {"show": False}
+            ),
             "emphasis": {
                 "itemStyle": {
                     "shadowBlur": 10,

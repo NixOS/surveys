@@ -65,6 +65,43 @@ def test_heatmap_lift_uses_diverging_visualmap():
     assert vm["max"] == 2
 
 
+def test_heatmap_annotate_percent_formatter():
+    ct = CrossTab(
+        x_labels=["A"],
+        y_labels=["t1"],
+        cells=[[42.0]],
+        cell_kind="rate_pct",
+    )
+    spec = heatmap(ct, annotate=True)
+    label = spec.option["series"][0]["label"]
+    assert label["show"] is True
+    assert label["formatter"] == "{@[2]}%"
+
+
+def test_heatmap_annotate_lift_formatter():
+    ct = CrossTab(
+        x_labels=["A"],
+        y_labels=["t1"],
+        cells=[[1.5]],
+        cell_kind="lift",
+    )
+    spec = heatmap(ct, annotate=True)
+    label = spec.option["series"][0]["label"]
+    assert label["show"] is True
+    assert label["formatter"] == "{@[2]}×"
+
+
+def test_heatmap_no_annotate_keeps_label_hidden():
+    ct = CrossTab(
+        x_labels=["A"],
+        y_labels=["t1"],
+        cells=[[42.0]],
+        cell_kind="rate_pct",
+    )
+    spec = heatmap(ct)
+    assert spec.option["series"][0]["label"] == {"show": False}
+
+
 from nixos_survey_lib.render_echarts import ranking_bar
 from nixos_survey_lib.types import Ranked
 
