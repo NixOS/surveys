@@ -506,6 +506,39 @@ def test_upset_no_oklch_anywhere():
     assert "oklch" not in json.dumps(opt).lower()
 
 
+def test_upset_connector_lines_span_filled_rows():
+    # combos: (A,) single filled row -> no connector;
+    #         (A, B) rows 0..1 -> connector from [1,0] to [1,1];
+    #         (B, C) rows 1..2 -> connector from [2,1] to [2,2].
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    line_series = [
+        s for s in opt["series"]
+        if s["type"] == "line" and s.get("xAxisIndex") == 1
+    ]
+    # Map each connector by its constant column index.
+    spans = {}
+    for s in line_series:
+        col = s["data"][0][0]
+        rows = sorted(pt[1] for pt in s["data"])
+        spans[col] = (rows[0], rows[-1])
+    # Column 0 (A,) has a single filled row -> no connector.
+    assert 0 not in spans
+    # Column 1 (A,B) spans rows 0..1.
+    assert spans[1] == (0, 1)
+    # Column 2 (B,C) spans rows 1..2.
+    assert spans[2] == (1, 2)
+
+
+def test_upset_connector_lines_use_hex_color():
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    for s in opt["series"]:
+        if s["type"] == "line" and s.get("xAxisIndex") == 1:
+            color = s.get("lineStyle", {}).get("color", "")
+            assert color.startswith("#")
+
+
 from nixos_survey_lib.render_echarts import sankey
 
 

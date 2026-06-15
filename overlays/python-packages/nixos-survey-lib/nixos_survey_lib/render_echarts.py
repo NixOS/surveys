@@ -533,6 +533,32 @@ def upset(
                 "itemStyle": {"color": _UPSET_DOT_FILLED if filled else _UPSET_DOT_FADED},
             })
 
+    # Connector lines: one 2-point line series per column spanning the topmost
+    # to bottommost filled row. Expressed as a plain `line` series (NOT a
+    # `custom`/renderItem series, which cannot survive JSON serialization since
+    # renderItem must be a runtime function). Single-/zero-filled columns get
+    # no connector. Hex color only (no oklch).
+    connector_series: list[dict[str, Any]] = []
+    for ci, combo in enumerate(combos):
+        member_set = set(combo.members)
+        filled_rows = [
+            ri for ri, set_label in enumerate(set_labels)
+            if set_label in member_set
+        ]
+        if len(filled_rows) < 2:
+            continue
+        r_min, r_max = min(filled_rows), max(filled_rows)
+        connector_series.append({
+            "type": "line",
+            "xAxisIndex": 1,
+            "yAxisIndex": 1,
+            "data": [[ci, r_min], [ci, r_max]],
+            "symbol": "none",
+            "lineStyle": {"color": _UPSET_DOT_FILLED, "width": 2},
+            "z": 1,
+            "silent": True,
+        })
+
     option: dict[str, Any] = {
         "grid": [
             # 0: top bar (intersection sizes)
@@ -586,10 +612,12 @@ def upset(
                 "label": {"show": True, "position": "top", "formatter": "{c}"},
                 "barWidth": "60%",
             },
+            *connector_series,
             {
                 "type": "scatter", "xAxisIndex": 1, "yAxisIndex": 1,
                 "data": dot_data,
                 "symbolSize": 16,
+                "z": 2,
             },
             {
                 "type": "bar", "xAxisIndex": 2, "yAxisIndex": 2,
