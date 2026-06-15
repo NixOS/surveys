@@ -360,6 +360,50 @@ def slope_chart(
     return ChartSpec(option=option, height=height if height is not None else 420)
 
 
+def lollipop(
+    bins: list[Bin],
+    *,
+    title: str | None = None,
+    height: int | None = None,
+) -> ChartSpec:
+    """Horizontal lollipop: a pictorialBar series whose stem is the bar body and
+    whose dot (circle, at the end) marks the value. Largest sits at the top.
+    No explicit color (inherits theme palette)."""
+    reversed_bins = list(reversed(bins))
+    labels = [b.label for b in reversed_bins]
+    values = [round(b.percent, 1) for b in reversed_bins]
+
+    option: dict[str, Any] = {
+        "grid": {"left": 200, "right": 80, "top": 40, "bottom": 30},
+        "xAxis": {"type": "value", "show": False, "max": "dataMax"},
+        "yAxis": {
+            "type": "category",
+            "data": labels,
+            "axisLabel": {"width": 180, "overflow": "truncate"},
+            "axisLine": {"show": False},
+            "axisTick": {"show": False},
+        },
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {"type": "shadow"},
+            "formatter": "{b}: {c}%",
+        },
+        "series": [{
+            "type": "pictorialBar",
+            "data": values,
+            "symbol": "circle",
+            "symbolPosition": "end",
+            "symbolSize": 14,
+            "barWidth": 4,
+            "label": {"show": True, "position": "right", "formatter": "{c}%"},
+        }],
+    }
+    if title is not None:
+        option["title"] = {"text": title, "left": "left"}
+
+    return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(bins)))
+
+
 def ranking_bar(
     ranked: list[Ranked],
     *,

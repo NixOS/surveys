@@ -206,6 +206,30 @@ def test_slope_chart_single_column_degrades():
     assert spec.option["series"][0]["data"] == [42.0, 42.0]
 
 
+from nixos_survey_lib.render_echarts import lollipop
+
+
+def test_lollipop_shape():
+    bins = [
+        Bin(label="Linux", count=90, percent=90.0),
+        Bin(label="macOS", count=30, percent=30.0),
+        Bin(label="Windows", count=10, percent=10.0),
+    ]
+    spec = lollipop(bins)
+    opt = spec.option
+    # Reversed so largest is at the top, like horizontal_bar.
+    assert opt["yAxis"]["data"] == ["Windows", "macOS", "Linux"]
+    series = opt["series"][0]
+    assert series["type"] == "pictorialBar"
+    assert series["symbol"] == "circle"
+    assert series["symbolPosition"] == "end"
+    assert series["data"] == [10.0, 30.0, 90.0]
+    assert series["label"]["formatter"] == "{c}%"
+    # No explicit color.
+    assert "color" not in series
+    assert "itemStyle" not in series
+
+
 from nixos_survey_lib.render_echarts import ranking_bar
 from nixos_survey_lib.types import Ranked
 
