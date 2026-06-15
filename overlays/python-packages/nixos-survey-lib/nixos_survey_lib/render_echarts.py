@@ -7,6 +7,26 @@ from .types import Bin, ChartSpec, CrossTab, Ranked
 _BAR_ROW_PX = 28
 _BAR_CHROME_PX = 80
 
+# Hex literals pre-resolved from the @nixos/branding oklch tokens (the frontend
+# only resolves oklch->hex for the theme PALETTE and heatmap gradients, never for
+# arbitrary series colors). diverging_bar and rank_distribution_bar emit these
+# directly. afghani-blue DEFAULT (#4d6fb7) matches the branding's documented hex.
+_PALETTE_HEX = {
+    "blue_default": "#4d6fb7",
+    "blue_25": "#15213a",
+    "blue_35": "#28395f",
+    "blue_45": "#3b5487",
+    "blue_65": "#698dd8",
+    "blue_75": "#87adfa",
+    "blue_85": "#b7cefd",
+    "orange_45": "#7b461f",
+    "orange_55": "#a25e2c",
+    "orange_65": "#c77942",
+    "orange_75": "#e99861",
+    "gray_dark": "#717171",
+    "gray_light": "#aeaeae",
+}
+
 
 def _default_bar_height(n_bars: int) -> int:
     """Pick a chart height that grows with the number of bars so wide charts
