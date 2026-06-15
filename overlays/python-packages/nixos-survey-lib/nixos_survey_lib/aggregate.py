@@ -294,6 +294,70 @@ def crosstab_multi(
     return CrossTab(x_labels=x_labels, y_labels=trait_labels, cells=cells, cell_kind=kind)
 
 
+def sankey_funnel(
+    r: SingleChoice,
+    *,
+    min_count: int = DEFAULT_BUCKET_MIN_COUNT,
+) -> tuple[list[str], list[dict[str, object]]]:
+    """Stage the single ``stable_upgrade`` column into a Sankey funnel.
+
+    Stages: All -> Knew/Didn't know; Knew -> Upgraded/Did not upgrade;
+    Upgraded -> severity. ``Skipped`` is excluded. Links below ``min_count``
+    are dropped, and nodes left with no surviving link are omitted.
+
+    DERIVED-INFERENCE CAVEAT: the Knew / Did not upgrade staging is an analyst
+    interpretation, not a survey field — the single column cannot distinguish
+    "knew but chose not to upgrade" from other reasons. This chart is
+    exploratory; its commentary must state the staging is derived.
+    """
+    counts: dict[str, int] = {}
+    for v in r.values.to_list():
+        if v is None or v == "Skipped":
+            continue
+        counts[str(v)] = counts.get(str(v), 0) + 1
+
+    didnt_know = counts.get("I did not know there was a new stable release.", 0)
+    did_not_upgrade = counts.get("I have not upgraded.", 0)
+    severity = {
+        "No issues": counts.get("I had no issues.", 0),
+        "Minor": counts.get("I had minor issues.", 0),
+        "Moderate": counts.get("I had moderate issues.", 0),
+        "Severe (resolved)": counts.get(
+            "I had severe issues but figured it out after some time.", 0
+        ),
+        "Severe (stuck)": counts.get(
+            "I had severe issues and could not make the upgrade.", 0
+        ),
+    }
+    upgraded = sum(severity.values())
+    knew = upgraded + did_not_upgrade
+
+    candidate_links: list[dict[str, object]] = [
+        {"source": "All", "target": "Knew", "value": knew},
+        {"source": "All", "target": "Didn't know", "value": didnt_know},
+        {"source": "Knew", "target": "Upgraded", "value": upgraded},
+        {"source": "Knew", "target": "Did not upgrade", "value": did_not_upgrade},
+    ]
+    for sev_name, sev_count in severity.items():
+        candidate_links.append(
+            {"source": "Upgraded", "target": sev_name, "value": sev_count}
+        )
+
+    links = [l for l in candidate_links if int(l["value"]) >= min_count]
+
+    node_order = [
+        "All", "Knew", "Didn't know", "Upgraded", "Did not upgrade",
+        "No issues", "Minor", "Moderate", "Severe (resolved)", "Severe (stuck)",
+    ]
+    used: set[str] = set()
+    for l in links:
+        used.add(str(l["source"]))
+        used.add(str(l["target"]))
+    nodes = [n for n in node_order if n in used]
+
+    return nodes, links
+
+
 def rank_distribution(
     r: Ranking,
     *,

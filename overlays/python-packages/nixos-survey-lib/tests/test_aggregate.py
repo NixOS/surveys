@@ -346,3 +346,81 @@ def test_rank_distribution_bands_collapse_tail_to_unranked():
     assert by["A"] == [100.0, 0.0, 0.0]
     assert by["C"] == [0.0, 100.0, 0.0]
     assert by["D"] == [0.0, 0.0, 100.0]
+
+
+from nixos_survey_lib.aggregate import sankey_funnel
+
+
+def _stable() -> SingleChoice:
+    values = (
+        ["I had no issues."] * 30
+        + ["I had minor issues."] * 20
+        + ["I had moderate issues."] * 10
+        + ["I had severe issues but figured it out after some time."] * 8
+        + ["I had severe issues and could not make the upgrade."] * 6
+        + ["I have not upgraded."] * 12
+        + ["I did not know there was a new stable release."] * 7
+        + ["Skipped"] * 3
+    )
+    return _sc(values, qid="stable_upgrade")
+
+
+def test_sankey_funnel_excludes_skipped():
+    nodes, links = sankey_funnel(_stable())
+    # No node or link mentions "Skipped".
+    assert "Skipped" not in nodes
+    for l in links:
+        assert l["source"] != "Skipped" and l["target"] != "Skipped"
+
+
+def test_sankey_funnel_stage_a_b_counts():
+    nodes, links = sankey_funnel(_stable())
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    # Knew = everyone except didn't-know and Skipped = 30+20+10+8+6+12 = 86
+    assert by[("All", "Knew")] == 86
+    assert by[("All", "Didn't know")] == 7
+
+
+def test_sankey_funnel_stage_c_counts():
+    nodes, links = sankey_funnel(_stable())
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    # Upgraded = all severities = 30+20+10+8+6 = 74
+    assert by[("Knew", "Upgraded")] == 74
+    assert by[("Knew", "Did not upgrade")] == 12
+
+
+def test_sankey_funnel_stage_d_severity():
+    nodes, links = sankey_funnel(_stable())
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert by[("Upgraded", "No issues")] == 30
+    assert by[("Upgraded", "Minor")] == 20
+    assert by[("Upgraded", "Moderate")] == 10
+    assert by[("Upgraded", "Severe (resolved)")] == 8
+    assert by[("Upgraded", "Severe (stuck)")] == 6
+
+
+def test_sankey_funnel_nodes_in_stage_order():
+    nodes, links = sankey_funnel(_stable())
+    assert nodes == [
+        "All", "Knew", "Didn't know", "Upgraded", "Did not upgrade",
+        "No issues", "Minor", "Moderate", "Severe (resolved)", "Severe (stuck)",
+    ]
+
+
+def test_sankey_funnel_drops_sub_min_count_links_and_orphan_nodes():
+    # Severe (stuck) has only 2 respondents → its link drops; with no other
+    # link touching it, the node is omitted too.
+    values = (
+        ["I had no issues."] * 30
+        + ["I had severe issues and could not make the upgrade."] * 2
+        + ["I have not upgraded."] * 12
+        + ["I did not know there was a new stable release."] * 7
+    )
+    nodes, links = sankey_funnel(_sc(values, qid="stable_upgrade"))
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert ("Upgraded", "Severe (stuck)") not in by
+    assert "Severe (stuck)" not in nodes
+    # Upgraded total counts only surviving severity respondents? No — the
+    # Knew->Upgraded value reflects ALL upgraded respondents (32), since the
+    # respondent existed even though their leaf link is suppressed.
+    assert by[("Knew", "Upgraded")] == 32
