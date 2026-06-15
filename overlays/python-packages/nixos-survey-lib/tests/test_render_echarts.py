@@ -440,7 +440,7 @@ def test_upset_top_bar_wiring_and_sizes():
     opt = upset(combos, set_totals, 0, height=400).option
     bar = next(s for s in opt["series"] if s["type"] == "bar" and s["xAxisIndex"] == 0)
     assert bar["yAxisIndex"] == 0
-    assert bar["data"] == [10, 6, 5]
+    assert [item["value"] for item in bar["data"]] == [10, 6, 5]
 
 
 def test_upset_set_rows_and_left_bar():
@@ -455,7 +455,7 @@ def test_upset_set_rows_and_left_bar():
     # Left bar (xAxisIndex 2 / yAxisIndex 2) carries per-set totals.
     left = next(s for s in opt["series"] if s["type"] == "bar" and s["xAxisIndex"] == 2)
     assert left["yAxisIndex"] == 2
-    assert left["data"] == [16, 11, 5]
+    assert [item["value"] for item in left["data"]] == [16, 11, 5]
     # Left value axis grows leftward.
     assert opt["xAxis"][2]["inverse"] is True
     # Totals-bar y-axis (index 2) shows labels (set codes on the far left);
@@ -611,6 +611,109 @@ def test_upset_dot_matrix_y_labels_hidden():
     opt = upset(combos, set_totals, 0, height=400).option
     yaxes = opt["yAxis"]
     assert yaxes[1]["axisLabel"]["show"] is False
+
+
+def test_upset_totals_value_axis_max_caps_long_bars():
+    """Totals value axis max is ~1.6× the largest total so the left-positioned
+    label on the longest bar never overlaps the set-code column."""
+    combos, set_totals = _upset_inputs()  # totals [16, 11, 5]; max_total = 16
+    opt = upset(combos, set_totals, 0, height=400).option
+    # xAxis[2] is the totals value axis (inverse=True, gridIndex=2).
+    totals_x_axis = opt["xAxis"][2]
+    assert "max" in totals_x_axis
+    max_val = totals_x_axis["max"]
+    max_total = 16
+    assert max_val >= int(max_total * 1.6) + 1
+    # Must be strictly greater than the data max so the longest bar doesn't hit the edge.
+    assert max_val > max_total
+
+
+def test_upset_top_bar_data_items_have_name():
+    """Top size-bar data items are objects with value + name 'codes: size'."""
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    bar = next(s for s in opt["series"] if s["type"] == "bar" and s["xAxisIndex"] == 0)
+    # Each item must be a dict with 'value' and 'name'.
+    for item in bar["data"]:
+        assert isinstance(item, dict), f"expected dict, got {item!r}"
+        assert "value" in item
+        assert "name" in item
+    # Column 1 is (A, B) size=6; name should contain both codes and the size.
+    item_1 = bar["data"][1]
+    assert "6" in item_1["name"]
+    assert "A" in item_1["name"] and "B" in item_1["name"]
+
+
+def test_upset_scatter_dots_have_name():
+    """Every scatter dot carries a name with its column's combo codes and size."""
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    scatter = next(s for s in opt["series"] if s["type"] == "scatter")
+    for item in scatter["data"]:
+        assert isinstance(item, dict)
+        assert "name" in item, f"missing 'name' on {item!r}"
+    # Column 2 is (B, C) size=5; all 3 dots in column 2 should name both B and C.
+    col2_dots = [d for d in scatter["data"] if d["value"][0] == 2]
+    assert len(col2_dots) == 3
+    for dot in col2_dots:
+        assert "B" in dot["name"] and "C" in dot["name"]
+        assert "5" in dot["name"]
+
+
+def test_upset_totals_bar_data_items_have_name():
+    """Left totals bar data items carry name 'code: total'."""
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    left = next(s for s in opt["series"] if s["type"] == "bar" and s["xAxisIndex"] == 2)
+    for item in left["data"]:
+        assert isinstance(item, dict), f"expected dict, got {item!r}"
+        assert "value" in item
+        assert "name" in item
+    # set_totals[0] is ("A", 16) -> name "A: 16"
+    item_0 = left["data"][0]
+    assert "A" in item_0["name"]
+    assert "16" in item_0["name"]
+
+
+def test_upset_totals_bar_data_items_have_name_with_set_labels():
+    """With set_labels, totals bar names use the short codes."""
+    combos = [
+        Combination(members=("A. Long name for set A",), size=10),
+    ]
+    set_totals = [
+        ("A. Long name for set A", 16),
+        ("B. Long name for set B", 11),
+    ]
+    labels_map = {
+        "A. Long name for set A": "A",
+        "B. Long name for set B": "B",
+    }
+    opt = upset(combos, set_totals, 0, height=400, set_labels=labels_map).option
+    left = next(s for s in opt["series"] if s["type"] == "bar" and s["xAxisIndex"] == 2)
+    item_0 = left["data"][0]
+    assert "A" in item_0["name"]
+    assert "A. Long name for set A" not in item_0["name"]
+
+
+def test_upset_tooltip_formatter_is_b():
+    """Option-level tooltip uses '{b}' formatter so hovered items show their name."""
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    assert opt["tooltip"]["trigger"] == "item"
+    assert opt["tooltip"]["formatter"] == "{b}"
+
+
+def test_upset_connector_lines_have_tooltip_show_false():
+    """Connector line series must not trigger tooltips."""
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    line_series = [
+        s for s in opt["series"]
+        if s["type"] == "line" and s.get("xAxisIndex") == 1
+    ]
+    assert len(line_series) >= 1, "expected at least one connector line"
+    for s in line_series:
+        assert s.get("tooltip", {}).get("show") is False
 
 
 from nixos_survey_lib.render_echarts import sankey

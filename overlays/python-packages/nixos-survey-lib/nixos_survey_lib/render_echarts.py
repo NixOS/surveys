@@ -534,11 +534,25 @@ def upset(
 
     # Displayed codes for the totals-bar y-axis: short codes when provided,
     # otherwise fall back to the full names.
-    display_codes = (
-        [set_labels.get(name, name) for name in row_names]
-        if set_labels is not None
-        else row_names
-    )
+    def _display_code(name: str) -> str:
+        if set_labels is not None:
+            return set_labels.get(name, name)
+        return name
+
+    display_codes = [_display_code(name) for name in row_names]
+
+    # Fix 1: cap the totals value axis max at ~1.6× the largest total so the
+    # left-positioned label on the longest bar stays inside the grid (right of
+    # the set-code column) rather than overflowing into it.
+    max_total = max(totals) if totals else 1
+    totals_axis_max = int(max_total * 1.6) + 1
+
+    # Per-column combo name strings for tooltip names.
+    def _combo_name(combo: Combination) -> str:
+        codes = " · ".join(_display_code(m) for m in combo.members)
+        return f"{codes}: {combo.size}"
+
+    combo_names = [_combo_name(c) for c in combos]
 
     # Dot-matrix: one point per (column, set row), filled if the set is a
     # member of that column's combination.
@@ -549,6 +563,7 @@ def upset(
             filled = set_label in member_set
             dot_data.append({
                 "value": [ci, ri],
+                "name": combo_names[ci],
                 "itemStyle": {"color": _UPSET_DOT_FILLED if filled else _UPSET_DOT_FADED},
             })
 
@@ -576,7 +591,20 @@ def upset(
             "lineStyle": {"color": _UPSET_DOT_FILLED, "width": 2},
             "z": 1,
             "silent": True,
+            "tooltip": {"show": False},
         })
+
+    # Top bar data items: objects with value + name for {b} tooltip.
+    top_bar_data = [
+        {"value": c.size, "name": combo_names[ci]}
+        for ci, c in enumerate(combos)
+    ]
+
+    # Left totals bar data items: objects with value + name for {b} tooltip.
+    left_bar_data = [
+        {"value": total, "name": f"{_display_code(name)}: {total}"}
+        for name, total in set_totals
+    ]
 
     option: dict[str, Any] = {
         "grid": [
@@ -600,8 +628,10 @@ def upset(
                 "axisLabel": {"show": False}, "axisTick": {"show": False},
                 "axisLine": {"show": False}, "splitLine": {"show": False},
             },
-            # 2: left bar value axis, grows leftward
-            {"type": "value", "gridIndex": 2, "inverse": True, "show": False},
+            # 2: left bar value axis, grows leftward; max capped so the
+            # longest bar's label stays inside the grid (fix 1).
+            {"type": "value", "gridIndex": 2, "inverse": True, "show": False,
+             "max": totals_axis_max},
         ],
         "yAxis": [
             # 0: top bar value axis
@@ -622,11 +652,11 @@ def upset(
                 "axisLine": {"show": False},
             },
         ],
-        "tooltip": {"trigger": "item"},
+        "tooltip": {"trigger": "item", "formatter": "{b}"},
         "series": [
             {
                 "type": "bar", "xAxisIndex": 0, "yAxisIndex": 0,
-                "data": [c.size for c in combos],
+                "data": top_bar_data,
                 "label": {"show": True, "position": "top", "formatter": "{c}"},
                 "barWidth": "60%",
             },
@@ -639,7 +669,7 @@ def upset(
             },
             {
                 "type": "bar", "xAxisIndex": 2, "yAxisIndex": 2,
-                "data": totals,
+                "data": left_bar_data,
                 "label": {"show": True, "position": "left", "formatter": "{c}"},
                 "barWidth": "60%",
             },
