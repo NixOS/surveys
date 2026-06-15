@@ -30,31 +30,31 @@ def test_e2e_pipeline_against_fixtures(fixtures_dir):
                 Row("country", "Country",
                     question=r.country.question.prompt,
                     commentary="Europe leads in the synthetic fixture.",
-                    chart=horizontal_bar(
-                        counts_single(r.country, bucket_min_percent=None, bucket_min_count=None))),
+                    charts=[horizontal_bar(
+                        counts_single(r.country, bucket_min_percent=None, bucket_min_count=None))]),
                 Row("skill", "Skill",
                     question=r.skill.question.prompt,
                     commentary="Distribution across three buckets.",
-                    chart=horizontal_bar(
+                    charts=[horizontal_bar(
                         counts_single(r.skill, bucket_min_percent=None, bucket_min_count=None,
-                                       order=["Beginner", "Intermediate", "Advanced"]))),
+                                       order=["Beginner", "Intermediate", "Advanced"]))]),
             ]),
             Section("tech", "Technology", rows=[
                 Row("os", "Operating systems",
                     question=r.os.question.prompt,
                     commentary="Linux universal.",
-                    chart=horizontal_bar(counts_multi(r.os, bucket_min_percent=None, bucket_min_count=None))),
+                    charts=[horizontal_bar(counts_multi(r.os, bucket_min_percent=None, bucket_min_count=None))]),
                 Row("nix_version", "Nix version",
                     question=r.nix_version.question.prompt,
                     commentary="Extracted from free-text.",
-                    chart=horizontal_bar(
-                        counts_single(nix_versions, bucket_min_percent=None, bucket_min_count=None))),
+                    charts=[horizontal_bar(
+                        counts_single(nix_versions, bucket_min_percent=None, bucket_min_count=None))]),
             ]),
             Section("ranking", "Ranking", rows=[
                 Row("priorities", "Priorities (top-1 appearances)",
                     question=r.priorities.question.prompt,
                     commentary="Quick ranking test.",
-                    chart=ranking_bar(ranking_top_n(r.priorities, n=1))),
+                    charts=[ranking_bar(ranking_top_n(r.priorities, n=1))]),
             ]),
         ],
     )

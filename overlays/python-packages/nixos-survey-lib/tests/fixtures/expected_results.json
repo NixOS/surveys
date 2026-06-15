@@ -15,136 +15,140 @@
           "title": "Country",
           "question": "Where do you live?",
           "commentary": "Europe leads in the synthetic fixture.",
-          "chart": {
-            "option": {
-              "grid": {
-                "left": 200,
-                "right": 80,
-                "top": 40,
-                "bottom": 30
-              },
-              "xAxis": {
-                "type": "value",
-                "show": false,
-                "max": "dataMax"
-              },
-              "yAxis": {
-                "type": "category",
-                "data": [
-                  "Prefer not to say",
-                  "Africa",
-                  "North America",
-                  "Asia",
-                  "Europe"
-                ],
-                "axisLabel": {
-                  "width": 180,
-                  "overflow": "truncate"
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
                 },
-                "axisLine": {
-                  "show": false
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
                 },
-                "axisTick": {
-                  "show": false
-                }
-              },
-              "tooltip": {
-                "trigger": "axis",
-                "axisPointer": {
-                  "type": "shadow"
-                },
-                "formatter": "{b}: {c}%"
-              },
-              "series": [
-                {
-                  "type": "bar",
+                "yAxis": {
+                  "type": "category",
                   "data": [
-                    5.0,
-                    10.0,
-                    20.0,
-                    20.0,
-                    45.0
+                    "Prefer not to say",
+                    "Africa",
+                    "North America",
+                    "Asia",
+                    "Europe"
                   ],
-                  "label": {
-                    "show": true,
-                    "position": "right",
-                    "formatter": "{c}%"
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
                   },
-                  "barWidth": 16,
-                  "itemStyle": {
-                    "borderRadius": 4
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
                   }
-                }
-              ]
-            },
-            "height": 240
-          }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}%"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      5.0,
+                      10.0,
+                      20.0,
+                      20.0,
+                      45.0
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}%"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ]
         },
         {
           "id": "skill",
           "title": "Skill",
           "question": "How would you describe your skill level with Nix?",
           "commentary": "Distribution across three buckets.",
-          "chart": {
-            "option": {
-              "grid": {
-                "left": 200,
-                "right": 80,
-                "top": 40,
-                "bottom": 30
-              },
-              "xAxis": {
-                "type": "value",
-                "show": false,
-                "max": "dataMax"
-              },
-              "yAxis": {
-                "type": "category",
-                "data": [
-                  "Advanced",
-                  "Intermediate",
-                  "Beginner"
-                ],
-                "axisLabel": {
-                  "width": 180,
-                  "overflow": "truncate"
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
                 },
-                "axisLine": {
-                  "show": false
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
                 },
-                "axisTick": {
-                  "show": false
-                }
-              },
-              "tooltip": {
-                "trigger": "axis",
-                "axisPointer": {
-                  "type": "shadow"
-                },
-                "formatter": "{b}: {c}%"
-              },
-              "series": [
-                {
-                  "type": "bar",
+                "yAxis": {
+                  "type": "category",
                   "data": [
-                    25.0,
-                    50.0,
-                    25.0
+                    "Advanced",
+                    "Intermediate",
+                    "Beginner"
                   ],
-                  "label": {
-                    "show": true,
-                    "position": "right",
-                    "formatter": "{c}%"
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
                   },
-                  "barWidth": 16,
-                  "itemStyle": {
-                    "borderRadius": 4
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
                   }
-                }
-              ]
-            },
-            "height": 240
-          }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}%"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      25.0,
+                      50.0,
+                      25.0
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}%"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ]
         }
       ]
     },
@@ -158,134 +162,138 @@
           "title": "Operating systems",
           "question": "Which operating systems do you use?",
           "commentary": "Linux universal.",
-          "chart": {
-            "option": {
-              "grid": {
-                "left": 200,
-                "right": 80,
-                "top": 40,
-                "bottom": 30
-              },
-              "xAxis": {
-                "type": "value",
-                "show": false,
-                "max": "dataMax"
-              },
-              "yAxis": {
-                "type": "category",
-                "data": [
-                  "Windows",
-                  "macOS",
-                  "Linux"
-                ],
-                "axisLabel": {
-                  "width": 180,
-                  "overflow": "truncate"
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
                 },
-                "axisLine": {
-                  "show": false
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
                 },
-                "axisTick": {
-                  "show": false
-                }
-              },
-              "tooltip": {
-                "trigger": "axis",
-                "axisPointer": {
-                  "type": "shadow"
-                },
-                "formatter": "{b}: {c}%"
-              },
-              "series": [
-                {
-                  "type": "bar",
+                "yAxis": {
+                  "type": "category",
                   "data": [
-                    15.0,
-                    30.0,
-                    95.0
+                    "Windows",
+                    "macOS",
+                    "Linux"
                   ],
-                  "label": {
-                    "show": true,
-                    "position": "right",
-                    "formatter": "{c}%"
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
                   },
-                  "barWidth": 16,
-                  "itemStyle": {
-                    "borderRadius": 4
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
                   }
-                }
-              ]
-            },
-            "height": 240
-          }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}%"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      15.0,
+                      30.0,
+                      95.0
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}%"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ]
         },
         {
           "id": "nix_version",
           "title": "Nix version",
           "question": "Which version of Nix do you use most often?",
           "commentary": "Extracted from free-text.",
-          "chart": {
-            "option": {
-              "grid": {
-                "left": 200,
-                "right": 80,
-                "top": 40,
-                "bottom": 30
-              },
-              "xAxis": {
-                "type": "value",
-                "show": false,
-                "max": "dataMax"
-              },
-              "yAxis": {
-                "type": "category",
-                "data": [
-                  "Skipped",
-                  "No Match",
-                  "2.24.1",
-                  "2.18.5"
-                ],
-                "axisLabel": {
-                  "width": 180,
-                  "overflow": "truncate"
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
                 },
-                "axisLine": {
-                  "show": false
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
                 },
-                "axisTick": {
-                  "show": false
-                }
-              },
-              "tooltip": {
-                "trigger": "axis",
-                "axisPointer": {
-                  "type": "shadow"
-                },
-                "formatter": "{b}: {c}%"
-              },
-              "series": [
-                {
-                  "type": "bar",
+                "yAxis": {
+                  "type": "category",
                   "data": [
-                    5.0,
-                    5.0,
-                    25.0,
-                    65.0
+                    "Skipped",
+                    "No Match",
+                    "2.24.1",
+                    "2.18.5"
                   ],
-                  "label": {
-                    "show": true,
-                    "position": "right",
-                    "formatter": "{c}%"
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
                   },
-                  "barWidth": 16,
-                  "itemStyle": {
-                    "borderRadius": 4
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
                   }
-                }
-              ]
-            },
-            "height": 240
-          }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}%"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      5.0,
+                      5.0,
+                      25.0,
+                      65.0
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}%"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ]
         }
       ]
     },
@@ -299,66 +307,68 @@
           "title": "Priorities (top-1 appearances)",
           "question": "Rank your priorities.",
           "commentary": "Quick ranking test.",
-          "chart": {
-            "option": {
-              "grid": {
-                "left": 200,
-                "right": 80,
-                "top": 40,
-                "bottom": 30
-              },
-              "xAxis": {
-                "type": "value",
-                "show": false,
-                "max": "dataMax"
-              },
-              "yAxis": {
-                "type": "category",
-                "data": [
-                  "Documentation",
-                  "Security",
-                  "Performance"
-                ],
-                "axisLabel": {
-                  "width": 180,
-                  "overflow": "truncate"
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
                 },
-                "axisLine": {
-                  "show": false
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
                 },
-                "axisTick": {
-                  "show": false
-                }
-              },
-              "tooltip": {
-                "trigger": "axis",
-                "axisPointer": {
-                  "type": "shadow"
-                },
-                "formatter": "{b}: {c}"
-              },
-              "series": [
-                {
-                  "type": "bar",
+                "yAxis": {
+                  "type": "category",
                   "data": [
-                    3,
-                    4,
-                    12
+                    "Documentation",
+                    "Security",
+                    "Performance"
                   ],
-                  "label": {
-                    "show": true,
-                    "position": "right",
-                    "formatter": "{c}"
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
                   },
-                  "barWidth": 16,
-                  "itemStyle": {
-                    "borderRadius": 4
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
                   }
-                }
-              ]
-            },
-            "height": 240
-          }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      3,
+                      4,
+                      12
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ]
         }
       ]
     }
