@@ -31,13 +31,12 @@ from nixos_survey_lib.normalize import (
 )
 from nixos_survey_lib.page import write_page
 from nixos_survey_lib.render_echarts import (
-    diverging_bar,
     heatmap,
     horizontal_bar,
+    likert_bar,
     line_chart,
     lollipop,
     rank_distribution_bar,
-    slope_chart,
 )
 from nixos_survey_lib.types import Page, Row, Section
 
@@ -167,7 +166,7 @@ def main(csv_path: str, out_path: str) -> None:
             Section("experience", "Experience", rows=[
                 Row("stable_upgrade", "Stable Upgrade", question=q("stable_upgrade"), commentary=cm["stable_upgrade"],
                     charts=[
-                        diverging_bar(
+                        likert_bar(
                             counts_single(r.stable_upgrade, order=STABLE_UPGRADE_ORDER,
                                           exclude=["Skipped"], bucket_min_percent=None),
                             positive=["I had no issues.", "I had minor issues."],
@@ -180,28 +179,13 @@ def main(csv_path: str, out_path: str) -> None:
                                 "I did not know there was a new stable release.",
                                 "I have not upgraded.",
                             ],
+                            title="Outcome mix (100%)",
                         ),
-                        horizontal_bar(counts_single(r.stable_upgrade, order=STABLE_UPGRADE_ORDER, bucket_min_percent=None)),
+                        horizontal_bar(counts_single(r.stable_upgrade, order=STABLE_UPGRADE_ORDER, bucket_min_percent=None),
+                                       title="By category"),
                     ]),
                 Row("involvement", "Involvement", question=q("involvement"), commentary=cm["involvement"],
                     charts=[horizontal_bar(counts_multi(r.involvement))]),
-                Row("involvement_x_experience", "Involvement by experience",
-                    question=f"{q('involvement')} × {q('years_using_nix')}",
-                    commentary=cm["involvement_x_experience"],
-                    charts=[
-                        heatmap(crosstab_multi(
-                            r.involvement, r.years_using_nix,
-                            denominator="rate",
-                            x_order=YEARS_USING_NIX_ORDER,
-                            x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
-                        ), annotate=True),
-                        heatmap(crosstab_multi(
-                            r.involvement, r.years_using_nix,
-                            denominator="lift",
-                            x_order=YEARS_USING_NIX_ORDER,
-                            x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
-                        ), annotate=True),
-                    ]),
                 Row("years_using_nix", "Years using Nix", question=q("years_using_nix"), commentary=cm["years_using_nix"],
                     charts=[horizontal_bar(counts_single(r.years_using_nix, order=YEARS_USING_NIX_ORDER, bucket_min_percent=None))]),
                 Row("skill_level", "Nix Skill Level", question=q("skill_level"), commentary=cm["skill_level"],
@@ -222,12 +206,29 @@ def main(csv_path: str, out_path: str) -> None:
                     charts=[horizontal_bar(counts_single(r.regular_toolset))]),
                 Row("help_success_frequency", "Help-search success rate", question=q("help_success_frequency"), commentary=cm["help_success_frequency"],
                     charts=[horizontal_bar(counts_single(r.help_success_frequency, order=HELP_FREQUENCY_ORDER, bucket_min_percent=None))]),
+                Row("involvement_x_experience", "Involvement by experience",
+                    question=f"{q('involvement')} × {q('years_using_nix')}",
+                    commentary=cm["involvement_x_experience"],
+                    charts=[
+                        heatmap(crosstab_multi(
+                            r.involvement, r.years_using_nix,
+                            denominator="rate",
+                            x_order=YEARS_USING_NIX_ORDER,
+                            x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
+                        ), annotate=True, title="Rate (% within band)"),
+                        heatmap(crosstab_multi(
+                            r.involvement, r.years_using_nix,
+                            denominator="lift",
+                            x_order=YEARS_USING_NIX_ORDER,
+                            x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
+                        ), annotate=True, title="Lift (vs overall)"),
+                    ]),
                 Row("skill_x_experience", "Expertise vs Experience",
                     question=f"{q('skill_level')} × {q('years_using_nix')}",
                     commentary=cm["skill_x_experience"],
                     charts=[
-                        heatmap(_skill_x_exp_ct, annotate=True, height=356),
-                        line_chart(_skill_x_exp_ct),
+                        heatmap(_skill_x_exp_ct, annotate=True, height=356, title="Distribution"),
+                        line_chart(_skill_x_exp_ct, title="Trend by tenure"),
                     ]),
                 Row("experience_x_skill", "Experience vs Expertise",
                     question=f"{q('years_using_nix')} × {q('skill_level')}",
@@ -261,8 +262,8 @@ def main(csv_path: str, out_path: str) -> None:
                     question=f"{q('traits')} × {q('years_using_nix')}",
                     commentary=cm["traits_rate_by_experience"],
                     charts=[
-                        heatmap(_traits_rate_exp_ct, annotate=True, height=540, vm_min=0, vm_max=100),
-                        slope_chart(_traits_rate_exp_ct),
+                        heatmap(_traits_rate_exp_ct, annotate=True, height=540, vm_min=0, vm_max=100, title="Rate by band"),
+                        line_chart(_traits_rate_exp_ct, title="Trend by tenure"),
                     ]),
                 Row("traits_lift_by_experience", "Trait lift by years using Nix",
                     question=f"{q('traits')} × {q('years_using_nix')}",
@@ -302,7 +303,10 @@ def main(csv_path: str, out_path: str) -> None:
                 Row("foundation_priorities", "Foundation funding priorities",
                     question=q("foundation_priorities"),
                     commentary=cm["foundation_priorities"],
-                    charts=[rank_distribution_bar(rank_distribution(r.foundation_priorities))]),
+                    charts=[rank_distribution_bar(
+                        rank_distribution(r.foundation_priorities, bands=[(1, 3), (4, 6), (7, 10)]),
+                        bands=[(1, 3), (4, 6), (7, 10)],
+                    )]),
             ]),
             Section("information_seeking", "Information seeking", rows=[
                 Row("objects_interact_with", "Objects you interact with",
