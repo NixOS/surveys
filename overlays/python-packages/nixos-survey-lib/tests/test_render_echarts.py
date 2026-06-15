@@ -413,6 +413,99 @@ def test_likert_bar_all_segment_colors_distinct():
     assert len(set(colors)) == 7, f"Duplicate colors found: {colors}"
 
 
+from nixos_survey_lib.render_echarts import upset
+from nixos_survey_lib.types import Combination
+
+
+def _upset_inputs():
+    combos = [
+        Combination(members=("A",), size=10),
+        Combination(members=("A", "B"), size=6),
+        Combination(members=("B", "C"), size=5),
+    ]
+    set_totals = [("A", 16), ("B", 11), ("C", 5)]
+    return combos, set_totals
+
+
+def test_upset_has_three_grids():
+    combos, set_totals = _upset_inputs()
+    spec = upset(combos, set_totals, 0, height=400)
+    grids = spec.option["grid"]
+    assert isinstance(grids, list)
+    assert len(grids) == 3
+
+
+def test_upset_top_bar_wiring_and_sizes():
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    bar = next(s for s in opt["series"] if s["type"] == "bar" and s["xAxisIndex"] == 0)
+    assert bar["yAxisIndex"] == 0
+    assert bar["data"] == [10, 6, 5]
+
+
+def test_upset_set_rows_and_left_bar():
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    # The dot-matrix y-axis (index 1) lists the sets in set_totals order.
+    yaxes = opt["yAxis"]
+    assert yaxes[1]["data"] == ["A", "B", "C"]
+    assert yaxes[1]["inverse"] is True
+    # Left bar (xAxisIndex 2 / yAxisIndex 2) carries per-set totals.
+    left = next(s for s in opt["series"] if s["type"] == "bar" and s["xAxisIndex"] == 2)
+    assert left["yAxisIndex"] == 2
+    assert left["data"] == [16, 11, 5]
+    # Left value axis grows leftward.
+    assert opt["xAxis"][2]["inverse"] is True
+
+
+def test_upset_dot_matrix_fill_state():
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    scatter = next(s for s in opt["series"] if s["type"] == "scatter")
+    assert scatter["xAxisIndex"] == 1
+    assert scatter["yAxisIndex"] == 1
+    # Index points by (column, row).
+    points = {tuple(d["value"]): d["itemStyle"]["color"] for d in scatter["data"]}
+    # Column 0 is (A,): row 0 (A) filled, rows 1 (B) and 2 (C) faded.
+    assert points[(0, 0)] == "#5277c3"
+    assert points[(0, 1)] == "#c9c9c9"
+    assert points[(0, 2)] == "#c9c9c9"
+    # Column 2 is (B, C): row 0 (A) faded, rows 1 (B) and 2 (C) filled.
+    assert points[(2, 0)] == "#c9c9c9"
+    assert points[(2, 1)] == "#5277c3"
+    assert points[(2, 2)] == "#5277c3"
+
+
+def test_upset_subtext_reports_dropped():
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 4, height=400).option
+    assert "4" in opt["title"]["subtext"]
+
+
+def test_upset_no_subtext_when_nothing_dropped():
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    # No dropped combos -> no subtext (or empty), never a misleading "0 ...".
+    subtext = opt.get("title", {}).get("subtext", "")
+    assert subtext == ""
+
+
+def test_upset_bars_emit_no_explicit_color():
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    for s in opt["series"]:
+        if s["type"] == "bar":
+            assert "color" not in s
+            assert "color" not in s.get("itemStyle", {})
+
+
+def test_upset_no_oklch_anywhere():
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    import json
+    assert "oklch" not in json.dumps(opt).lower()
+
+
 from nixos_survey_lib.render_echarts import sankey
 
 

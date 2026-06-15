@@ -1,7 +1,7 @@
 import math
 from typing import Any
 
-from .types import Bin, ChartSpec, CrossTab, RankDistribution
+from .types import Bin, ChartSpec, Combination, CrossTab, RankDistribution
 
 
 _BAR_ROW_PX = 28
@@ -492,4 +492,120 @@ def sankey(
     if title is not None:
         option["title"] = {"text": title, "left": "left", "top": 0}
     return ChartSpec(option=option, height=height if height is not None else 480)
+
+
+# Dot-matrix fill colors. Hex literals only — the frontend resolves oklch only
+# for the theme PALETTE and heatmap visualMap gradients, not arbitrary series
+# colors, so any explicit color here MUST be hex.
+_UPSET_DOT_FILLED = "#5277c3"
+_UPSET_DOT_FADED = "#c9c9c9"
+
+
+def upset(
+    combos: list[Combination],
+    set_totals: list[tuple[str, int]],
+    dropped_count: int,
+    *,
+    height: int,
+) -> ChartSpec:
+    """Render an UpSet plot as a multi-grid ECharts option.
+
+    grids: [0] top bar of intersection sizes, [1] bottom scatter dot-matrix
+    (sets x intersections), [2] left bar of per-set totals. The dot-matrix
+    shares the intersection category x-axis with the top bar and the set
+    category y-axis with the left bar. ``dropped_count`` is surfaced in
+    ``title.subtext`` (no silent truncation).
+    """
+    set_labels = [label for label, _total in set_totals]
+    totals = [total for _label, total in set_totals]
+    n_cols = len(combos)
+    col_categories = [str(i) for i in range(n_cols)]
+
+    # Dot-matrix: one point per (column, set row), filled if the set is a
+    # member of that column's combination.
+    dot_data: list[dict[str, Any]] = []
+    for ci, combo in enumerate(combos):
+        member_set = set(combo.members)
+        for ri, set_label in enumerate(set_labels):
+            filled = set_label in member_set
+            dot_data.append({
+                "value": [ci, ri],
+                "itemStyle": {"color": _UPSET_DOT_FILLED if filled else _UPSET_DOT_FADED},
+            })
+
+    option: dict[str, Any] = {
+        "grid": [
+            # 0: top bar (intersection sizes)
+            {"left": 200, "right": 40, "top": 50, "height": 110},
+            # 1: bottom dot-matrix
+            {"left": 200, "right": 40, "top": 180, "bottom": 30},
+            # 2: left bar (per-set totals), vertically aligned with grid 1
+            {"left": 40, "width": 130, "top": 180, "bottom": 30},
+        ],
+        "xAxis": [
+            # 0: top bar category (intersection columns), labels hidden
+            {
+                "type": "category", "data": col_categories, "gridIndex": 0,
+                "axisLabel": {"show": False}, "axisTick": {"show": False},
+                "axisLine": {"show": False},
+            },
+            # 1: dot-matrix category (shares the intersection columns)
+            {
+                "type": "category", "data": col_categories, "gridIndex": 1,
+                "axisLabel": {"show": False}, "axisTick": {"show": False},
+                "axisLine": {"show": False}, "splitLine": {"show": False},
+            },
+            # 2: left bar value axis, grows leftward
+            {"type": "value", "gridIndex": 2, "inverse": True, "show": False},
+        ],
+        "yAxis": [
+            # 0: top bar value axis
+            {"type": "value", "gridIndex": 0},
+            # 1: dot-matrix set rows. Set names can be long (contribution_experience
+            # statements are full sentences), so truncate the labels and rely on the
+            # tooltip for the full text — matching the bar/heatmap axisLabel convention.
+            # The grid's `left` padding must be wide enough to hold the truncated labels.
+            {
+                "type": "category", "data": set_labels, "gridIndex": 1,
+                "inverse": True, "axisTick": {"show": False},
+                "axisLine": {"show": False}, "splitLine": {"show": False},
+                "axisLabel": {"width": 170, "overflow": "truncate"},
+            },
+            # 2: left bar set rows (aligned with dot-matrix), labels hidden
+            {
+                "type": "category", "data": set_labels, "gridIndex": 2,
+                "inverse": True, "axisLabel": {"show": False},
+                "axisTick": {"show": False}, "axisLine": {"show": False},
+            },
+        ],
+        "tooltip": {"trigger": "item"},
+        "series": [
+            {
+                "type": "bar", "xAxisIndex": 0, "yAxisIndex": 0,
+                "data": [c.size for c in combos],
+                "label": {"show": True, "position": "top", "formatter": "{c}"},
+                "barWidth": "60%",
+            },
+            {
+                "type": "scatter", "xAxisIndex": 1, "yAxisIndex": 1,
+                "data": dot_data,
+                "symbolSize": 16,
+            },
+            {
+                "type": "bar", "xAxisIndex": 2, "yAxisIndex": 2,
+                "data": totals,
+                "label": {"show": True, "position": "left", "formatter": "{c}"},
+                "barWidth": "60%",
+            },
+        ],
+    }
+
+    if dropped_count > 0:
+        option["title"] = {
+            "subtext": f"{dropped_count} combination(s) not shown "
+                       f"(below 5 respondents or beyond the display cap).",
+            "left": "left",
+        }
+
+    return ChartSpec(option=option, height=height)
 
