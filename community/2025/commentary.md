@@ -345,9 +345,9 @@ feedback unhelpful. Employer policy is rarely a blocker (0.6%).
 
 ## involvement_x_experience
 
-Two views of how involvement roles vary with experience. The left heatmap shows
+Two views of how involvement roles vary with experience. The Rate heatmap shows
 the rate — among respondents in each experience band, the share reporting each
-involvement role. The right heatmap shows lift — how much more (or less) likely
+involvement role. The Lift heatmap shows lift — how much more (or less) likely
 each role is within a band relative to the overall baseline (1.0× = no
 difference). Bands exclude non-users and undisclosed experience.
 

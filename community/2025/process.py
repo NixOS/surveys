@@ -262,8 +262,7 @@ def main(csv_path: str, out_path: str) -> None:
                     question=f"{q('traits')} × {q('years_using_nix')}",
                     commentary=cm["traits_rate_by_experience"],
                     charts=[
-                        heatmap(_traits_rate_exp_ct, annotate=True, height=540, vm_min=0, vm_max=100, title="Rate by band"),
-                        line_chart(_traits_rate_exp_ct, title="Trend by tenure"),
+                        heatmap(_traits_rate_exp_ct, annotate=True, height=540, vm_min=0, vm_max=100),
                     ]),
                 Row("traits_lift_by_experience", "Trait lift by years using Nix",
                     question=f"{q('traits')} × {q('years_using_nix')}",
