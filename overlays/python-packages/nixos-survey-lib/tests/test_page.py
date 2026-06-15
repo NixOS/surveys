@@ -11,7 +11,7 @@ def _sample_page() -> Page:
         sections=[
             Section(id="people", heading="People", rows=[
                 Row(id="country", title="Country", question="Where?", commentary="Europe leads.",
-                    chart=ChartSpec(option={"series": [{"type": "bar", "data": [1]}]}, height=240)),
+                    charts=[ChartSpec(option={"series": [{"type": "bar", "data": [1]}]}, height=240)]),
             ]),
         ],
     )
@@ -26,19 +26,20 @@ def test_page_to_json_structure():
     assert out["sections"][0]["id"] == "people"
     row = out["sections"][0]["rows"][0]
     assert row["id"] == "country"
-    assert row["chart"]["option"]["series"][0]["data"] == [1]
-    assert row["chart"]["height"] == 240
+    assert len(row["charts"]) == 1
+    assert row["charts"][0]["option"]["series"][0]["data"] == [1]
+    assert row["charts"][0]["height"] == 240
 
 
 def test_page_to_json_omits_optional_height_when_none():
     p = Page(year=2026, title="t", sections=[
         Section(id="s", heading="S", rows=[
             Row(id="r", title="R", question="?", commentary="",
-                chart=ChartSpec(option={}, height=None)),
+                charts=[ChartSpec(option={}, height=None)]),
         ]),
     ])
     out = json.loads(page_to_json(p))
-    assert "height" not in out["sections"][0]["rows"][0]["chart"]
+    assert "height" not in out["sections"][0]["rows"][0]["charts"][0]
 
 
 def test_write_page_writes_file(tmp_path):
