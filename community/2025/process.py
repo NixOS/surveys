@@ -19,8 +19,6 @@ from nixos_survey_lib.aggregate import (
     crosstab,
     crosstab_multi,
     rank_distribution,
-    ranking_avg,
-    ranking_top_n,
 )
 from nixos_survey_lib.loader import (
     load_commentary,
@@ -39,7 +37,6 @@ from nixos_survey_lib.render_echarts import (
     line_chart,
     lollipop,
     rank_distribution_bar,
-    ranking_bar,
     slope_chart,
 )
 from nixos_survey_lib.types import Page, Row, Section
@@ -305,17 +302,23 @@ def main(csv_path: str, out_path: str) -> None:
                 Row("foundation_priorities", "Foundation funding priorities",
                     question=q("foundation_priorities"),
                     commentary=cm["foundation_priorities"],
-                    charts=[ranking_bar(ranking_avg(r.foundation_priorities))]),
+                    charts=[rank_distribution_bar(rank_distribution(r.foundation_priorities))]),
             ]),
             Section("information_seeking", "Information seeking", rows=[
                 Row("objects_interact_with", "Objects you interact with",
                     question=q("objects_interact_with"),
                     commentary=cm["objects_interact_with"],
-                    charts=[ranking_bar(ranking_avg(r.objects_interact_with))]),
-                Row("help_resources", "Help resources (top-5 appearances)",
+                    charts=[rank_distribution_bar(
+                        rank_distribution(r.objects_interact_with, bands=[(1, 3), (4, 6), (7, 10)]),
+                        bands=[(1, 3), (4, 6), (7, 10)],
+                    )]),
+                Row("help_resources", "Help resources",
                     question=q("help_resources"),
                     commentary=cm["help_resources"],
-                    charts=[ranking_bar(ranking_top_n(r.help_resources, n=5))]),
+                    charts=[rank_distribution_bar(
+                        rank_distribution(r.help_resources, bands=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]),
+                        bands=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)],
+                    )]),
             ]),
         ],
     )

@@ -300,25 +300,23 @@ so cells in the rightmost columns are noisier.
 
 ## objects_interact_with
 
-Mean rank (lower = preferred).
-
-Search dominates: package search (avg 1.87) and NixOS option search (2.68)
-are far ahead of every other object. NixOS configuration examples (4.58),
-manuals (5.91), command-line interface (6.00), and development environments
-(6.05) form the next tier. Peripheral items — job postings, press
-information, reviews, paid support — sit at the bottom.
+Each bar shows how respondents distributed their ranks across grouped positions
+(1-3, 4-6, 7-10), with the remainder left unranked. Search objects dominate the
+top band: package search and NixOS option search are placed in the top three far
+more often than anything else. Configuration examples, manuals, the command-line
+interface, and development environments form the middle tier. Peripheral
+objects — job postings, press information, reviews, paid support — are mostly
+left unranked.
 
 ## help_resources
 
-Respondents were asked to rank their top 5 only.
-Bar = number of respondents who placed this resource in their top 5.
-
-The official NixOS Wiki leads (2,313 — 68% of respondents put it in their
-top 5), followed by reference manuals (1,995 — 59%) and GitHub issues
-(1,359 — 40%). LLMs already crack the top 7 (919, 27%), ahead of nix.dev
-(711, 21%). Social channels — Reddit, Stack Overflow, Matrix, Discord — sit
-well below the official and code-adjacent sources; Mastodon and Twitter/X
-are essentially unused for help-seeking.
+Each bar shows the share of respondents who placed a resource at each of their
+top five positions, with the remainder unranked. The official NixOS Wiki and the
+reference manuals are placed in the top five most often, followed by GitHub
+issues and discussions. LLMs already appear in many top-five lists, ahead of
+nix.dev. Social channels — Reddit, Stack Overflow, Matrix, Discord — trail the
+official and code-adjacent sources; Mastodon and Twitter/X are rarely chosen for
+help-seeking.
 
 ## donation_incentives
 
@@ -330,13 +328,11 @@ Ear-marking donations to specific areas lands last at 5.6%.
 
 ## foundation_priorities
 
-Mean rank (lower = preferred).
-
-Documentation is the clear top priority (avg rank 2.28, ranked by 2,182
-respondents — more than half). Nixpkgs package maintenance (3.47) and
-Security (3.67) follow. Community health, NixOS releases, and Nixpkgs
-architecture cluster around rank 4. Marketing (6.87) and community events
-(7.89) are the lowest priorities.
+Each bar shows how respondents distributed their ranks across positions, with the
+remainder unranked. Documentation is placed first far more often than any other
+area. Nixpkgs package maintenance and security follow closely. Community health,
+NixOS releases, and Nixpkgs architecture cluster in the middle. Marketing and
+community events are the priorities most often ranked low or left unranked.
 
 ## contribution_experience
 
