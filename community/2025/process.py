@@ -250,7 +250,20 @@ def main(csv_path: str, out_path: str) -> None:
                     commentary=cm["user_types"],
                     charts=[
                         horizontal_bar(counts_multi(r.user_types)),
-                        upset(*upset_combinations(r.user_types), height=560),
+                        upset(
+                            *upset_combinations(r.user_types),
+                            height=560,
+                            set_labels={
+                                c: c.split(".")[0]
+                                for c in [
+                                    "A. I love the idea behind Nix",
+                                    "B. I’m curious how Nix works",
+                                    "C. I use Nix to get things done",
+                                    "D. I (want to) work on Nix",
+                                    "E. I’m a decision-maker",
+                                ]
+                            },
+                        ),
                     ]),
                 Row("traits", "Self-described skills", question=q("traits"), commentary=cm["traits"],
                     charts=[horizontal_bar(counts_multi(r.traits))]),
@@ -351,6 +364,19 @@ def main(csv_path: str, out_path: str) -> None:
                         upset(
                             *upset_combinations(r.contribution_experience, max_combos=25),
                             height=760,
+                            set_labels={
+                                "I don’t plan to contribute.": "No plan",
+                                "I would like to contribute, but I don’t know how to get started.": "Start?",
+                                "I want to contribute to an existing effort, but don’t know how to join in.": "Join?",
+                                "I tried to contribute, but got stuck after I started.": "Stuck",
+                                "I received feedback, but it was unhelpful or unclear.": "Unclear",
+                                "It took too long to receive feedback.": "Slow",
+                                "I can’t contribute because my employer doesn’t allow it.": "Blocked",
+                                "Everything I wanted to work on was already being handled by others and I don't feel the need to get involved.": "Covered",
+                                "I was able to contribute on my own.": "Solo",
+                                "I was able to contribute with help from the community.": "Helped",
+                                "I plan to contribute in the future.": "Future",
+                            },
                         ),
                     ]),
             ]),
