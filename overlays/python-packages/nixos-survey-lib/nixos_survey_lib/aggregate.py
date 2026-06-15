@@ -358,6 +358,64 @@ def sankey_funnel(
     return nodes, links
 
 
+def sankey_links(
+    x: SingleChoice,
+    y: SingleChoice,
+    *,
+    x_band: dict[str, str] | None = None,
+    y_map: dict[str, str] | None = None,
+    exclude: list[str] | None = None,
+    min_count: int = DEFAULT_BUCKET_MIN_COUNT,
+) -> tuple[list[str], list[dict[str, object]]]:
+    """Co-occurrence Sankey between two single-choice columns.
+
+    A row is dropped if EITHER its raw x or raw y value is in ``exclude``
+    (straight apostrophes — matched before mapping). Surviving x values are
+    grouped via ``x_band`` and y values via ``y_map`` (unmapped values pass
+    through). Links below ``min_count`` are dropped (privacy floor); a node
+    appears only if it touches a surviving link. x-nodes precede y-nodes in
+    first-seen order.
+    """
+    excluded = set(exclude or [])
+    x_raw = x.values.to_list()
+    y_raw = y.values.to_list()
+
+    pair_counts: dict[tuple[str, str], int] = {}
+    x_seen: list[str] = []
+    y_seen: list[str] = []
+    for xv, yv in zip(x_raw, y_raw):
+        if xv is None or yv is None:
+            continue
+        xs, ys = str(xv), str(yv)
+        if xs in excluded or ys in excluded:
+            continue
+        mx = x_band.get(xs, xs) if x_band else xs
+        my = y_map.get(ys, ys) if y_map else ys
+        if mx not in x_seen:
+            x_seen.append(mx)
+        if my not in y_seen:
+            y_seen.append(my)
+        key = (mx, my)
+        pair_counts[key] = pair_counts.get(key, 0) + 1
+
+    x_index = {n: i for i, n in enumerate(x_seen)}
+    y_index = {n: i for i, n in enumerate(y_seen)}
+    surviving = [
+        {"source": mx, "target": my, "value": c}
+        for (mx, my), c in pair_counts.items()
+        if c >= min_count
+    ]
+    surviving.sort(key=lambda l: (x_index[str(l["source"])], y_index[str(l["target"])]))
+
+    used: set[str] = set()
+    for l in surviving:
+        used.add(str(l["source"]))
+        used.add(str(l["target"]))
+    nodes = [n for n in x_seen if n in used] + [n for n in y_seen if n in used]
+
+    return nodes, surviving
+
+
 def rank_distribution(
     r: Ranking,
     *,

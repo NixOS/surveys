@@ -424,3 +424,73 @@ def test_sankey_funnel_drops_sub_min_count_links_and_orphan_nodes():
     # Knew->Upgraded value reflects ALL upgraded respondents (32), since the
     # respondent existed even though their leaf link is suppressed.
     assert by[("Knew", "Upgraded")] == 32
+
+
+from nixos_survey_lib.aggregate import sankey_links
+
+
+def test_sankey_links_basic_cooccurrence():
+    x = _sc(["3 to 4 years"] * 6 + ["1 to 2 years"] * 6, qid="years_using_nix")
+    y = _sc(["No issues"] * 6 + ["Minor"] * 6, qid="outcome")
+    nodes, links = sankey_links(x, y, min_count=5)
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert by[("3 to 4 years", "No issues")] == 6
+    assert by[("1 to 2 years", "Minor")] == 6
+
+
+def test_sankey_links_drops_sub_min_count():
+    # The (1 to 2 years, Minor) pair has only 2 → dropped; that y-node has no
+    # other link → omitted.
+    x = _sc(["3 to 4 years"] * 6 + ["1 to 2 years"] * 2, qid="years_using_nix")
+    y = _sc(["No issues"] * 6 + ["Minor"] * 2, qid="outcome")
+    nodes, links = sankey_links(x, y, min_count=5)
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert ("1 to 2 years", "Minor") not in by
+    assert "Minor" not in nodes
+    assert "1 to 2 years" not in nodes
+    assert "No issues" in nodes
+    assert "3 to 4 years" in nodes
+
+
+def test_sankey_links_excludes_either_side():
+    x = _sc(["3 to 4 years"] * 6 + ["I don't use Nix"] * 6, qid="years_using_nix")
+    y = _sc(["No issues"] * 6 + ["No issues"] * 6, qid="outcome")
+    nodes, links = sankey_links(x, y, exclude=["I don't use Nix"], min_count=5)
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert by[("3 to 4 years", "No issues")] == 6
+    assert "I don't use Nix" not in nodes
+
+
+def test_sankey_links_x_band_groups_values():
+    x = _sc(["7 to 8 years"] * 3 + ["9 to 10 years"] * 3, qid="years_using_nix")
+    y = _sc(["No issues"] * 6, qid="outcome")
+    band = {"7 to 8 years": "7-10y", "9 to 10 years": "7-10y"}
+    nodes, links = sankey_links(x, y, x_band=band, min_count=5)
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert by[("7-10y", "No issues")] == 6
+    assert "7 to 8 years" not in nodes
+
+
+def test_sankey_links_y_map_groups_values():
+    x = _sc(["3 to 4 years"] * 6, qid="years_using_nix")
+    y = _sc(["I had moderate issues."] * 3
+            + ["I had severe issues and could not make the upgrade."] * 3,
+            qid="outcome")
+    ymap = {
+        "I had moderate issues.": "Problems",
+        "I had severe issues and could not make the upgrade.": "Problems",
+    }
+    nodes, links = sankey_links(x, y, y_map=ymap, min_count=5)
+    by = {(l["source"], l["target"]): l["value"] for l in links}
+    assert by[("3 to 4 years", "Problems")] == 6
+
+
+def test_sankey_links_node_order_x_then_y():
+    x = _sc(["1 to 2 years"] * 6 + ["3 to 4 years"] * 6, qid="years_using_nix")
+    y = _sc(["No issues"] * 6 + ["Minor"] * 6, qid="outcome")
+    nodes, links = sankey_links(
+        x, y, x_band={"1 to 2 years": "1-2y", "3 to 4 years": "3-4y"}, min_count=5
+    )
+    # x-nodes precede y-nodes.
+    assert nodes.index("1-2y") < nodes.index("No issues")
+    assert nodes.index("3-4y") < nodes.index("No issues")
