@@ -18,6 +18,7 @@ from nixos_survey_lib.aggregate import (
     counts_single,
     crosstab,
     crosstab_multi,
+    rank_distribution,
     ranking_avg,
     ranking_top_n,
 )
@@ -32,9 +33,14 @@ from nixos_survey_lib.normalize import (
 )
 from nixos_survey_lib.page import write_page
 from nixos_survey_lib.render_echarts import (
+    diverging_bar,
     heatmap,
     horizontal_bar,
+    line_chart,
+    lollipop,
+    rank_distribution_bar,
     ranking_bar,
+    slope_chart,
 )
 from nixos_survey_lib.types import Page, Row, Section
 
