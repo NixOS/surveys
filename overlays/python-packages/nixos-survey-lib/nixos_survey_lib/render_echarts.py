@@ -199,6 +199,91 @@ def heatmap(
     )
 
 
+# Color ramps for diverging_bar. Positive (severity-OK) stacks right in blue;
+# the first positive label gets the strongest shade. Negative (severity-bad)
+# stacks left in orange; lightest shade first (mildest severity gets lightest
+# orange, most severe gets darkest orange).
+_DIVERGING_POSITIVE_COLORS = [
+    _PALETTE_HEX["blue_default"],
+    _PALETTE_HEX["blue_65"],
+    _PALETTE_HEX["blue_75"],
+    _PALETTE_HEX["blue_85"],
+]
+_DIVERGING_NEGATIVE_COLORS = [
+    _PALETTE_HEX["orange_75"],
+    _PALETTE_HEX["orange_65"],
+    _PALETTE_HEX["orange_55"],
+    _PALETTE_HEX["orange_45"],
+]
+
+
+def diverging_bar(
+    bins: list[Bin],
+    *,
+    positive: list[str],
+    negative: list[str],
+    neutral: list[str],
+    title: str | None = None,
+    height: int | None = None,
+) -> ChartSpec:
+    """Diverging stacked bar: one centered "Severity" spine (negative labels
+    stack left in orange, positive stack right in blue) plus a SEPARATE small
+    gray "Other" bar for the neutral labels. Colors are hex literals.
+
+    Each category in ``positive``/``negative``/``neutral`` becomes one stacked
+    ECharts series; values come from each label's ``Bin.percent``. Negative
+    labels are negated so they extend left from zero. Neutral labels render on
+    a second y-category ("Other") only.
+    """
+    pct = {b.label: round(b.percent, 1) for b in bins}
+
+    y_data = ["Other", "Severity"]  # bottom-up: "Severity" renders on top
+    series: list[dict[str, Any]] = []
+
+    for i, label in enumerate(positive):
+        color = _DIVERGING_POSITIVE_COLORS[min(i, len(_DIVERGING_POSITIVE_COLORS) - 1)]
+        series.append({
+            "name": label,
+            "type": "bar",
+            "stack": "severity",
+            "data": [0, pct.get(label, 0.0)],
+            "itemStyle": {"color": color},
+            "label": {"show": True, "formatter": "{c}%"},
+        })
+    for i, label in enumerate(negative):
+        color = _DIVERGING_NEGATIVE_COLORS[min(i, len(_DIVERGING_NEGATIVE_COLORS) - 1)]
+        series.append({
+            "name": label,
+            "type": "bar",
+            "stack": "severity",
+            "data": [0, -pct.get(label, 0.0)],
+            "itemStyle": {"color": color},
+            "label": {"show": True, "formatter": "{c}%"},
+        })
+    for label in neutral:
+        series.append({
+            "name": label,
+            "type": "bar",
+            "stack": "neutral",
+            "data": [pct.get(label, 0.0), 0],
+            "itemStyle": {"color": _PALETTE_HEX["gray_dark"]},
+            "label": {"show": True, "formatter": "{c}%"},
+        })
+
+    option: dict[str, Any] = {
+        "grid": {"left": 80, "right": 80, "top": 40, "bottom": 30},
+        "legend": {"top": 0, "type": "scroll"},
+        "tooltip": {"trigger": "item", "formatter": "{a}: {c}%"},
+        "xAxis": {"type": "value", "axisLabel": {"formatter": "{value}%"}},
+        "yAxis": {"type": "category", "data": y_data},
+        "series": series,
+    }
+    if title is not None:
+        option["title"] = {"text": title, "left": "left"}
+
+    return ChartSpec(option=option, height=height if height is not None else 200)
+
+
 def ranking_bar(
     ranked: list[Ranked],
     *,

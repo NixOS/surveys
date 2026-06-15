@@ -102,6 +102,51 @@ def test_heatmap_no_annotate_keeps_label_hidden():
     assert spec.option["series"][0]["label"] == {"show": False}
 
 
+from nixos_survey_lib.render_echarts import diverging_bar
+
+
+def test_diverging_bar_shape_and_colors():
+    bins = [
+        Bin(label="No issues", count=50, percent=50.0),
+        Bin(label="Minor", count=20, percent=20.0),
+        Bin(label="Moderate", count=10, percent=10.0),
+        Bin(label="Severe resolved", count=6, percent=6.0),
+        Bin(label="Severe stuck", count=4, percent=4.0),
+        Bin(label="Did not know", count=5, percent=5.0),
+        Bin(label="Not upgraded", count=5, percent=5.0),
+    ]
+    spec = diverging_bar(
+        bins,
+        positive=["No issues", "Minor"],
+        negative=["Moderate", "Severe resolved", "Severe stuck"],
+        neutral=["Did not know", "Not upgraded"],
+    )
+    opt = spec.option
+    assert opt["yAxis"]["data"] == ["Other", "Severity"]
+    series = {s["name"]: s for s in opt["series"]}
+    # Positive labels: positive values on the Severity row, zero on Other.
+    assert series["No issues"]["data"] == [0, 50.0]
+    assert series["Minor"]["data"] == [0, 20.0]
+    # Negative labels: negated values on the Severity row.
+    assert series["Moderate"]["data"] == [0, -10.0]
+    assert series["Severe stuck"]["data"] == [0, -4.0]
+    # Neutral labels: positive values on the Other row only.
+    assert series["Did not know"]["data"] == [5.0, 0]
+    assert series["Not upgraded"]["data"] == [5.0, 0]
+    # Hex colors only (never oklch).
+    for s in opt["series"]:
+        color = s["itemStyle"]["color"]
+        assert color.startswith("#")
+    # Positive uses a blue shade, negative an orange shade.
+    assert series["No issues"]["itemStyle"]["color"] == "#4d6fb7"
+    assert series["Moderate"]["itemStyle"]["color"] == "#e99861"
+    # Neutral uses gray.
+    assert series["Did not know"]["itemStyle"]["color"] == "#717171"
+    # All severity series share one stack; neutral series share another.
+    assert series["No issues"]["stack"] == "severity"
+    assert series["Did not know"]["stack"] == "neutral"
+
+
 from nixos_survey_lib.render_echarts import ranking_bar
 from nixos_survey_lib.types import Ranked
 
