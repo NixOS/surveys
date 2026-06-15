@@ -1,7 +1,7 @@
 import math
 from typing import Any
 
-from .types import Bin, ChartSpec, CrossTab, Ranked
+from .types import Bin, ChartSpec, CrossTab, RankDistribution, Ranked
 
 
 _BAR_ROW_PX = 28
@@ -402,6 +402,77 @@ def lollipop(
         option["title"] = {"text": title, "left": "left"}
 
     return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(bins)))
+
+
+# Sequential blue ramp for rank-distribution segments: rank 1 (top) is darkest.
+# Index 0 = top rank/band; later segments lighten. The "Unranked" tail segment
+# always uses gray (handled separately, not from this ramp).
+_RANK_DIST_BLUES = [
+    _PALETTE_HEX["blue_25"],
+    _PALETTE_HEX["blue_35"],
+    _PALETTE_HEX["blue_45"],
+    _PALETTE_HEX["blue_default"],
+    _PALETTE_HEX["blue_65"],
+    _PALETTE_HEX["blue_75"],
+    _PALETTE_HEX["blue_85"],
+]
+
+
+def rank_distribution_bar(
+    dist: RankDistribution,
+    *,
+    bands: list[tuple[int, int]] | None = None,
+    title: str | None = None,
+    height: int | None = None,
+) -> ChartSpec:
+    """100%-stacked horizontal bar from a RankDistribution. One series per
+    segment; top rank/band = darkest blue, lighter for later segments, gray for
+    the trailing "Unranked" segment. Colors are hex literals. ``bands`` is
+    accepted for signature parity (the segment structure already comes from
+    ``dist.segment_labels``) and otherwise unused.
+    """
+    # ECharts category y-axis is bottom-up; reverse so the first (top-share)
+    # item appears at the top.
+    items = list(reversed(dist.items))
+    labels = [it.label for it in items]
+
+    n_segments = len(dist.segment_labels)
+    series: list[dict[str, Any]] = []
+    for si, seg_label in enumerate(dist.segment_labels):
+        is_last = si == n_segments - 1
+        if is_last:
+            color = _PALETTE_HEX["gray_light"]
+        else:
+            color = _RANK_DIST_BLUES[min(si, len(_RANK_DIST_BLUES) - 1)]
+        series.append({
+            "name": seg_label,
+            "type": "bar",
+            "stack": "total",
+            "data": [round(it.percents[si], 1) for it in items],
+            "itemStyle": {"color": color},
+        })
+
+    option: dict[str, Any] = {
+        "grid": {"left": 200, "right": 40, "top": 40, "bottom": 30},
+        "legend": {"top": 0, "type": "scroll"},
+        "tooltip": {"trigger": "item", "formatter": "{a} — {b}: {c}%"},
+        "xAxis": {"type": "value", "max": 100, "axisLabel": {"formatter": "{value}%"}},
+        "yAxis": {
+            "type": "category",
+            "data": labels,
+            "axisLabel": {"width": 180, "overflow": "truncate"},
+            "axisLine": {"show": False},
+            "axisTick": {"show": False},
+        },
+        "series": series,
+    }
+    if title is not None:
+        option["title"] = {"text": title, "left": "left"}
+
+    return ChartSpec(
+        option=option,
+        height=height if height is not None else _default_bar_height(len(dist.items)),
+    )
 
 
 def ranking_bar(

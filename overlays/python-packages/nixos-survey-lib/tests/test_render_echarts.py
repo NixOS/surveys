@@ -230,6 +230,44 @@ def test_lollipop_shape():
     assert "itemStyle" not in series
 
 
+from nixos_survey_lib.render_echarts import rank_distribution_bar
+from nixos_survey_lib.types import RankDistribution, RankDistItem
+
+
+def test_rank_distribution_bar_shape_and_colors():
+    dist = RankDistribution(
+        segment_labels=["#1", "#2", "Unranked"],
+        items=[
+            RankDistItem(label="Docs", percents=[60.0, 30.0, 10.0]),
+            RankDistItem(label="Wiki", percents=[20.0, 20.0, 60.0]),
+        ],
+    )
+    spec = rank_distribution_bar(dist)
+    opt = spec.option
+    # Reversed so the top item (Docs) sits at the top of a bottom-up y-axis.
+    assert opt["yAxis"]["data"] == ["Wiki", "Docs"]
+    series = {s["name"]: s for s in opt["series"]}
+    assert set(series) == {"#1", "#2", "Unranked"}
+    # All series stacked together.
+    assert series["#1"]["stack"] == "total"
+    assert series["#2"]["stack"] == "total"
+    # Reversed data alignment: Wiki first, Docs second.
+    assert series["#1"]["data"] == [20.0, 60.0]
+    assert series["Unranked"]["data"] == [60.0, 10.0]
+    # Hex colors; top rank darkest blue, Unranked gray.
+    assert series["#1"]["itemStyle"]["color"] == "#15213a"
+    assert series["Unranked"]["itemStyle"]["color"] == "#aeaeae"
+    for s in opt["series"]:
+        assert s["itemStyle"]["color"].startswith("#")
+
+
+def test_rank_distribution_bar_empty():
+    dist = RankDistribution(segment_labels=[], items=[])
+    spec = rank_distribution_bar(dist)
+    assert spec.option["series"] == []
+    assert spec.option["yAxis"]["data"] == []
+
+
 from nixos_survey_lib.render_echarts import ranking_bar
 from nixos_survey_lib.types import Ranked
 
