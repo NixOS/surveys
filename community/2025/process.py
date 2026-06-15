@@ -21,6 +21,7 @@ from nixos_survey_lib.aggregate import (
     rank_distribution,
     sankey_funnel,
     sankey_links,
+    upset_combinations,
 )
 from nixos_survey_lib.loader import (
     load_commentary,
@@ -40,6 +41,7 @@ from nixos_survey_lib.render_echarts import (
     lollipop,
     rank_distribution_bar,
     sankey,
+    upset,
 )
 from nixos_survey_lib.types import Page, Row, Section
 
@@ -246,7 +248,10 @@ def main(csv_path: str, out_path: str) -> None:
                 Row("user_types", "User types",
                     question="Which user types do you identify with?",
                     commentary=cm["user_types"],
-                    charts=[horizontal_bar(counts_multi(r.user_types))]),
+                    charts=[
+                        horizontal_bar(counts_multi(r.user_types)),
+                        upset(*upset_combinations(r.user_types), height=560),
+                    ]),
                 Row("traits", "Self-described skills", question=q("traits"), commentary=cm["traits"],
                     charts=[horizontal_bar(counts_multi(r.traits))]),
                 Row("improvements", "Wished-for improvements", question=q("improvements"), commentary=cm["improvements"],
@@ -341,7 +346,13 @@ def main(csv_path: str, out_path: str) -> None:
                 Row("contribution_experience", "Contributor experience",
                     question=q("contribution_experience"),
                     commentary=cm["contribution_experience"],
-                    charts=[horizontal_bar(counts_multi(r.contribution_experience))]),
+                    charts=[
+                        horizontal_bar(counts_multi(r.contribution_experience)),
+                        upset(
+                            *upset_combinations(r.contribution_experience, max_combos=25),
+                            height=760,
+                        ),
+                    ]),
             ]),
             Section("foundation", "Foundation", rows=[
                 Row("donation_incentives", "Donation incentives",
