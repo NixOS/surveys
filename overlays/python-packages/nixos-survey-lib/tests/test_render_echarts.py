@@ -169,6 +169,43 @@ def test_line_chart_series_per_y_label():
     assert "itemStyle" not in series["Beginner"]
 
 
+from nixos_survey_lib.render_echarts import slope_chart
+
+
+def test_slope_chart_first_vs_last_column():
+    ct = CrossTab(
+        x_labels=["<1y", "1-2y", "3-4y"],
+        y_labels=["Trait A", "Trait B"],
+        cells=[[10.0, 90.0], [50.0, 50.0], [80.0, 20.0]],
+        cell_kind="rate_pct",
+    )
+    spec = slope_chart(ct)
+    opt = spec.option
+    # Only first and last x columns appear.
+    assert opt["xAxis"]["data"] == ["<1y", "3-4y"]
+    series = {s["name"]: s for s in opt["series"]}
+    assert series["Trait A"]["type"] == "line"
+    assert series["Trait A"]["data"] == [10.0, 80.0]
+    assert series["Trait B"]["data"] == [90.0, 20.0]
+    # Endpoint labels shown.
+    assert series["Trait A"]["label"]["show"] is True
+    # No explicit color.
+    assert "color" not in series["Trait A"]
+
+
+def test_slope_chart_single_column_degrades():
+    ct = CrossTab(
+        x_labels=["only"],
+        y_labels=["Trait A"],
+        cells=[[42.0]],
+        cell_kind="rate_pct",
+    )
+    spec = slope_chart(ct)
+    # First and last are the same column.
+    assert spec.option["xAxis"]["data"] == ["only", "only"]
+    assert spec.option["series"][0]["data"] == [42.0, 42.0]
+
+
 from nixos_survey_lib.render_echarts import ranking_bar
 from nixos_survey_lib.types import Ranked
 

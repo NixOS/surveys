@@ -321,6 +321,45 @@ def line_chart(
     return ChartSpec(option=option, height=height if height is not None else 360)
 
 
+def slope_chart(
+    table: CrossTab,
+    *,
+    title: str | None = None,
+    height: int | None = None,
+) -> ChartSpec:
+    """Two-point slope chart: first vs last x_label column, one line per
+    y_label, labeled at both ends. No explicit color (inherits theme palette)."""
+    unit = "×" if table.cell_kind == "lift" else "%"
+    first_i = 0
+    last_i = len(table.x_labels) - 1 if table.x_labels else 0
+    x_data = [table.x_labels[first_i], table.x_labels[last_i]] if table.x_labels else []
+
+    series: list[dict[str, Any]] = []
+    for yi, y_label in enumerate(table.y_labels):
+        start = round(table.cells[first_i][yi], 1)
+        end = round(table.cells[last_i][yi], 1)
+        series.append({
+            "name": y_label,
+            "type": "line",
+            "data": [start, end],
+            "smooth": False,
+            "label": {"show": True, "formatter": "{c}" + unit},
+        })
+
+    option: dict[str, Any] = {
+        "grid": {"left": 60, "right": 120, "top": 40, "bottom": 40},
+        "legend": {"top": 0, "type": "scroll"},
+        "tooltip": {"trigger": "item", "formatter": "{a}: {c}" + unit},
+        "xAxis": {"type": "category", "data": x_data, "boundaryGap": True},
+        "yAxis": {"type": "value", "axisLabel": {"formatter": "{value}" + unit}},
+        "series": series,
+    }
+    if title is not None:
+        option["title"] = {"text": title, "left": "left"}
+
+    return ChartSpec(option=option, height=height if height is not None else 420)
+
+
 def ranking_bar(
     ranked: list[Ranked],
     *,
