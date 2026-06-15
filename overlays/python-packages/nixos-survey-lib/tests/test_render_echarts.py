@@ -116,49 +116,97 @@ def test_heatmap_no_annotate_keeps_label_hidden():
     assert spec.option["series"][0]["label"] == {"show": False}
 
 
-from nixos_survey_lib.render_echarts import diverging_bar
+from nixos_survey_lib.render_echarts import likert_bar
 
 
-def test_diverging_bar_shape_and_colors():
+def test_likert_bar_100pct_stacked():
     bins = [
-        Bin(label="No issues", count=50, percent=50.0),
-        Bin(label="Minor", count=20, percent=20.0),
-        Bin(label="Moderate", count=10, percent=10.0),
-        Bin(label="Severe resolved", count=6, percent=6.0),
-        Bin(label="Severe stuck", count=4, percent=4.0),
-        Bin(label="Did not know", count=5, percent=5.0),
-        Bin(label="Not upgraded", count=5, percent=5.0),
+        Bin(label="Strongly agree", count=40, percent=40.0),
+        Bin(label="Agree", count=30, percent=30.0),
+        Bin(label="Disagree", count=15, percent=15.0),
+        Bin(label="Strongly disagree", count=10, percent=10.0),
+        Bin(label="No opinion", count=5, percent=5.0),
     ]
-    spec = diverging_bar(
+    spec = likert_bar(
         bins,
-        positive=["No issues", "Minor"],
-        negative=["Moderate", "Severe resolved", "Severe stuck"],
-        neutral=["Did not know", "Not upgraded"],
+        positive=["Strongly agree", "Agree"],
+        negative=["Disagree", "Strongly disagree"],
+        neutral=["No opinion"],
     )
     opt = spec.option
-    assert opt["yAxis"]["data"] == ["Other", "Severity"]
-    series = {s["name"]: s for s in opt["series"]}
-    # Positive labels: positive values on the Severity row, zero on Other.
-    assert series["No issues"]["data"] == [0, 50.0]
-    assert series["Minor"]["data"] == [0, 20.0]
-    # Negative labels: negated values on the Severity row.
-    assert series["Moderate"]["data"] == [0, -10.0]
-    assert series["Severe stuck"]["data"] == [0, -4.0]
-    # Neutral labels: positive values on the Other row only.
-    assert series["Did not know"]["data"] == [5.0, 0]
-    assert series["Not upgraded"]["data"] == [5.0, 0]
-    # Hex colors only (never oklch).
-    for s in opt["series"]:
-        color = s["itemStyle"]["color"]
-        assert color.startswith("#")
-    # Positive uses a blue shade, negative an orange shade.
-    assert series["No issues"]["itemStyle"]["color"] == "#4d6fb7"
-    assert series["Moderate"]["itemStyle"]["color"] == "#e99861"
-    # Neutral uses gray.
-    assert series["Did not know"]["itemStyle"]["color"] == "#717171"
-    # All severity series share one stack; neutral series share another.
-    assert series["No issues"]["stack"] == "severity"
-    assert series["Did not know"]["stack"] == "neutral"
+    series = opt["series"]
+    # Segment count == len(positive) + len(negative) + len(neutral).
+    assert len(series) == 5
+    # All series share one stack.
+    assert all(s["stack"] == "likert" for s in series)
+    # No negative values anywhere.
+    for s in series:
+        for v in s["data"]:
+            assert v >= 0
+
+
+def test_likert_bar_segment_order():
+    bins = [
+        Bin(label="Strongly agree", count=40, percent=40.0),
+        Bin(label="Agree", count=30, percent=30.0),
+        Bin(label="Disagree", count=15, percent=15.0),
+        Bin(label="Strongly disagree", count=10, percent=10.0),
+        Bin(label="No opinion", count=5, percent=5.0),
+    ]
+    spec = likert_bar(
+        bins,
+        positive=["Strongly agree", "Agree"],
+        negative=["Disagree", "Strongly disagree"],
+        neutral=["No opinion"],
+    )
+    series = spec.option["series"]
+    names = [s["name"] for s in series]
+    # Positive first, then negative, then neutral.
+    assert names == ["Strongly agree", "Agree", "Disagree", "Strongly disagree", "No opinion"]
+
+
+def test_likert_bar_hex_colors_and_distinct_neutrals():
+    bins = [
+        Bin(label="Yes", count=60, percent=60.0),
+        Bin(label="No", count=20, percent=20.0),
+        Bin(label="Maybe", count=10, percent=10.0),
+        Bin(label="N/A", count=10, percent=10.0),
+    ]
+    spec = likert_bar(
+        bins,
+        positive=["Yes"],
+        negative=["No"],
+        neutral=["Maybe", "N/A"],
+    )
+    series = {s["name"]: s for s in spec.option["series"]}
+    # All colors are hex literals.
+    for s in spec.option["series"]:
+        assert s["itemStyle"]["color"].startswith("#")
+    # Two neutral segments must have DIFFERENT colors.
+    assert series["Maybe"]["itemStyle"]["color"] != series["N/A"]["itemStyle"]["color"]
+
+
+def test_likert_bar_label_formatter():
+    bins = [Bin(label="Yes", count=100, percent=100.0)]
+    spec = likert_bar(bins, positive=["Yes"], negative=[], neutral=[])
+    series = spec.option["series"]
+    assert series[0]["label"]["formatter"] == "{c}%"
+
+
+def test_likert_bar_tooltip_and_legend():
+    bins = [Bin(label="Yes", count=100, percent=100.0)]
+    spec = likert_bar(bins, positive=["Yes"], negative=[], neutral=[])
+    opt = spec.option
+    assert opt["tooltip"]["trigger"] == "item"
+    assert opt["tooltip"]["formatter"] == "{a}: {c}%"
+    assert "legend" in opt
+    assert opt["legend"].get("type") != "scroll"
+
+
+def test_likert_bar_title():
+    bins = [Bin(label="Yes", count=100, percent=100.0)]
+    spec = likert_bar(bins, positive=["Yes"], negative=[], neutral=[], title="My question")
+    assert spec.option["title"]["text"] == "My question"
 
 
 from nixos_survey_lib.render_echarts import line_chart
@@ -278,9 +326,13 @@ def test_rank_distribution_bar_shape_and_colors():
     # Reversed data alignment: Wiki first, Docs second.
     assert series["#1"]["data"] == [20.0, 60.0]
     assert series["Unranked"]["data"] == [60.0, 10.0]
-    # Hex colors; top rank darkest blue, Unranked gray.
-    assert series["#1"]["itemStyle"]["color"] == "#15213a"
+    # Hex colors; top rank darkest blue (well-separated from later ranks), Unranked gray.
+    assert series["#1"]["itemStyle"]["color"] == "#4d6fb7"
     assert series["Unranked"]["itemStyle"]["color"] == "#aeaeae"
+    # Rank bands must be visually distinct from each other and from gray_light.
+    rank1_color = series["#1"]["itemStyle"]["color"]
+    rank2_color = series["#2"]["itemStyle"]["color"]
+    assert rank1_color != rank2_color
     for s in opt["series"]:
         assert s["itemStyle"]["color"].startswith("#")
 

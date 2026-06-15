@@ -199,83 +199,81 @@ def heatmap(
     )
 
 
-# Color ramps for diverging_bar. Positive (severity-OK) stacks right in blue;
-# the first positive label gets the strongest shade. Negative (severity-bad)
-# stacks left in orange; lightest shade first (mildest severity gets lightest
-# orange, most severe gets darkest orange).
-_DIVERGING_POSITIVE_COLORS = [
+# Color ramps for likert_bar.
+# Positive (agreement) labels use blue shades: darkest = most positive.
+_LIKERT_POSITIVE_COLORS = [
     _PALETTE_HEX["blue_default"],
-    _PALETTE_HEX["blue_65"],
     _PALETTE_HEX["blue_75"],
-    _PALETTE_HEX["blue_85"],
 ]
-_DIVERGING_NEGATIVE_COLORS = [
+# Negative (disagreement) labels use orange shades: lightest = mildest.
+_LIKERT_NEGATIVE_COLORS = [
     _PALETTE_HEX["orange_75"],
-    _PALETTE_HEX["orange_65"],
-    _PALETTE_HEX["orange_55"],
     _PALETTE_HEX["orange_45"],
 ]
+# Neutral labels use two distinct grays.
+_LIKERT_NEUTRAL_COLORS = [
+    _PALETTE_HEX["gray_light"],
+    _PALETTE_HEX["gray_dark"],
+]
 
 
-def diverging_bar(
+def likert_bar(
     bins: list[Bin],
     *,
     positive: list[str],
     negative: list[str],
     neutral: list[str],
+    order: list[str] | None = None,
     title: str | None = None,
     height: int | None = None,
 ) -> ChartSpec:
-    """Diverging stacked bar: one centered "Severity" spine (negative labels
-    stack left in orange, positive stack right in blue) plus a SEPARATE small
-    gray "Other" bar for the neutral labels. Colors are hex literals.
+    """100%-stacked horizontal bar for Likert-scale data. One bar; each label
+    becomes one stacked ``bar`` series sharing ``stack: "likert"``.
 
-    Each category in ``positive``/``negative``/``neutral`` becomes one stacked
-    ECharts series; values come from each label's ``Bin.percent``. Negative
-    labels are negated so they extend left from zero. Neutral labels render on
-    a second y-category ("Other") only.
+    Segment order left→right: positive labels (blue shades, darkest first),
+    then negative labels (orange shades), then neutral labels (distinct grays).
+    All values are positive percents. Colors are hex literals.
     """
     pct = {b.label: round(b.percent, 1) for b in bins}
-
-    y_data = ["Other", "Severity"]  # bottom-up: "Severity" renders on top
     series: list[dict[str, Any]] = []
 
     for i, label in enumerate(positive):
-        color = _DIVERGING_POSITIVE_COLORS[min(i, len(_DIVERGING_POSITIVE_COLORS) - 1)]
+        color = _LIKERT_POSITIVE_COLORS[min(i, len(_LIKERT_POSITIVE_COLORS) - 1)]
         series.append({
             "name": label,
             "type": "bar",
-            "stack": "severity",
-            "data": [0, pct.get(label, 0.0)],
+            "stack": "likert",
+            "data": [pct.get(label, 0.0)],
             "itemStyle": {"color": color},
             "label": {"show": True, "formatter": "{c}%"},
         })
     for i, label in enumerate(negative):
-        color = _DIVERGING_NEGATIVE_COLORS[min(i, len(_DIVERGING_NEGATIVE_COLORS) - 1)]
+        color = _LIKERT_NEGATIVE_COLORS[min(i, len(_LIKERT_NEGATIVE_COLORS) - 1)]
         series.append({
             "name": label,
             "type": "bar",
-            "stack": "severity",
-            "data": [0, -pct.get(label, 0.0)],
+            "stack": "likert",
+            "data": [pct.get(label, 0.0)],
             "itemStyle": {"color": color},
             "label": {"show": True, "formatter": "{c}%"},
         })
-    for label in neutral:
+    for i, label in enumerate(neutral):
+        color = _LIKERT_NEUTRAL_COLORS[min(i, len(_LIKERT_NEUTRAL_COLORS) - 1)]
         series.append({
             "name": label,
             "type": "bar",
-            "stack": "neutral",
-            "data": [pct.get(label, 0.0), 0],
-            "itemStyle": {"color": _PALETTE_HEX["gray_dark"]},
+            "stack": "likert",
+            "data": [pct.get(label, 0.0)],
+            "itemStyle": {"color": color},
             "label": {"show": True, "formatter": "{c}%"},
         })
 
     option: dict[str, Any] = {
         "grid": {"left": 80, "right": 80, "top": 40, "bottom": 30},
-        "legend": {"top": 0, "type": "scroll"},
+        "legend": {"top": 0},
         "tooltip": {"trigger": "item", "formatter": "{a}: {c}%"},
-        "xAxis": {"type": "value", "axisLabel": {"formatter": "{value}%"}},
-        "yAxis": {"type": "category", "data": y_data},
+        "xAxis": {"type": "value", "max": 100, "axisLabel": {"formatter": "{value}%"}},
+        "yAxis": {"type": "category", "data": [""]},
         "series": series,
     }
     if title is not None:
@@ -305,7 +303,7 @@ def line_chart(
 
     option: dict[str, Any] = {
         "grid": {"left": 60, "right": 40, "top": 40, "bottom": 60},
-        "legend": {"top": 0, "type": "scroll"},
+        "legend": {"top": 0},
         "tooltip": {"trigger": "axis"},
         "xAxis": {
             "type": "category",
@@ -348,7 +346,7 @@ def slope_chart(
 
     option: dict[str, Any] = {
         "grid": {"left": 60, "right": 120, "top": 40, "bottom": 40},
-        "legend": {"top": 0, "type": "scroll"},
+        "legend": {"top": 0},
         "tooltip": {"trigger": "item", "formatter": "{a}: {c}" + unit},
         "xAxis": {"type": "category", "data": x_data, "boundaryGap": True},
         "yAxis": {"type": "value", "axisLabel": {"formatter": "{value}" + unit}},
@@ -413,16 +411,15 @@ def lollipop(
 
 
 # Sequential blue ramp for rank-distribution segments: rank 1 (top) is darkest.
-# Index 0 = top rank/band; later segments lighten. The "Unranked" tail segment
-# always uses gray (handled separately, not from this ramp).
+# Index 0 = top rank/band; later segments lighten. Shades are well-separated
+# so 3–5 bands are clearly distinguishable. The "Unranked" tail segment always
+# uses gray_light (#aeaeae), which is distinct from all blues here.
 _RANK_DIST_BLUES = [
-    _PALETTE_HEX["blue_25"],
-    _PALETTE_HEX["blue_35"],
-    _PALETTE_HEX["blue_45"],
     _PALETTE_HEX["blue_default"],
     _PALETTE_HEX["blue_65"],
-    _PALETTE_HEX["blue_75"],
     _PALETTE_HEX["blue_85"],
+    _PALETTE_HEX["blue_75"],
+    _PALETTE_HEX["blue_45"],
 ]
 
 
@@ -462,7 +459,7 @@ def rank_distribution_bar(
 
     option: dict[str, Any] = {
         "grid": {"left": 200, "right": 40, "top": 40, "bottom": 30},
-        "legend": {"top": 0, "type": "scroll"},
+        "legend": {"top": 0},
         "tooltip": {"trigger": "item", "formatter": "{a} — {b}: {c}%"},
         "xAxis": {"type": "value", "max": 100, "axisLabel": {"formatter": "{value}%"}},
         "yAxis": {
