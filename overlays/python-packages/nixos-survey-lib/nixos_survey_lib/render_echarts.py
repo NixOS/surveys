@@ -507,26 +507,45 @@ def upset(
     dropped_count: int,
     *,
     height: int,
+    set_labels: dict[str, str] | None = None,
 ) -> ChartSpec:
     """Render an UpSet plot as a multi-grid ECharts option.
 
-    grids: [0] top bar of intersection sizes, [1] bottom scatter dot-matrix
-    (sets x intersections), [2] left bar of per-set totals. The dot-matrix
-    shares the intersection category x-axis with the top bar and the set
-    category y-axis with the left bar. ``dropped_count`` is surfaced in
-    ``title.subtext`` (no silent truncation).
+    Canonical left-to-right layout: [set-code labels] → [totals bar] →
+    [dot-matrix].
+
+    grids: [0] top bar of intersection sizes (aligned with dot-matrix),
+    [1] dot-matrix (sets × intersections), [2] left totals bar (per-set
+    counts). The dot-matrix shares the intersection category x-axis with the
+    top bar and the set category y-axis with the left bar.
+
+    ``set_labels`` maps each full set name to a short display code. When
+    provided, the totals-bar y-axis (index 2) shows the short codes; the
+    dot-matrix y-axis (index 1) hides its labels so only the codes on the far
+    left are visible. Combos and set_totals continue to be keyed on full names
+    internally.
+
+    ``dropped_count`` is surfaced in ``title.subtext`` (no silent truncation).
     """
-    set_labels = [label for label, _total in set_totals]
+    row_names = [label for label, _total in set_totals]
     totals = [total for _label, total in set_totals]
     n_cols = len(combos)
     col_categories = [str(i) for i in range(n_cols)]
+
+    # Displayed codes for the totals-bar y-axis: short codes when provided,
+    # otherwise fall back to the full names.
+    display_codes = (
+        [set_labels.get(name, name) for name in row_names]
+        if set_labels is not None
+        else row_names
+    )
 
     # Dot-matrix: one point per (column, set row), filled if the set is a
     # member of that column's combination.
     dot_data: list[dict[str, Any]] = []
     for ci, combo in enumerate(combos):
         member_set = set(combo.members)
-        for ri, set_label in enumerate(set_labels):
+        for ri, set_label in enumerate(row_names):
             filled = set_label in member_set
             dot_data.append({
                 "value": [ci, ri],
@@ -542,7 +561,7 @@ def upset(
     for ci, combo in enumerate(combos):
         member_set = set(combo.members)
         filled_rows = [
-            ri for ri, set_label in enumerate(set_labels)
+            ri for ri, set_label in enumerate(row_names)
             if set_label in member_set
         ]
         if len(filled_rows) < 2:
@@ -561,12 +580,12 @@ def upset(
 
     option: dict[str, Any] = {
         "grid": [
-            # 0: top bar (intersection sizes)
-            {"left": 200, "right": 40, "top": 50, "height": 110},
-            # 1: bottom dot-matrix
-            {"left": 200, "right": 40, "top": 180, "bottom": 30},
-            # 2: left bar (per-set totals), vertically aligned with grid 1
-            {"left": 40, "width": 130, "top": 180, "bottom": 30},
+            # 0: top bar (intersection sizes) — same left/right as dot-matrix
+            {"left": 190, "right": 40, "top": 50, "height": 110},
+            # 1: dot-matrix — right of the totals bar
+            {"left": 190, "right": 40, "top": 180, "bottom": 30},
+            # 2: left totals bar — narrow column; y-axis carries set codes
+            {"left": 70, "width": 90, "top": 180, "bottom": 30},
         ],
         "xAxis": [
             # 0: top bar category (intersection columns), labels hidden
@@ -587,21 +606,20 @@ def upset(
         "yAxis": [
             # 0: top bar value axis
             {"type": "value", "gridIndex": 0},
-            # 1: dot-matrix set rows. Set names can be long (contribution_experience
-            # statements are full sentences), so truncate the labels and rely on the
-            # tooltip for the full text — matching the bar/heatmap axisLabel convention.
-            # The grid's `left` padding must be wide enough to hold the truncated labels.
+            # 1: dot-matrix set rows — labels hidden; codes live on the
+            # totals-bar axis to the left so there is no overlap.
             {
-                "type": "category", "data": set_labels, "gridIndex": 1,
+                "type": "category", "data": row_names, "gridIndex": 1,
                 "inverse": True, "axisTick": {"show": False},
                 "axisLine": {"show": False}, "splitLine": {"show": False},
-                "axisLabel": {"width": 170, "overflow": "truncate"},
+                "axisLabel": {"show": False},
             },
-            # 2: left bar set rows (aligned with dot-matrix), labels hidden
+            # 2: totals-bar set rows (aligned with dot-matrix) — shows short
+            # codes (or full names when set_labels is None) on the far left.
             {
-                "type": "category", "data": set_labels, "gridIndex": 2,
-                "inverse": True, "axisLabel": {"show": False},
-                "axisTick": {"show": False}, "axisLine": {"show": False},
+                "type": "category", "data": display_codes, "gridIndex": 2,
+                "inverse": True, "axisTick": {"show": False},
+                "axisLine": {"show": False},
             },
         ],
         "tooltip": {"trigger": "item"},

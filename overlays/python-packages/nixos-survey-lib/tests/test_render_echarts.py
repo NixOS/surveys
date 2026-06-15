@@ -450,12 +450,17 @@ def test_upset_set_rows_and_left_bar():
     yaxes = opt["yAxis"]
     assert yaxes[1]["data"] == ["A", "B", "C"]
     assert yaxes[1]["inverse"] is True
+    # Dot-matrix y-axis labels are HIDDEN (set codes live on the totals-bar axis).
+    assert yaxes[1]["axisLabel"]["show"] is False
     # Left bar (xAxisIndex 2 / yAxisIndex 2) carries per-set totals.
     left = next(s for s in opt["series"] if s["type"] == "bar" and s["xAxisIndex"] == 2)
     assert left["yAxisIndex"] == 2
     assert left["data"] == [16, 11, 5]
     # Left value axis grows leftward.
     assert opt["xAxis"][2]["inverse"] is True
+    # Totals-bar y-axis (index 2) shows labels (set codes on the far left);
+    # absence of axisLabel or show=True both mean "visible".
+    assert yaxes[2].get("axisLabel", {}).get("show") is not False
 
 
 def test_upset_dot_matrix_fill_state():
@@ -537,6 +542,75 @@ def test_upset_connector_lines_use_hex_color():
         if s["type"] == "line" and s.get("xAxisIndex") == 1:
             color = s.get("lineStyle", {}).get("color", "")
             assert color.startswith("#")
+
+
+def test_upset_canonical_layout_order():
+    """Canonical layout: totals bar is left of dot-matrix.
+    totals-bar grid left ~70 (narrow), dot-matrix and top-bar grids left ~190.
+    """
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    grids = opt["grid"]
+    # Grid 2 (totals bar) left edge must be less than grid 1 (dot-matrix) left edge.
+    assert grids[2]["left"] < grids[1]["left"]
+    # Grid 0 (top bar) and grid 1 (dot-matrix) share the same left edge.
+    assert grids[0]["left"] == grids[1]["left"]
+
+
+def test_upset_totals_bar_grid_is_narrow():
+    """Totals-bar grid width should be ~90 (well under the dot-matrix left offset)."""
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    grids = opt["grid"]
+    # Grid 2 (totals bar): left + width < dot-matrix left (no overlap).
+    totals_right_edge = grids[2]["left"] + grids[2]["width"]
+    assert totals_right_edge <= grids[1]["left"]
+
+
+def test_upset_set_labels_changes_displayed_codes():
+    """set_labels maps full names to short codes; the y-axis of the totals bar
+    shows short codes; combos and set_totals remain keyed on full names."""
+    combos = [
+        Combination(members=("A. Long name for set A",), size=10),
+        Combination(members=("A. Long name for set A", "B. Long name for set B"), size=6),
+        Combination(members=("B. Long name for set B", "C. Long name for set C"), size=5),
+    ]
+    set_totals = [
+        ("A. Long name for set A", 16),
+        ("B. Long name for set B", 11),
+        ("C. Long name for set C", 5),
+    ]
+    labels_map = {
+        "A. Long name for set A": "A",
+        "B. Long name for set B": "B",
+        "C. Long name for set C": "C",
+    }
+    opt = upset(combos, set_totals, 0, height=400, set_labels=labels_map).option
+    yaxes = opt["yAxis"]
+    # Totals-bar y-axis (index 2) shows short codes.
+    assert yaxes[2]["data"] == ["A", "B", "C"]
+    # Dot-matrix y-axis (index 1) uses full names internally (membership is keyed on them).
+    assert yaxes[1]["data"] == [
+        "A. Long name for set A",
+        "B. Long name for set B",
+        "C. Long name for set C",
+    ]
+
+
+def test_upset_set_labels_none_falls_back_to_full_names():
+    """When set_labels is None, totals-bar y-axis shows the full set names."""
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400, set_labels=None).option
+    yaxes = opt["yAxis"]
+    assert yaxes[2]["data"] == ["A", "B", "C"]
+
+
+def test_upset_dot_matrix_y_labels_hidden():
+    """Dot-matrix y-axis labels are always hidden; codes live on the totals-bar axis."""
+    combos, set_totals = _upset_inputs()
+    opt = upset(combos, set_totals, 0, height=400).option
+    yaxes = opt["yAxis"]
+    assert yaxes[1]["axisLabel"]["show"] is False
 
 
 from nixos_survey_lib.render_echarts import sankey
