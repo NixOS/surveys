@@ -8,7 +8,7 @@ import {
   ScatterChart,
   PictorialBarChart,
 } from 'echarts/charts';
-import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent } from 'echarts/components';
+import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, TitleComponent } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 import colors from '@nixos/branding/colors/tailwind.js';
 
@@ -23,6 +23,7 @@ echarts.use([
   TooltipComponent,
   VisualMapComponent,
   LegendComponent,
+  TitleComponent,
   SVGRenderer,
 ]);
 

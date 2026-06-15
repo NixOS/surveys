@@ -48,8 +48,9 @@ def horizontal_bar(
     labels = [b.label for b in reversed_bins]
     values = [round(b.percent, 1) for b in reversed_bins]
 
+    grid_top = 64 if title is not None else 40
     option: dict[str, Any] = {
-        "grid": {"left": 200, "right": 80, "top": 40, "bottom": 30},
+        "grid": {"left": 200, "right": 80, "top": grid_top, "bottom": 30},
         "xAxis": {"type": "value", "show": False, "max": "dataMax"},
         "yAxis": {
             "type": "category",
@@ -72,7 +73,7 @@ def horizontal_bar(
         }],
     }
     if title is not None:
-        option["title"] = {"text": title, "left": "left"}
+        option["title"] = {"text": title, "left": "left", "top": 0}
 
     return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(bins)))
 
@@ -149,8 +150,9 @@ def heatmap(
             "top": "center",
         }
 
+    grid_top = 64 if title is not None else 40
     option: dict[str, Any] = {
-        "grid": {"left": 200, "right": 80, "top": 40, "bottom": 70},
+        "grid": {"left": 200, "right": 80, "top": grid_top, "bottom": 70},
         "xAxis": {
             "type": "category",
             "data": table.x_labels,
@@ -191,7 +193,7 @@ def heatmap(
         }],
     }
     if title is not None:
-        option["title"] = {"text": title, "left": "left"}
+        option["title"] = {"text": title, "left": "left", "top": 0}
 
     return ChartSpec(
         option=option,
@@ -270,16 +272,18 @@ def likert_bar(
             "label": {"show": True, "formatter": "{c}%"},
         })
 
+    legend_top = 28 if title is not None else 0
+    grid_top = 64 if title is not None else 40
     option: dict[str, Any] = {
-        "grid": {"left": 80, "right": 80, "top": 40, "bottom": 30},
-        "legend": {"top": 0},
+        "grid": {"left": 80, "right": 80, "top": grid_top, "bottom": 30},
+        "legend": {"top": legend_top},
         "tooltip": {"trigger": "item", "formatter": "{a}: {c}%"},
         "xAxis": {"type": "value", "max": 100, "axisLabel": {"formatter": "{value}%"}},
         "yAxis": {"type": "category", "data": [""]},
         "series": series,
     }
     if title is not None:
-        option["title"] = {"text": title, "left": "left"}
+        option["title"] = {"text": title, "left": "left", "top": 0}
 
     return ChartSpec(option=option, height=height if height is not None else 200)
 
@@ -303,9 +307,11 @@ def line_chart(
             "smooth": False,
         })
 
+    legend_top = 28 if title is not None else 0
+    grid_top = 64 if title is not None else 40
     option: dict[str, Any] = {
-        "grid": {"left": 60, "right": 40, "top": 40, "bottom": 60},
-        "legend": {"top": 0},
+        "grid": {"left": 60, "right": 40, "top": grid_top, "bottom": 60},
+        "legend": {"top": legend_top},
         "tooltip": {"trigger": "axis"},
         "xAxis": {
             "type": "category",
@@ -316,7 +322,7 @@ def line_chart(
         "series": series,
     }
     if title is not None:
-        option["title"] = {"text": title, "left": "left"}
+        option["title"] = {"text": title, "left": "left", "top": 0}
 
     return ChartSpec(option=option, height=height if height is not None else 360)
 
@@ -335,8 +341,9 @@ def lollipop(
     labels = [b.label for b in reversed_bins]
     values = [round(b.percent, 1) for b in reversed_bins]
 
+    grid_top = 64 if title is not None else 40
     option: dict[str, Any] = {
-        "grid": {"left": 200, "right": 80, "top": 40, "bottom": 30},
+        "grid": {"left": 200, "right": 80, "top": grid_top, "bottom": 30},
         "xAxis": {"type": "value", "show": False, "max": "dataMax"},
         "yAxis": {
             "type": "category",
@@ -369,7 +376,7 @@ def lollipop(
         ],
     }
     if title is not None:
-        option["title"] = {"text": title, "left": "left"}
+        option["title"] = {"text": title, "left": "left", "top": 0}
 
     return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(bins)))
 
@@ -430,9 +437,11 @@ def rank_distribution_bar(
             "itemStyle": {"color": color},
         })
 
+    legend_top = 28 if title is not None else 0
+    grid_top = 64 if title is not None else 40
     option: dict[str, Any] = {
-        "grid": {"left": 200, "right": 40, "top": 40, "bottom": 30},
-        "legend": {"top": 0},
+        "grid": {"left": 200, "right": 40, "top": grid_top, "bottom": 30},
+        "legend": {"top": legend_top},
         "tooltip": {"trigger": "item", "formatter": "{a} — {b}: {c}%"},
         "xAxis": {"type": "value", "max": 100, "axisLabel": {"formatter": "{value}%"}},
         "yAxis": {
@@ -445,7 +454,7 @@ def rank_distribution_bar(
         "series": series,
     }
     if title is not None:
-        option["title"] = {"text": title, "left": "left"}
+        option["title"] = {"text": title, "left": "left", "top": 0}
 
     return ChartSpec(
         option=option,
