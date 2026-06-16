@@ -383,13 +383,16 @@ fewer than 5 respondents) are omitted and counted in the chart's caption.
 - **Helped** — I was able to contribute with help from the community.
 - **Future** — I plan to contribute in the future.
 
-## involvement_x_experience
+## involvement_rate_by_experience
 
-Two views of how involvement roles vary with experience. The Rate heatmap shows
-the rate — among respondents in each experience band, the share reporting each
-involvement role. The Lift heatmap shows lift — how much more (or less) likely
-each role is within a band relative to the overall baseline (1.0× = no
-difference). Bands exclude non-users and undisclosed experience.
+Among respondents in each experience band, the share reporting each involvement
+role. Bands exclude non-users and undisclosed experience.
+
+## involvement_lift_by_experience
+
+How much more (or less) likely each involvement role is within an experience band
+relative to the overall baseline (1.0× = no difference). Bands exclude non-users
+and undisclosed experience.
 
 ## workplace_uses_nix
 
