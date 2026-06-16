@@ -348,7 +348,9 @@ def lollipop(
         "yAxis": {
             "type": "category",
             "data": labels,
-            "axisLabel": {"width": 180, "overflow": "truncate"},
+            # Extra margin so a short-stem dot (centered on the value, extending
+            # ~7px left of it) doesn't crowd the category label near the axis.
+            "axisLabel": {"width": 180, "overflow": "truncate", "margin": 18},
             "axisLine": {"show": False},
             "axisTick": {"show": False},
         },
