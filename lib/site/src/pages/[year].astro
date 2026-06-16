@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import PlotRow from '../components/PlotRow.astro';
+import TableOfContents from '../components/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const all = await getCollection('results');
@@ -29,6 +30,7 @@ const { data } = Astro.props;
     </div>
   )}
   <hr class="mt-12 border-primary-black-85 dark:border-primary-black-25" />
+  <TableOfContents sections={data.sections.map(s => ({ id: s.id, heading: s.heading }))} />
   {data.sections.map(section => (
     <section>
       <SectionHeading id={section.id} heading={section.heading} note={section.note} />
