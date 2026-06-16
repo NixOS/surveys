@@ -34,7 +34,9 @@ const { data } = Astro.props;
   {data.sections.map(section => (
     <section>
       <SectionHeading id={section.id} heading={section.heading} note={section.note} />
-      {section.rows.map(row => <PlotRow row={row} />)}
+      <div class="columns-1 md:columns-2 gap-5">
+        {section.rows.map(row => <PlotRow row={row} />)}
+      </div>
     </section>
   ))}
   <footer class="mt-20 border-t border-primary-black-85 dark:border-primary-black-25 pt-6 text-sm text-primary-black-65 dark:text-primary-white-45">
