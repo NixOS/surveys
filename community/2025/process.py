@@ -211,7 +211,7 @@ def main(csv_path: str, out_path: str) -> None:
                     charts=[lollipop(counts_multi(r.software_ecosystems))]),
             ]),
             Section("experience", "Experience", rows=[
-                Row("stable_upgrade", "Stable Upgrade", question=q("stable_upgrade"), commentary=cm["stable_upgrade"],
+                Row("stable_upgrade", "Stable Upgrade", question=q("stable_upgrade"), commentary=cm["stable_upgrade"], wide=True,
                     charts=[
                         likert_bar(
                             counts_single(r.stable_upgrade, order=STABLE_UPGRADE_ORDER,
@@ -243,11 +243,11 @@ def main(csv_path: str, out_path: str) -> None:
                     charts=[horizontal_bar(counts_single(r.first_heard_how))]),
                 Row("discovery_flow", "Discovery flow",
                     question=f"{q('first_heard_which')} → {q('first_heard_how')}",
-                    commentary=cm["discovery_flow"],
+                    commentary=cm["discovery_flow"], wide=True,
                     charts=[sankey(discovery_nodes, discovery_links)]),
                 Row("user_types", "User types",
                     question="Which user types do you identify with?",
-                    commentary=cm["user_types"],
+                    commentary=cm["user_types"], wide=True,
                     charts=[
                         horizontal_bar(counts_multi(r.user_types)),
                         upset(
@@ -268,7 +268,7 @@ def main(csv_path: str, out_path: str) -> None:
                     charts=[horizontal_bar(counts_single(r.help_success_frequency, order=HELP_FREQUENCY_ORDER, bucket_min_percent=None))]),
                 Row("involvement_x_experience", "Involvement by experience",
                     question=f"{q('involvement')} × {q('years_using_nix')}",
-                    commentary=cm["involvement_x_experience"],
+                    commentary=cm["involvement_x_experience"], wide=True,
                     charts=[
                         heatmap(crosstab_multi(
                             r.involvement, r.years_using_nix,
@@ -285,14 +285,14 @@ def main(csv_path: str, out_path: str) -> None:
                     ]),
                 Row("skill_x_experience", "Expertise vs Experience",
                     question=f"{q('skill_level')} × {q('years_using_nix')}",
-                    commentary=cm["skill_x_experience"],
+                    commentary=cm["skill_x_experience"], wide=True,
                     charts=[
                         heatmap(_skill_x_exp_ct, annotate=True, height=356, title="Distribution"),
                         line_chart(_skill_x_exp_ct, title="Trend by tenure"),
                     ]),
                 Row("experience_x_skill", "Experience vs Expertise",
                     question=f"{q('years_using_nix')} × {q('skill_level')}",
-                    commentary=cm["experience_x_skill"],
+                    commentary=cm["experience_x_skill"], wide=True,
                     charts=[heatmap(crosstab(
                         r.skill_level, r.years_using_nix,
                         normalize="y",
@@ -302,7 +302,7 @@ def main(csv_path: str, out_path: str) -> None:
                     ), height=460)]),
                 Row("traits_rate_by_skill", "Trait rate by skill level",
                     question=f"{q('traits')} × {q('skill_level')}",
-                    commentary=cm["traits_rate_by_skill"],
+                    commentary=cm["traits_rate_by_skill"], wide=True,
                     charts=[heatmap(crosstab_multi(
                         r.traits, r.skill_level,
                         denominator="rate",
@@ -311,7 +311,7 @@ def main(csv_path: str, out_path: str) -> None:
                     ), height=588, vm_min=0, vm_max=100)]),
                 Row("traits_lift_by_skill", "Trait lift by skill level",
                     question=f"{q('traits')} × {q('skill_level')}",
-                    commentary=cm["traits_lift_by_skill"],
+                    commentary=cm["traits_lift_by_skill"], wide=True,
                     charts=[heatmap(crosstab_multi(
                         r.traits, r.skill_level,
                         denominator="lift",
@@ -320,13 +320,13 @@ def main(csv_path: str, out_path: str) -> None:
                     ), height=588)]),
                 Row("traits_rate_by_experience", "Trait rate by years using Nix",
                     question=f"{q('traits')} × {q('years_using_nix')}",
-                    commentary=cm["traits_rate_by_experience"],
+                    commentary=cm["traits_rate_by_experience"], wide=True,
                     charts=[
                         heatmap(_traits_rate_exp_ct, annotate=True, height=540, vm_min=0, vm_max=100),
                     ]),
                 Row("traits_lift_by_experience", "Trait lift by years using Nix",
                     question=f"{q('traits')} × {q('years_using_nix')}",
-                    commentary=cm["traits_lift_by_experience"],
+                    commentary=cm["traits_lift_by_experience"], wide=True,
                     charts=[heatmap(crosstab_multi(
                         r.traits, r.years_using_nix,
                         denominator="lift",
@@ -351,7 +351,7 @@ def main(csv_path: str, out_path: str) -> None:
             Section("contribution", "Contribution", rows=[
                 Row("contribution_experience", "Contributor experience",
                     question=q("contribution_experience"),
-                    commentary=cm["contribution_experience"],
+                    commentary=cm["contribution_experience"], wide=True,
                     charts=[
                         horizontal_bar(counts_multi(r.contribution_experience)),
                         upset(
