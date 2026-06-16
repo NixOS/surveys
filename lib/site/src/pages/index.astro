@@ -12,7 +12,7 @@ const surveys = (await getCollection('results'))
     <p>The NixOS community periodically surveys its users to learn who they are, how they use Nix and NixOS, and what they need. This site publishes the results.</p>
     <p>Each report turns thousands of community responses into charts you can explore — browse the surveys below.</p>
   </div>
-  <ul class="grid gap-5 list-none p-0 grid-cols-[repeat(auto-fill,minmax(280px,360px))]">
+  <ul class="grid gap-5 list-none p-0 grid-cols-[repeat(auto-fit,minmax(320px,520px))]">
     {surveys.map(s => (
       <li>
         <a href={`/${s.data.series}/${s.data.year}/`}
