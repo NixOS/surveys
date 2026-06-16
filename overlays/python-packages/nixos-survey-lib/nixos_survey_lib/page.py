@@ -18,6 +18,7 @@ def write_page(page: Page, path: Path) -> None:
 def _page_dict(page: Page) -> dict[str, Any]:
     return {
         "schema_version": page.schema_version,
+        "series": page.series,
         "year": page.year,
         "title": page.title,
         "intro_meta": page.intro_meta,

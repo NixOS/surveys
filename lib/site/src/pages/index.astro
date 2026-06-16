@@ -15,7 +15,7 @@ const surveys = (await getCollection('results'))
   <ul class="grid gap-5 list-none p-0 grid-cols-[repeat(auto-fill,minmax(280px,360px))]">
     {surveys.map(s => (
       <li>
-        <a href={`/${s.data.year}/`}
+        <a href={`/${s.data.series}/${s.data.year}/`}
            class="block rounded-xl overflow-hidden border-2 border-secondary-afghani-blue dark:border-secondary-afghani-blue-75 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200 p-5 no-underline">
           <span class="block text-xl font-bold font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">{s.data.title}</span>
           {s.data.intro_meta && (

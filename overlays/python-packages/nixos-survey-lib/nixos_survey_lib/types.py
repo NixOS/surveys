@@ -86,6 +86,8 @@ class Page:
     year: int
     title: str
     sections: list[Section]
+    # Survey series slug — used as the first URL segment, e.g. /community/2025/.
+    series: str = "community"
     # Optional front-matter shown above the first section divider.
     intro_meta: str | None = None
     intro_paragraphs: list[str] | None = None

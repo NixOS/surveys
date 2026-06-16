@@ -161,7 +161,7 @@ def main(csv_path: str, out_path: str) -> None:
 
     page = Page(
         year=2025,
-        title="2025 Survey Results",
+        title="2025 Community Survey Results",
         intro_meta="3,399 responses · September 1 — December 15, 2025",
         intro_paragraphs=[
             "The 2025 NixOS Community Survey ran from September 1 to December 15, 2025, drawing 3,399 full responses — a 48% increase over the 2,290 received in 2024.",

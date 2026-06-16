@@ -1,17 +1,17 @@
 ---
-// lib/site/src/pages/[year].astro
+// lib/site/src/pages/[series]/[year].astro
 import { getCollection } from 'astro:content';
-import Layout from '../layouts/Layout.astro';
-import SectionHeading from '../components/SectionHeading.astro';
-import PlotRow from '../components/PlotRow.astro';
-import TableOfContents from '../components/TableOfContents.astro';
+import Layout from '../../layouts/Layout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import PlotRow from '../../components/PlotRow.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const all = await getCollection('results');
   return all
     .filter(r => r.data.year !== 9999)
     .map(r => ({
-      params: { year: String(r.data.year) },
+      params: { series: r.data.series, year: String(r.data.year) },
       props: { data: r.data },
     }));
 }
@@ -49,7 +49,7 @@ const { data } = Astro.props;
     </div>
   </footer>
   <script>
-    import { initCharts } from '../echarts-init';
+    import { initCharts } from '../../echarts-init';
     initCharts();
   </script>
 </Layout>

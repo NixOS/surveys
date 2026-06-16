@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
+  "series": "community",
   "year": 2025,
   "title": "Tiny Survey Test",
   "intro_meta": null,

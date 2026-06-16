@@ -24,6 +24,7 @@ const Section = z.object({
 
 const Results = z.object({
   schema_version: z.literal(1),
+  series: z.string().default('community'),
   year: z.number().int(),
   title: z.string(),
   intro_meta: z.string().nullable().optional(),
