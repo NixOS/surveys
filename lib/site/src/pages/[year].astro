@@ -7,10 +7,12 @@ import PlotRow from '../components/PlotRow.astro';
 
 export async function getStaticPaths() {
   const all = await getCollection('results');
-  return all.map(r => ({
-    params: { year: String(r.data.year) },
-    props: { data: r.data },
-  }));
+  return all
+    .filter(r => r.data.year !== 9999)
+    .map(r => ({
+      params: { year: String(r.data.year) },
+      props: { data: r.data },
+    }));
 }
 
 const { data } = Astro.props;

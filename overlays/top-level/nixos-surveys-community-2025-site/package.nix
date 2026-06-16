@@ -15,8 +15,6 @@ buildNpmPackage {
 
   preBuild = ''
     mkdir -p src/content/results
-    # Replace the fixture JSON with the real one for this year.
-    rm -f src/content/results/fixture-2025.json
     cp ${nixos-surveys-community-2025-data}/results-2025.json src/content/results/results-2025.json
   '';
 
