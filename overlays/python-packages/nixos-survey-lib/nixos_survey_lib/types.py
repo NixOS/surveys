@@ -69,6 +69,7 @@ class Row:
     question: str
     commentary: str
     charts: list[ChartSpec]
+    wide: bool = False
 
 
 @dataclass(frozen=True)

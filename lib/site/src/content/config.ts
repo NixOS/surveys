@@ -12,6 +12,7 @@ const Row = z.object({
   question: z.string(),
   commentary: z.string(),
   charts: z.array(ChartSpec),
+  wide: z.boolean().default(false),
 });
 
 const Section = z.object({

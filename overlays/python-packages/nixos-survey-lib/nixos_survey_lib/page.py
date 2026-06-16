@@ -42,6 +42,7 @@ def _row_dict(r: Row) -> dict[str, Any]:
         "question": r.question,
         "commentary": r.commentary,
         "charts": [_chart_dict(c) for c in r.charts],
+        "wide": r.wide,
     }
 
 

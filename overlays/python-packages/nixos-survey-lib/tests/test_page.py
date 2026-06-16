@@ -1,6 +1,6 @@
 import json
 
-from nixos_survey_lib.page import page_to_json, write_page
+from nixos_survey_lib.page import _row_dict, page_to_json, write_page
 from nixos_survey_lib.types import ChartSpec, Page, Row, Section
 
 
@@ -48,3 +48,15 @@ def test_write_page_writes_file(tmp_path):
     write_page(p, target)
     out = json.loads(target.read_text())
     assert out["year"] == 2025
+
+
+def test_row_dict_includes_wide_default_false():
+    r = Row(id="x", title="X", question="q", commentary="c",
+            charts=[ChartSpec(option={}, height=None)])
+    assert _row_dict(r)["wide"] is False
+
+
+def test_row_dict_includes_wide_true():
+    r = Row(id="x", title="X", question="q", commentary="c",
+            charts=[ChartSpec(option={}, height=None)], wide=True)
+    assert _row_dict(r)["wide"] is True
