@@ -2,16 +2,25 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
-const all = await getCollection('results');
-const years = all.map(r => r.data.year).sort((a, b) => b - a);
+const surveys = (await getCollection('results'))
+  .filter(r => r.data.year !== 9999)
+  .sort((a, b) => b.data.year - a.data.year);
 ---
-<Layout title="NixOS Community Survey Results">
-  <h1 class="mb-8 text-4xl font-bold font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">NixOS Community Survey Results</h1>
-  <ul class="space-y-2">
-    {years.map(y => (
+<Layout title="NixOS Surveys">
+  <h1 class="mb-4 text-4xl md:text-5xl font-bold font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">NixOS Surveys</h1>
+  <div class="max-w-prose space-y-4 text-lg leading-relaxed mb-10">
+    <p>The NixOS community periodically surveys its users to learn who they are, how they use Nix and NixOS, and what they need. This site publishes the results.</p>
+    <p>Each report turns thousands of community responses into charts you can explore — browse the surveys below.</p>
+  </div>
+  <ul class="grid gap-5 list-none p-0 grid-cols-[repeat(auto-fill,minmax(280px,360px))]">
+    {surveys.map(s => (
       <li>
-        <a href={`/${y}/`} class="text-secondary-afghani-blue hover:underline">
-          {y} results
+        <a href={`/${s.data.year}/`}
+           class="block rounded-xl overflow-hidden border-2 border-secondary-afghani-blue dark:border-secondary-afghani-blue-75 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200 p-5 no-underline">
+          <span class="block text-xl font-bold font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">{s.data.title}</span>
+          {s.data.intro_meta && (
+            <span class="mt-1 block text-sm text-primary-black-65 dark:text-primary-white-45">{s.data.intro_meta}</span>
+          )}
         </a>
       </li>
     ))}
