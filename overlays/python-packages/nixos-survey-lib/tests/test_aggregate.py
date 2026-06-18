@@ -311,6 +311,72 @@ def test_rank_distribution_sorted_by_avg_rank_not_top_share():
     )
 
 
+def test_rank_distribution_sort_uses_banded_positions_only():
+    # Deep ranks past the last band must not count toward the sort. "L" is
+    # ranked #1 by two and #3 by three; "N" is ranked #2 by three. With
+    # bands=[(1,1),(2,2)], position 3 is past the last band and folds into
+    # "Unranked".
+    #   Borda (rank1=2, rank2=1): L = 2*2 = 4 > N = 1*3 = 3 -> L sorts above N;
+    #   L's three #3 placements are past the band and score nothing.
+    r = _rk([
+        ["L", "N", "z1"],
+        ["L", "N", "z2"],
+        ["a", "N", "L"],
+        ["b", "c", "L"],
+        ["d", "e", "L"],
+    ])
+    dist = rank_distribution(r, bands=[(1, 1), (2, 2)], min_count=2)
+    labels = [it.label for it in dist.items]
+    assert labels == ["L", "N"], (
+        f"L (Borda 4) must sort above N (Borda 3); deep #3 ranks past the "
+        f"bands must not count. got {labels}"
+    )
+    by = {it.label: it.percents for it in dist.items}
+    # L's three #3 placements are past the bands, so they show as Unranked.
+    assert by["L"] == [40.0, 0.0, 60.0]
+
+
+def test_rank_distribution_sort_is_frequency_weighted():
+    # A choice ranked #1 by a single respondent must NOT outrank a choice ranked
+    # #2 by many: the sort weights how often as well as how high. (Average rank
+    # would wrongly float the rare-but-high choice to the top.)
+    #   Borda (rank1=2, rank2=1): rare = 2*1 = 2, common = 1*5 = 5
+    #   -> common sorts above rare despite rare's lone #1.
+    r = _rk([
+        ["rare",   "common", None],
+        ["filler", "common", None],
+        ["filler", "common", None],
+        ["filler", "common", None],
+        ["filler", "common", None],
+    ])
+    dist = rank_distribution(r, bands=[(1, 1), (2, 2)], min_count=1)
+    labels = [it.label for it in dist.items]
+    assert labels.index("common") < labels.index("rare"), (
+        f"'common' (#2 by five) must outrank 'rare' (a lone #1); got {labels}"
+    )
+
+
+def test_rank_distribution_borda_scores_by_band_not_exact_position():
+    # Within a band, exact position must not matter — only the band does, so the
+    # order stays reconstructable from the displayed bands. With bands=[(1,3),
+    # (4,6)] a #3 and a #1 both land in the top band (worth 2 pts each).
+    #   "deep" is ranked #3 by four; "shallow" is ranked #1 by three.
+    #   band score: deep = 2*4 = 8 > shallow = 2*3 = 6 -> deep sorts first.
+    #   (Exact-position scoring would rank shallow first: 6*3=18 > 4*4=16.)
+    r = _rk([
+        ["shallow", None, "deep", None, None, None],
+        ["shallow", None, "deep", None, None, None],
+        ["shallow", None, "deep", None, None, None],
+        [None,      None, "deep", None, None, None],
+    ])
+    dist = rank_distribution(r, bands=[(1, 3), (4, 6)], min_count=1)
+    labels = [it.label for it in dist.items]
+    assert labels == ["deep", "shallow"], (
+        f"a #3 in the top band must score the same as a #1; expected deep "
+        f"before shallow, got {labels}"
+    )
+
+
 def test_rank_distribution_unranked_share():
     # 2 respondents; choice D only appears for one of them, never for the other.
     r = _rk([

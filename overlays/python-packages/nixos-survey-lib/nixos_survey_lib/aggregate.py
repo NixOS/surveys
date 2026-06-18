@@ -466,7 +466,12 @@ def rank_distribution(
     """Per choice, % of respondents placing it at each rank position (or band),
     plus an "Unranked" remainder. Positions past the last band fold into
     "Unranked". Items with total ranked count < ``min_count`` are suppressed
-    (privacy floor). Items are sorted by their top segment's share descending.
+    (privacy floor). Sorted by a Borda-style points score descending: each
+    placement scores points by its displayed band — the top band is worth N
+    points (N = number of bands), the last shown band 1 — summed over all
+    respondents, so the order rewards being ranked both often and high while
+    staying reconstructable from the bands shown (ranks past the last band don't
+    count). Label ascending breaks ties.
     """
     total = len(r)
     n_positions = len(r.rank_columns)
@@ -491,11 +496,14 @@ def rank_distribution(
             return None  # past the last band -> unranked
         n_segments = len(bands)
 
-    # Per choice: counts per segment, total ranked count, and raw position sum
-    # for computing average rank (used for sort order).
+    # Per choice: counts per segment, the overall ranked count (privacy floor),
+    # and a Borda-style points total scored by displayed band (the sort key):
+    # the top band is worth n_segments points, the last shown band 1. Ranks past
+    # the last band fold into "Unranked" and score nothing. Scoring by band (not
+    # exact position) keeps the order consistent with the bands actually shown.
     seg_counts: dict[str, list[int]] = {}
-    ranked_total: dict[str, int] = {}
-    rank_pos_sum: dict[str, int] = {}  # sum of 1-based positions for avg rank
+    ranked_total: dict[str, int] = {}      # any position; for the privacy floor
+    borda_score: dict[str, int] = {}       # sum of (n_segments - band index)
     for pos, series in enumerate(r.rank_columns, start=1):
         si = seg_index(pos)
         for v in series.to_list():
@@ -503,14 +511,13 @@ def rank_distribution(
                 continue
             label = str(v)
             ranked_total[label] = ranked_total.get(label, 0) + 1
-            rank_pos_sum[label] = rank_pos_sum.get(label, 0) + pos
             if si is None:
-                continue  # collapses into unranked (not counted in any segment)
+                continue  # past the last band -> folds into "Unranked"
             counts = seg_counts.setdefault(label, [0] * n_segments)
             counts[si] += 1
+            borda_score[label] = borda_score.get(label, 0) + (n_segments - si)
 
     items: list[RankDistItem] = []
-    avg_rank: dict[str, float] = {}
     for label, rtotal in ranked_total.items():
         if rtotal < min_count:
             continue
@@ -522,10 +529,10 @@ def rank_distribution(
             unranked_pct = 0.0
         percents.append(unranked_pct)
         items.append(RankDistItem(label=label, percents=percents))
-        avg_rank[label] = rank_pos_sum[label] / rtotal
 
-    # Sort by average rank ascending (most-preferred first); label asc as tiebreak.
-    items.sort(key=lambda it: (avg_rank[it.label], it.label))
+    # Sort by Borda score descending (most-preferred first); label asc as
+    # tiebreak. Items never ranked within a band score 0 and sort last.
+    items.sort(key=lambda it: (-borda_score.get(it.label, 0), it.label))
     return RankDistribution(segment_labels=segment_labels, items=items)
 
 
