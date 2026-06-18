@@ -129,10 +129,10 @@ report not using Nix at all.
 
 ## stable_upgrade
 
-Most respondents who upgraded had a clean experience: 37.4% report no
-issues and 19.5% only minor ones, while moderate, severe-resolved, and
-severe-unresolved issues together account for 7.1%. A further 12.8%
-had not yet upgraded at survey time, and 5.5% were unaware a new
+Among respondents who answered, most had a clean upgrade: 45.4% report
+no issues and 23.7% only minor ones, while moderate, severe-resolved,
+and severe-unresolved issues together account for 8.6%. A further 15.5%
+had not yet upgraded at survey time, and 6.7% were unaware a new
 stable release existed.
 
 The Sankey funnel below re-stages these responses as a flow — from all
