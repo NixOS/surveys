@@ -55,7 +55,10 @@ mapAttrs (system: pkgs: {
         watch_pid=$!
         trap 'kill $watch_pid 2>/dev/null' INT TERM EXIT
 
-        if [ ! -d lib/site/node_modules ]; then
+        # Reinstall when node_modules is missing, or when the lockfile is newer
+        # than the last install (npm refreshes node_modules/.package-lock.json on
+        # every install) — so dependency changes aren't silently skipped.
+        if [ ! -d lib/site/node_modules ] || [ lib/site/package-lock.json -nt lib/site/node_modules/.package-lock.json ]; then
           echo "[dev] installing npm dependencies..."
           (cd lib/site && npm install --silent)
         fi
