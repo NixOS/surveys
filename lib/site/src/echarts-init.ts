@@ -11,6 +11,7 @@ import {
 import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, TitleComponent } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 import colors from '@nixos/branding/colors/tailwind.js';
+import { formatHex } from 'culori';
 
 echarts.use([
   BarChart,
@@ -27,29 +28,18 @@ echarts.use([
   SVGRenderer,
 ]);
 
-// ECharts' internal color interpolation (visualMap heatmap gradients) does not
-// handle oklch() strings, so we resolve every theme color to #rrggbb before
-// handing it to ECharts. Canvas 2D's fillStyle always normalizes to a hex (or
-// rgba) string regardless of browser (whereas getComputedStyle now preserves
-// oklch() in modern Firefox per the CSS Color 4 spec).
+// @nixos/branding ships every color as oklch(), which ECharts can't interpolate
+// (heatmap gradients) and which some browsers won't resolve in chart fills:
+// Chromium leaves an oklch() string unchanged where Firefox normalizes it to
+// sRGB. Convert each to #rrggbb up front with culori; formatHex returns
+// undefined for anything it can't parse, so fall back to the input unchanged.
 const _colorCache = new Map<string, string>();
-let _canvasCtx: CanvasRenderingContext2D | null = null;
 function resolveColor(input: string): string {
-  const cached = _colorCache.get(input);
-  if (cached) return cached;
-  if (!_canvasCtx) {
-    _canvasCtx = document.createElement('canvas').getContext('2d');
+  let out = _colorCache.get(input);
+  if (out === undefined) {
+    out = formatHex(input) ?? input;
+    _colorCache.set(input, out);
   }
-  if (!_canvasCtx) {
-    _colorCache.set(input, input);
-    return input;
-  }
-  // Reset to a known value before assigning. Canvas fillStyle silently keeps
-  // its previous value if the assigned string is unparseable.
-  _canvasCtx.fillStyle = '#000000';
-  _canvasCtx.fillStyle = input;
-  const out = String(_canvasCtx.fillStyle);
-  _colorCache.set(input, out);
   return out;
 }
 

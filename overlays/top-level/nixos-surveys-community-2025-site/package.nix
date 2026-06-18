@@ -11,7 +11,7 @@ buildNpmPackage {
   src = nixosSurveysRepoRoot + "/lib/site";
 
   # Filled by the first failing build (see Step 2).
-  npmDepsHash = "sha256-ivA848iaFenVZz5quN2KrifrpuJcYINTzWC8vaL6C/Q=";
+  npmDepsHash = "sha256-Zhouk59jUeC6jRE0BtVsSPHxY/7nLVCXrIMV9Vq9LII=";
 
   preBuild = ''
     mkdir -p src/content/results
