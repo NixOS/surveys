@@ -60,6 +60,7 @@ class Combination:
 class ChartSpec:
     option: dict[str, Any]
     height: int | None = None
+    caption: str | None = None
 
 
 @dataclass(frozen=True)

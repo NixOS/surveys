@@ -369,20 +369,6 @@ each column is one exact combination of selected statements, sized by the bar
 above. Only the most common combinations are shown; rarer ones (and any with
 fewer than 5 respondents) are omitted and counted in the chart's caption.
 
-**UpSet row key** (short code → full statement):
-
-- **No plan** — I don't plan to contribute.
-- **Start?** — I would like to contribute, but I don't know how to get started.
-- **Join?** — I want to contribute to an existing effort, but don't know how to join in.
-- **Stuck** — I tried to contribute, but got stuck after I started.
-- **Unclear** — I received feedback, but it was unhelpful or unclear.
-- **Slow** — It took too long to receive feedback.
-- **Blocked** — I can't contribute because my employer doesn't allow it.
-- **Covered** — Everything I wanted to work on was already being handled by others and I don't feel the need to get involved.
-- **Solo** — I was able to contribute on my own.
-- **Helped** — I was able to contribute with help from the community.
-- **Future** — I plan to contribute in the future.
-
 ## involvement_rate_by_experience
 
 Among respondents in each experience band, the share reporting each involvement

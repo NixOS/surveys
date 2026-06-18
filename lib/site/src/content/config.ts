@@ -4,6 +4,7 @@ import { defineCollection, z } from 'astro:content';
 const ChartSpec = z.object({
   option: z.record(z.any()),
   height: z.number().int().positive().optional(),
+  caption: z.string().optional(),
 });
 
 const Row = z.object({

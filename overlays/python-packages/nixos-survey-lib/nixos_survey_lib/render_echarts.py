@@ -685,5 +685,16 @@ def upset(
             "left": "left",
         }
 
-    return ChartSpec(option=option, height=height)
+    # When set codes are in play, emit a "code — full statement" key as the
+    # chart's caption so it renders right next to the plot instead of being
+    # buried in the section summary. The set_labels mapping is the single
+    # source of truth (no separate hand-maintained list).
+    caption: str | None = None
+    if set_labels is not None:
+        key_lines = "\n".join(
+            f"- **{code}** — {full}" for full, code in set_labels.items()
+        )
+        caption = "**UpSet row key** (short code → full statement):\n\n" + key_lines
+
+    return ChartSpec(option=option, height=height, caption=caption)
 
