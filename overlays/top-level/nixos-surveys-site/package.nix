@@ -5,7 +5,7 @@
 }:
 
 buildNpmPackage {
-  pname = "nixos-surveys-community-2025-site";
+  pname = "nixos-surveys-site";
   version = "0.1.0";
 
   src = nixosSurveysRepoRoot + "/lib/site";
