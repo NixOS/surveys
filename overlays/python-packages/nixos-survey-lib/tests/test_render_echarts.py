@@ -262,8 +262,12 @@ def test_lollipop_shape():
     assert dot["itemStyle"]["color"] == "#4d6fb7"
     assert dot["label"]["show"] is True
     assert dot["label"]["formatter"] == "{c}%"
-    # Tooltip uses item trigger so two series don't produce duplicate rows.
-    assert opt["tooltip"]["trigger"] == "item"
+    # Axis trigger (with a shadow pointer) so hovering anywhere along the row
+    # shows the tooltip, like horizontal_bar. The indexed {b0}/{c0} formatter
+    # collapses the two series to a single "label: value%" line (no duplicate row).
+    assert opt["tooltip"]["trigger"] == "axis"
+    assert opt["tooltip"]["axisPointer"]["type"] == "shadow"
+    assert opt["tooltip"]["formatter"] == "{b0}: {c0}%"
 
 
 from nixos_survey_lib.render_echarts import rank_distribution_bar

@@ -371,8 +371,9 @@ def lollipop(
             "axisTick": {"show": False},
         },
         "tooltip": {
-            "trigger": "item",
-            "formatter": "{b}: {c}%",
+            "trigger": "axis",
+            "axisPointer": {"type": "shadow"},
+            "formatter": "{b0}: {c0}%",
         },
         "series": [
             {
