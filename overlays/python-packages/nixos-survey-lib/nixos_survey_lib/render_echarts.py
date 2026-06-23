@@ -288,6 +288,14 @@ def likert_bar(
     return ChartSpec(option=option, height=height if height is not None else 200)
 
 
+# Per-series symbol + dash so lines stay distinguishable by shape and stroke,
+# not color alone (the palette accents share one lightness). Symbols cycle
+# fastest; the dash only advances after a full symbol pass, giving
+# len(_LINE_SYMBOLS) * len(_LINE_DASHES) distinct combinations before any repeat.
+_LINE_SYMBOLS = ["circle", "triangle", "rect", "diamond", "roundRect", "pin"]
+_LINE_DASHES = ["solid", "dashed", "dotted"]
+
+
 def line_chart(
     table: CrossTab,
     *,
@@ -295,7 +303,9 @@ def line_chart(
     height: int | None = None,
 ) -> ChartSpec:
     """One line series per y_label over the x_labels axis. Cell values are
-    cells[xi][yi]. Emits no explicit color (inherits the theme palette)."""
+    cells[xi][yi]. Color inherits the theme palette; each series also gets a
+    distinct symbol + line dash (see _LINE_SYMBOLS / _LINE_DASHES) so the lines
+    stay distinguishable by shape and stroke, not color alone."""
     unit = "×" if table.cell_kind == "lift" else "%"
     series: list[dict[str, Any]] = []
     for yi, y_label in enumerate(table.y_labels):
@@ -305,6 +315,12 @@ def line_chart(
             "type": "line",
             "data": values,
             "smooth": False,
+            "symbol": _LINE_SYMBOLS[yi % len(_LINE_SYMBOLS)],
+            "symbolSize": 8,
+            "lineStyle": {
+                "type": _LINE_DASHES[(yi // len(_LINE_SYMBOLS)) % len(_LINE_DASHES)],
+                "width": 2,
+            },
         })
 
     legend_top = 28 if title is not None else 0
