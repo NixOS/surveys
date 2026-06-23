@@ -159,6 +159,23 @@ function injectSankeyTooltip(option: Record<string, unknown>): void {
   };
 }
 
+// Result cards use overflow:hidden (for rounded corners), so a long ECharts
+// tooltip — rendered as an HTML div inside the chart — gets clipped at the card
+// edge. Append it to <body> to escape the clip, and cap its width so very long
+// content wraps into a tidy box instead of stretching across the screen.
+// Array-safe: getOption() (the dark-mode re-init path) returns tooltip as an array.
+function fixTooltipOverflow(option: Record<string, unknown>): void {
+  const tt = option.tooltip;
+  const tips = Array.isArray(tt) ? tt : tt ? [tt] : [];
+  for (const t of tips) {
+    if (t && typeof t === 'object') {
+      const o = t as Record<string, unknown>;
+      o.appendToBody = true;
+      o.extraCssText = 'max-width: 320px; white-space: normal;';
+    }
+  }
+}
+
 // Shared observer: reflow each chart when its container's size changes (e.g.,
 // browser window resize changes the grid column width). Fires only when the
 // observed element's box actually changes, so no debouncing needed.
@@ -197,6 +214,7 @@ function initChart(card: Element): void {
   injectVisualMapColors(option);
   injectHeatmapTooltip(option);
   injectSankeyTooltip(option);
+  fixTooltipOverflow(option);
   echarts.init(div as HTMLElement, currentTheme(), { renderer: 'svg' }).setOption(option);
   resizeObserver.observe(div as HTMLElement);
 }
@@ -221,6 +239,7 @@ export function initCharts(): void {
       injectVisualMapColors(opt);
       injectHeatmapTooltip(opt);
       injectSankeyTooltip(opt);
+      fixTooltipOverflow(opt);
       echarts.init(div, currentTheme(), { renderer: 'svg' }).setOption(opt);
     });
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
