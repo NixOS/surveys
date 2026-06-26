@@ -154,6 +154,24 @@ function injectHeatmapTooltip(option: Record<string, unknown>): void {
   };
 }
 
+// Likert segment labels sit inside their stacked segment. A thin segment (small
+// percent) is narrower than its "x.x%" label, so the text would spill across
+// into the neighbouring segments. Hide a segment's label when it is wider than
+// the segment itself; the value is still available in the tooltip. labelLayout
+// is a function (can't live in the embedded JSON) and is recomputed on resize,
+// so labels reappear as the chart — and each segment — grows wider.
+type LikertLabelParams = { rect: { width: number }; labelRect: { width: number } };
+function injectLikertLabelLayout(option: Record<string, unknown>): void {
+  const series = option.series as Array<{ stack?: string; labelLayout?: unknown }> | undefined;
+  if (!series) return;
+  for (const s of series) {
+    if (s.stack !== 'likert') continue;
+    s.labelLayout = (params: LikertLabelParams) => ({
+      fontSize: params.labelRect.width > params.rect.width ? 0 : 12,
+    });
+  }
+}
+
 // Sankey tooltips need toFixed(1) formatting — can't be expressed as a string
 // template, so inject a JS formatter here.
 type SankeyTooltipParams = { dataType: 'edge' | 'node'; name: string; value: number; data: { source: string; target: string } };
@@ -222,6 +240,7 @@ function initChart(card: Element): void {
   if (!optionScript || !div) return;
   const option = JSON.parse(optionScript.textContent ?? '{}');
   injectVisualMapColors(option);
+  injectLikertLabelLayout(option);
   injectHeatmapTooltip(option);
   injectSankeyTooltip(option);
   fixTooltipOverflow(option);
