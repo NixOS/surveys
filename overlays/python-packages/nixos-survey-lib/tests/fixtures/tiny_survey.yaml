@@ -1,0 +1,49 @@
+title: Tiny Test Survey
+questions:
+  - id: country
+    prompt: Where do you live?
+    type: single
+    choices:
+      - Africa
+      - Asia
+      - Europe
+      - North America
+      - Prefer not to say
+
+  - id: os
+    prompt: Which operating systems do you use?
+    type: multiple
+    choices:
+      - Linux
+      - macOS
+      - Windows
+
+  - id: priorities
+    prompt: Rank your priorities.
+    type: ranking
+    choices:
+      - Performance
+      - Security
+      - Documentation
+
+  - id: nix_version
+    prompt: Which version of Nix do you use most often?
+    type: text
+
+  - id: skill
+    prompt: How would you describe your skill level with Nix?
+    type: single
+    choices:
+      - Beginner
+      - Intermediate
+      - Advanced
+
+  - id: long_prompt_question
+    prompt: |
+      This is a deliberately long prompt
+      that spans multiple lines in YAML
+      to test whitespace normalization.
+    type: single
+    choices:
+      - Yes
+      - No

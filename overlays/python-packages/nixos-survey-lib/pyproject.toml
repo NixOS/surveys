@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nixos-survey-lib"
+version = "0.1.0"
+description = "Processing pipeline for NixOS community survey responses"
+requires-python = ">=3.11"
+dependencies = ["polars>=1.0", "pyyaml"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["nixos_survey_lib*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,55 @@
+---
+// lib/site/src/pages/[series]/[year].astro
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import PlotRow from '../../components/PlotRow.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('results');
+  return all
+    .filter(r => r.data.year !== 9999)
+    .map(r => ({
+      params: { series: r.data.series, year: String(r.data.year) },
+      props: { data: r.data },
+    }));
+}
+
+const { data } = Astro.props;
+---
+<Layout title={data.title}>
+  <p class="mb-3 text-sm uppercase tracking-widest font-semibold text-primary-black-65 dark:text-primary-white-65">NixOS Community · Annual Report</p>
+  <h1 class="mb-3 text-5xl md:text-6xl font-bold tracking-tight font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">{data.title}</h1>
+  {data.intro_meta && (
+    <p class="mb-8 text-base text-primary-black-45 dark:text-primary-white-65">{data.intro_meta}</p>
+  )}
+  {data.intro_paragraphs && data.intro_paragraphs.length > 0 && (
+    <div class="max-w-prose space-y-4 text-lg leading-relaxed">
+      {data.intro_paragraphs.map(p => <p>{p}</p>)}
+    </div>
+  )}
+  <hr class="mt-12 border-primary-black-85 dark:border-primary-black-25" />
+  <TableOfContents sections={data.sections.map(s => ({ id: s.id, heading: s.heading }))} />
+  {data.sections.map(section => (
+    <section>
+      <SectionHeading id={section.id} heading={section.heading} note={section.note} />
+      <div class="columns-1 md:columns-2 gap-5">
+        {section.rows.map(row => <PlotRow row={row} />)}
+      </div>
+    </section>
+  ))}
+  <footer class="mt-20 border-t border-primary-black-85 dark:border-primary-black-25 pt-6 text-sm text-primary-black-65 dark:text-primary-white-65">
+    <div class="flex flex-col gap-3 md:flex-row md:items-baseline md:justify-between">
+      <p>Maintained by the NixOS Marketing Team</p>
+      <nav class="flex gap-5">
+        <a href="https://github.com/NixOS/surveys" class="underline hover:no-underline">Source on GitHub</a>
+        <a href="https://nixos.org/" class="underline hover:no-underline">nixos.org</a>
+      </nav>
+    </div>
+  </footer>
+  <script>
+    import { initCharts } from '../../echarts-init';
+    initCharts();
+  </script>
+</Layout>

@@ -1,0 +1,598 @@
+from typing import Literal
+
+import polars as pl
+
+from .types import Bin, Combination, CrossTab, MultiChoice, RankDistribution, RankDistItem, Ranking, SingleChoice
+
+
+DEFAULT_BUCKET_MIN_PERCENT: float = 0.5
+# `5` matches the minimum-cell-size floor used by NCHS, California CHHS,
+# Statistics Canada, Eurostat, and the UNECE SDC Handbook for protecting
+# respondent identity in published frequency tables.
+DEFAULT_BUCKET_MIN_COUNT: int = 5
+# Label used for the rare-aggregation bucket. Distinct from a literal "Other"
+# choice in the source data (e.g. Role/Industry have "Other" as a real category).
+BUCKET_LABEL: str = "Other (combined)"
+
+
+def counts_single(
+    r: SingleChoice,
+    *,
+    order: list[str] | None = None,
+    exclude: list[str] | None = None,
+    bucket_min_percent: float | None = DEFAULT_BUCKET_MIN_PERCENT,
+    bucket_min_count: int | None = DEFAULT_BUCKET_MIN_COUNT,
+    bucket_action: Literal["combine", "drop"] = "combine",
+) -> list[Bin]:
+    """Count distinct values; return ordered bins with count and percent.
+
+    Identifies rare values when EITHER threshold fires (logical OR):
+    ``percent < bucket_min_percent`` or ``count < bucket_min_count``.
+    Pass ``None`` to disable that side; pass ``None`` to both to disable
+    bucketing entirely.
+
+    ``bucket_action`` controls what happens to rare values:
+      "combine" — aggregate them under ``BUCKET_LABEL``
+      "drop"    — remove them entirely (use for sensitive categories where
+                  publishing an aggregate bar would still leak counts via
+                  the displayed percent)
+    """
+    excluded = set(exclude or [])
+    series = r.values
+    if excluded:
+        series = series.filter(~series.is_in(list(excluded)))
+
+    total = len(series)
+    if total == 0:
+        return []
+
+    counts_df = (
+        series.to_frame("response")
+        .group_by("response")
+        .len()
+        .rename({"len": "count"})
+    )
+
+    pct_active = bucket_min_percent is not None and bucket_min_percent > 0
+    count_active = bucket_min_count is not None and bucket_min_count > 0
+    if pct_active or count_active:
+        counts_df = counts_df.with_columns(
+            (pl.col("count") / pl.lit(float(total)) * 100.0).alias("pct")
+        )
+        rare_mask = pl.lit(False)
+        if pct_active:
+            rare_mask = rare_mask | (pl.col("pct") < bucket_min_percent)
+        if count_active:
+            rare_mask = rare_mask | (pl.col("count") < bucket_min_count)
+        rare = counts_df.filter(rare_mask)["response"].to_list()
+        if rare:
+            rare_count = counts_df.filter(pl.col("response").is_in(rare))["count"].sum()
+            counts_df = counts_df.filter(~pl.col("response").is_in(rare))
+            if bucket_action == "combine":
+                other_row = pl.DataFrame({
+                    "response": [BUCKET_LABEL],
+                    "count": pl.Series([int(rare_count)], dtype=pl.UInt32),
+                })
+                counts_df = pl.concat([counts_df.select(["response", "count"]), other_row])
+            else:
+                counts_df = counts_df.select(["response", "count"])
+        else:
+            counts_df = counts_df.select(["response", "count"])
+
+    if order is not None:
+        rank = {v: i for i, v in enumerate(order)}
+        counts_df = counts_df.with_columns(
+            pl.col("response").map_elements(
+                lambda v: rank.get(v, len(order)),
+                return_dtype=pl.Int64,
+            ).alias("_rank")
+        )
+        counts_df = counts_df.sort("_rank").drop("_rank")
+    else:
+        # Sort by count desc, with response label asc as a stable tie-breaker
+        # so equal counts produce a deterministic order across runs.
+        counts_df = counts_df.sort(["count", "response"], descending=[True, False])
+
+    rows = counts_df.to_dicts()
+    return [
+        Bin(label=row["response"], count=int(row["count"]), percent=row["count"] / total * 100.0)
+        for row in rows
+    ]
+
+
+def counts_multi(
+    r: MultiChoice,
+    *,
+    bucket_min_percent: float | None = DEFAULT_BUCKET_MIN_PERCENT,
+    bucket_min_count: int | None = DEFAULT_BUCKET_MIN_COUNT,
+    bucket_action: Literal["combine", "drop"] = "combine",
+) -> list[Bin]:
+    """For each choice, count 'Yes' responses; percent is relative to total respondents.
+
+    Identifies rare values when EITHER threshold fires (logical OR). See
+    ``counts_single`` for ``bucket_action`` semantics ("combine" aggregates
+    rare values; "drop" removes them entirely).
+    """
+    total = len(r)
+    if total == 0:
+        return []
+
+    rows: list[tuple[str, int]] = []
+    for choice, series in r.choice_columns.items():
+        yes_count = int((series == "Yes").sum())
+        rows.append((choice, yes_count))
+
+    bins = [Bin(label=c, count=n, percent=n / total * 100.0) for c, n in rows]
+    bins.sort(key=lambda b: b.percent, reverse=True)
+
+    pct_active = bucket_min_percent is not None and bucket_min_percent > 0
+    count_active = bucket_min_count is not None and bucket_min_count > 0
+    if pct_active or count_active:
+        def _is_rare(b: Bin) -> bool:
+            if pct_active and b.percent < bucket_min_percent:
+                return True
+            if count_active and b.count < bucket_min_count:
+                return True
+            return False
+
+        keep = [b for b in bins if not _is_rare(b)]
+        rare = [b for b in bins if _is_rare(b)]
+        if rare and bucket_action == "combine":
+            other_count = sum(b.count for b in rare)
+            other_pct = sum(b.percent for b in rare)
+            keep.append(Bin(label=BUCKET_LABEL, count=other_count, percent=other_pct))
+        bins = keep
+
+    return bins
+
+
+def crosstab(
+    x: SingleChoice,
+    y: SingleChoice,
+    *,
+    normalize: Literal["global", "x", "y"] = "global",
+    x_order: list[str] | None = None,
+    y_order: list[str] | None = None,
+    x_exclude: list[str] | None = None,
+    y_exclude: list[str] | None = None,
+) -> CrossTab:
+    """Cross-tab two single-choice questions, normalized over global / x / y."""
+    df = pl.DataFrame({"x": x.values, "y": y.values})
+    if x_exclude:
+        df = df.filter(~pl.col("x").is_in(list(x_exclude)))
+    if y_exclude:
+        df = df.filter(~pl.col("y").is_in(list(y_exclude)))
+
+    if df.height == 0:
+        return CrossTab(x_labels=[], y_labels=[], cells=[], cell_kind="rate_pct")
+
+    def _resolve_order(arg_order: list[str] | None, series_name: str) -> list[str]:
+        actual = df[series_name].unique().to_list()
+        if arg_order is None:
+            return df.group_by(series_name).len().sort("len", descending=True)[series_name].to_list()
+        seen: set[str] = set()
+        result: list[str] = []
+        for v in arg_order:
+            if v in actual and v not in seen:
+                result.append(v)
+                seen.add(v)
+        for v in actual:
+            if v not in seen:
+                result.append(v)
+        return result
+
+    x_labels = _resolve_order(x_order, "x")
+    y_labels = _resolve_order(y_order, "y")
+
+    pairs = df.group_by(["x", "y"]).len().rename({"len": "count"})
+    pair_counts: dict[tuple[str, str], int] = {
+        (row["x"], row["y"]): int(row["count"]) for row in pairs.to_dicts()
+    }
+
+    total = df.height
+    row_totals: dict[str, int] = {
+        xl: sum(pair_counts.get((xl, yl), 0) for yl in y_labels) for xl in x_labels
+    }
+    col_totals: dict[str, int] = {
+        yl: sum(pair_counts.get((xl, yl), 0) for xl in x_labels) for yl in y_labels
+    }
+
+    cells: list[list[float]] = []
+    for xl in x_labels:
+        row: list[float] = []
+        for yl in y_labels:
+            c = pair_counts.get((xl, yl), 0)
+            if normalize == "global":
+                pct = c / total * 100.0
+            elif normalize == "x":
+                rt = row_totals[xl]
+                pct = (c / rt * 100.0) if rt > 0 else 0.0
+            else:
+                ct_v = col_totals[yl]
+                pct = (c / ct_v * 100.0) if ct_v > 0 else 0.0
+            row.append(pct)
+        cells.append(row)
+
+    return CrossTab(x_labels=x_labels, y_labels=y_labels, cells=cells, cell_kind="rate_pct")
+
+
+def crosstab_multi(
+    multi: MultiChoice,
+    single: SingleChoice,
+    *,
+    denominator: Literal["rate", "composition", "lift"],
+    x_order: list[str] | None = None,
+    x_exclude: list[str] | None = None,
+) -> CrossTab:
+    """Cross-tab a multi-choice (rows = traits) against a single-choice
+    (columns = single values). Three denominator modes:
+      rate         — P(trait | single)        ; cell_kind=rate_pct
+      composition  — P(single | trait)        ; cell_kind=composition_pct
+      lift         — composition / baseline   ; cell_kind=lift
+    """
+    excluded = set(x_exclude or [])
+    df = pl.DataFrame({"single": single.values})
+    for choice, series in multi.choice_columns.items():
+        df = df.with_columns(series.alias(choice))
+
+    if excluded:
+        df = df.filter(~pl.col("single").is_in(list(excluded)))
+
+    total = df.height
+    kind = {"rate": "rate_pct", "composition": "composition_pct", "lift": "lift"}[denominator]
+    if total == 0:
+        return CrossTab(x_labels=[], y_labels=[], cells=[], cell_kind=kind)
+
+    actual_single = df["single"].unique().to_list()
+    if x_order is None:
+        x_labels = (
+            df.group_by("single").len()
+            .sort("len", descending=True)["single"].to_list()
+        )
+    else:
+        seen: set[str] = set()
+        x_labels = []
+        for v in x_order:
+            if v in actual_single and v not in seen:
+                x_labels.append(v)
+                seen.add(v)
+        for v in actual_single:
+            if v not in seen:
+                x_labels.append(v)
+
+    trait_labels = list(multi.choice_columns.keys())
+
+    single_totals = {xl: int(df.filter(pl.col("single") == xl).height) for xl in x_labels}
+    trait_totals = {t: int((df[t] == "Yes").sum()) for t in trait_labels}
+
+    # Pre-compute per-trait filtered DataFrames to avoid repeated filtering.
+    trait_dfs = {t: df.filter(pl.col(t) == "Yes") for t in trait_labels}
+
+    # cells[xi][yi]: outer index = x_labels (single values), inner = trait_labels (y)
+    # This matches what heatmap() expects: cells[xi][yi].
+    cells: list[list[float]] = []
+    for xl in x_labels:
+        col_vals: list[float] = []
+        for t in trait_labels:
+            c = int(trait_dfs[t].filter(pl.col("single") == xl).height)
+            if denominator == "rate":
+                denom = single_totals[xl]
+                val = (c / denom * 100.0) if denom > 0 else 0.0
+            elif denominator == "composition":
+                denom = trait_totals[t]
+                val = (c / denom * 100.0) if denom > 0 else 0.0
+            else:
+                tt = trait_totals[t]
+                st = single_totals[xl]
+                if tt > 0 and st > 0 and total > 0:
+                    val = (c * total) / (tt * st)
+                else:
+                    val = 1.0
+            col_vals.append(val)
+        cells.append(col_vals)
+
+    return CrossTab(x_labels=x_labels, y_labels=trait_labels, cells=cells, cell_kind=kind)
+
+
+def sankey_funnel(
+    r: SingleChoice,
+    *,
+    min_count: int = DEFAULT_BUCKET_MIN_COUNT,
+    as_percent: bool = False,
+) -> tuple[list[str], list[dict[str, object]]]:
+    """Stage the single ``stable_upgrade`` column into a Sankey funnel.
+
+    Stages: All -> Knew/Didn't know; Knew -> Upgraded/Did not upgrade;
+    Upgraded -> severity. ``Skipped`` is excluded. Links below ``min_count``
+    are dropped, and nodes left with no surviving link are omitted.
+
+    When ``as_percent=True`` each surviving link's value is expressed as a
+    percent of total respondents (excluding Skipped). Privacy suppression
+    (``min_count``) is applied to raw counts before conversion.
+
+    DERIVED-INFERENCE CAVEAT: the Knew / Did not upgrade staging is an analyst
+    interpretation, not a survey field — the single column cannot distinguish
+    "knew but chose not to upgrade" from other reasons. This chart is
+    exploratory; its commentary must state the staging is derived.
+    """
+    counts: dict[str, int] = {}
+    for v in r.values.to_list():
+        if v is None or v == "Skipped":
+            continue
+        counts[str(v)] = counts.get(str(v), 0) + 1
+
+    didnt_know = counts.get("I did not know there was a new stable release.", 0)
+    did_not_upgrade = counts.get("I have not upgraded.", 0)
+    severity = {
+        "No issues": counts.get("I had no issues.", 0),
+        "Minor": counts.get("I had minor issues.", 0),
+        "Moderate": counts.get("I had moderate issues.", 0),
+        "Severe (resolved)": counts.get(
+            "I had severe issues but figured it out after some time.", 0
+        ),
+        "Severe (stuck)": counts.get(
+            "I had severe issues and could not make the upgrade.", 0
+        ),
+    }
+    upgraded = sum(severity.values())
+    knew = upgraded + did_not_upgrade
+    total = knew + didnt_know  # all respondents excluding Skipped
+
+    candidate_links: list[dict[str, object]] = [
+        {"source": "All", "target": "Knew", "value": knew},
+        {"source": "All", "target": "Didn't know", "value": didnt_know},
+        {"source": "Knew", "target": "Upgraded", "value": upgraded},
+        {"source": "Knew", "target": "Did not upgrade", "value": did_not_upgrade},
+    ]
+    for sev_name, sev_count in severity.items():
+        candidate_links.append(
+            {"source": "Upgraded", "target": sev_name, "value": sev_count}
+        )
+
+    # Apply min_count suppression on raw counts before any conversion.
+    links = [l for l in candidate_links if int(l["value"]) >= min_count]
+
+    if as_percent and total > 0:
+        links = [
+            {**l, "value": round(int(l["value"]) / total * 100, 1)}
+            for l in links
+        ]
+
+    node_order = [
+        "All", "Knew", "Didn't know", "Upgraded", "Did not upgrade",
+        "No issues", "Minor", "Moderate", "Severe (resolved)", "Severe (stuck)",
+    ]
+    used: set[str] = set()
+    for l in links:
+        used.add(str(l["source"]))
+        used.add(str(l["target"]))
+    nodes = [n for n in node_order if n in used]
+
+    return nodes, links
+
+
+def sankey_links(
+    x: SingleChoice,
+    y: SingleChoice,
+    *,
+    x_band: dict[str, str] | None = None,
+    y_map: dict[str, str] | None = None,
+    exclude: list[str] | None = None,
+    min_count: int = DEFAULT_BUCKET_MIN_COUNT,
+    as_percent: bool = False,
+) -> tuple[list[str], list[dict[str, object]]]:
+    """Co-occurrence Sankey between two single-choice columns.
+
+    A row is dropped if EITHER its raw x or raw y value is in ``exclude``
+    (straight apostrophes — matched before mapping). Surviving x values are
+    grouped via ``x_band`` and y values via ``y_map`` (unmapped values pass
+    through). Links below ``min_count`` are dropped (privacy floor); a node
+    appears only if it touches a surviving link. x-nodes precede y-nodes in
+    first-seen order.
+
+    When ``as_percent=True`` each surviving link's value is expressed as a
+    percent of included rows (rows with both x and y present after exclusions).
+    Privacy suppression (``min_count``) is applied to raw counts before
+    conversion.
+    """
+    excluded = set(exclude or [])
+    x_raw = x.values.to_list()
+    y_raw = y.values.to_list()
+
+    pair_counts: dict[tuple[str, str], int] = {}
+    x_seen: list[str] = []
+    y_seen: list[str] = []
+    total = 0
+    for xv, yv in zip(x_raw, y_raw):
+        if xv is None or yv is None:
+            continue
+        xs, ys = str(xv), str(yv)
+        if xs in excluded or ys in excluded:
+            continue
+        total += 1
+        mx = x_band.get(xs, xs) if x_band else xs
+        my = y_map.get(ys, ys) if y_map else ys
+        if mx not in x_seen:
+            x_seen.append(mx)
+        if my not in y_seen:
+            y_seen.append(my)
+        key = (mx, my)
+        pair_counts[key] = pair_counts.get(key, 0) + 1
+
+    collisions = set(x_seen) & set(y_seen)
+    if collisions:
+        quoted = ", ".join(f'"{v}"' for v in sorted(collisions))
+        raise ValueError(
+            f"sankey_links: x-node name(s) collide with y-node name(s): {quoted}. "
+            "Use x_band or y_map to rename colliding values before they reach the graph."
+        )
+
+    x_index = {n: i for i, n in enumerate(x_seen)}
+    y_index = {n: i for i, n in enumerate(y_seen)}
+    # Apply min_count suppression on raw counts before any conversion.
+    surviving_raw = [
+        (mx, my, c)
+        for (mx, my), c in pair_counts.items()
+        if c >= min_count
+    ]
+    surviving_raw.sort(key=lambda t: (x_index[t[0]], y_index[t[1]]))
+
+    if as_percent and total > 0:
+        surviving: list[dict[str, object]] = [
+            {"source": mx, "target": my, "value": round(c / total * 100, 1)}
+            for mx, my, c in surviving_raw
+        ]
+    else:
+        surviving = [
+            {"source": mx, "target": my, "value": c}
+            for mx, my, c in surviving_raw
+        ]
+
+    used: set[str] = set()
+    for l in surviving:
+        used.add(str(l["source"]))
+        used.add(str(l["target"]))
+    nodes = [n for n in x_seen if n in used] + [n for n in y_seen if n in used]
+
+    return nodes, surviving
+
+
+def rank_distribution(
+    r: Ranking,
+    *,
+    bands: list[tuple[int, int]] | None = None,
+    min_count: int = DEFAULT_BUCKET_MIN_COUNT,
+) -> RankDistribution:
+    """Per choice, % of respondents placing it at each rank position (or band),
+    plus an "Unranked" remainder. Positions past the last band fold into
+    "Unranked". Items with total ranked count < ``min_count`` are suppressed
+    (privacy floor). Sorted by a Borda-style points score descending: each
+    placement scores points by its displayed band — the top band is worth N
+    points (N = number of bands), the last shown band 1 — summed over all
+    respondents, so the order rewards being ranked both often and high while
+    staying reconstructable from the bands shown (ranks past the last band don't
+    count). Label ascending breaks ties.
+    """
+    total = len(r)
+    n_positions = len(r.rank_columns)
+    if total == 0 or n_positions == 0:
+        return RankDistribution(segment_labels=[], items=[])
+
+    # Map each 1-based position to a segment index, and build segment labels.
+    if bands is None:
+        segment_labels = [f"#{p}" for p in range(1, n_positions + 1)] + ["Unranked"]
+        # position p (1-based) -> segment index p-1
+        def seg_index(pos: int) -> int | None:
+            return pos - 1 if 1 <= pos <= n_positions else None
+        n_segments = n_positions
+    else:
+        segment_labels = [
+            (f"{lo}-{hi}" if lo != hi else f"{lo}") for (lo, hi) in bands
+        ] + ["Unranked"]
+        def seg_index(pos: int) -> int | None:
+            for i, (lo, hi) in enumerate(bands):
+                if lo <= pos <= hi:
+                    return i
+            return None  # past the last band -> unranked
+        n_segments = len(bands)
+
+    # Per choice: counts per segment, the overall ranked count (privacy floor),
+    # and a Borda-style points total scored by displayed band (the sort key):
+    # the top band is worth n_segments points, the last shown band 1. Ranks past
+    # the last band fold into "Unranked" and score nothing. Scoring by band (not
+    # exact position) keeps the order consistent with the bands actually shown.
+    seg_counts: dict[str, list[int]] = {}
+    ranked_total: dict[str, int] = {}      # any position; for the privacy floor
+    borda_score: dict[str, int] = {}       # sum of (n_segments - band index)
+    for pos, series in enumerate(r.rank_columns, start=1):
+        si = seg_index(pos)
+        for v in series.to_list():
+            if v is None or v == "":
+                continue
+            label = str(v)
+            ranked_total[label] = ranked_total.get(label, 0) + 1
+            if si is None:
+                continue  # past the last band -> folds into "Unranked"
+            counts = seg_counts.setdefault(label, [0] * n_segments)
+            counts[si] += 1
+            borda_score[label] = borda_score.get(label, 0) + (n_segments - si)
+
+    items: list[RankDistItem] = []
+    for label, rtotal in ranked_total.items():
+        if rtotal < min_count:
+            continue
+        counts = seg_counts.get(label, [0] * n_segments)
+        percents = [c / total * 100.0 for c in counts]
+        unranked_pct = 100.0 - sum(percents)
+        # Clamp tiny negative float drift to 0.
+        if -1e-9 < unranked_pct < 0:
+            unranked_pct = 0.0
+        percents.append(unranked_pct)
+        items.append(RankDistItem(label=label, percents=percents))
+
+    # Sort by Borda score descending (most-preferred first); label asc as
+    # tiebreak. Items never ranked within a band score 0 and sort last.
+    items.sort(key=lambda it: (-borda_score.get(it.label, 0), it.label))
+    return RankDistribution(segment_labels=segment_labels, items=items)
+
+
+def upset_combinations(
+    multi: MultiChoice,
+    *,
+    min_size: int = 5,
+    max_combos: int = 20,
+) -> tuple[list[Combination], list[tuple[str, int]], int]:
+    """Compute UpSet-plot inputs for a multi-select question.
+
+    For each respondent, their *membership* is the tuple of choices answered
+    "Yes", ordered by the set order (``multi.choice_columns`` key order). The
+    exclusive-membership size of a combination is the number of respondents
+    whose membership is exactly that tuple. Respondents who selected nothing
+    form the empty membership and are never reported as a combination.
+
+    Returns ``(combos, set_totals, dropped_count)``:
+      - ``combos``: combinations with size >= ``min_size``, sorted by size
+        descending (ties broken by members ascending), capped to ``max_combos``.
+      - ``set_totals``: ``(set_label, total_yes_count)`` per set in set order.
+      - ``dropped_count``: how many distinct non-empty combinations were
+        excluded — either below ``min_size`` or beyond the ``max_combos`` cap.
+        No silent truncation: this number drives the chart's subtext.
+    """
+    set_labels = list(multi.choice_columns.keys())
+    n = len(multi)
+
+    set_totals: list[tuple[str, int]] = [
+        (label, int((multi.choice_columns[label] == "Yes").sum()))
+        for label in set_labels
+    ]
+
+    # Build each respondent's membership tuple in set order.
+    membership_counts: dict[tuple[str, ...], int] = {}
+    for i in range(n):
+        members = tuple(
+            label for label in set_labels
+            if multi.choice_columns[label][i] == "Yes"
+        )
+        if not members:
+            continue  # empty membership is never a combination
+        membership_counts[members] = membership_counts.get(members, 0) + 1
+
+    # Total distinct non-empty combinations that actually occurred.
+    total_combos = len(membership_counts)
+
+    # Drop below the privacy floor.
+    above_floor = [
+        Combination(members=members, size=size)
+        for members, size in membership_counts.items()
+        if size >= min_size
+    ]
+    # Sort by size desc, then members asc for determinism.
+    above_floor.sort(key=lambda c: (-c.size, c.members))
+
+    # Cap to max_combos.
+    combos = above_floor[:max_combos]
+
+    dropped_count = total_combos - len(combos)
+
+    return combos, set_totals, dropped_count
+

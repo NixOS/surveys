@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Pulse the heading-link icon briefly after the URL is copied to clipboard.
+ * `!important` is intentional: Tailwind's group-hover:opacity-50 selector has
+ * higher specificity than this class while the cursor is over the heading,
+ * so we need to force the win. */
+.heading-link-copied {
+  opacity: 1 !important;
+  color: theme('colors.accent-zambian-green.DEFAULT');
+  transform: scale(1.3);
+  transition: transform 150ms ease-out, color 150ms ease-out;
+}

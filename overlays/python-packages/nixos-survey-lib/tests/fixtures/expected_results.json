@@ -1,0 +1,382 @@
+{
+  "schema_version": 1,
+  "series": "community",
+  "year": 2025,
+  "title": "Tiny Survey Test",
+  "intro_meta": null,
+  "intro_paragraphs": null,
+  "sections": [
+    {
+      "id": "demographics",
+      "heading": "Demographics",
+      "note": null,
+      "rows": [
+        {
+          "id": "country",
+          "title": "Country",
+          "question": "Where do you live?",
+          "commentary": "Europe leads in the synthetic fixture.",
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
+                },
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
+                },
+                "yAxis": {
+                  "type": "category",
+                  "data": [
+                    "Prefer not to say",
+                    "Africa",
+                    "North America",
+                    "Asia",
+                    "Europe"
+                  ],
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
+                  },
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
+                  }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}%"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      5.0,
+                      10.0,
+                      20.0,
+                      20.0,
+                      45.0
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}%"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ],
+          "wide": false
+        },
+        {
+          "id": "skill",
+          "title": "Skill",
+          "question": "How would you describe your skill level with Nix?",
+          "commentary": "Distribution across three buckets.",
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
+                },
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
+                },
+                "yAxis": {
+                  "type": "category",
+                  "data": [
+                    "Advanced",
+                    "Intermediate",
+                    "Beginner"
+                  ],
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
+                  },
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
+                  }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}%"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      25.0,
+                      50.0,
+                      25.0
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}%"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ],
+          "wide": false
+        }
+      ]
+    },
+    {
+      "id": "tech",
+      "heading": "Technology",
+      "note": null,
+      "rows": [
+        {
+          "id": "os",
+          "title": "Operating systems",
+          "question": "Which operating systems do you use?",
+          "commentary": "Linux universal.",
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
+                },
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
+                },
+                "yAxis": {
+                  "type": "category",
+                  "data": [
+                    "Windows",
+                    "macOS",
+                    "Linux"
+                  ],
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
+                  },
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
+                  }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}%"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      15.0,
+                      30.0,
+                      95.0
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}%"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ],
+          "wide": false
+        },
+        {
+          "id": "nix_version",
+          "title": "Nix version",
+          "question": "Which version of Nix do you use most often?",
+          "commentary": "Extracted from free-text.",
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
+                },
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
+                },
+                "yAxis": {
+                  "type": "category",
+                  "data": [
+                    "Skipped",
+                    "No Match",
+                    "2.24.1",
+                    "2.18.5"
+                  ],
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
+                  },
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
+                  }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}%"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      5.0,
+                      5.0,
+                      25.0,
+                      65.0
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}%"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ],
+          "wide": false
+        }
+      ]
+    },
+    {
+      "id": "ranking",
+      "heading": "Ranking",
+      "note": null,
+      "rows": [
+        {
+          "id": "os2",
+          "title": "Operating systems (again)",
+          "question": "Which operating systems do you use?",
+          "commentary": "Reuse os as a non-ranking placeholder.",
+          "charts": [
+            {
+              "option": {
+                "grid": {
+                  "left": 200,
+                  "right": 80,
+                  "top": 40,
+                  "bottom": 30
+                },
+                "xAxis": {
+                  "type": "value",
+                  "show": false,
+                  "max": "dataMax"
+                },
+                "yAxis": {
+                  "type": "category",
+                  "data": [
+                    "Windows",
+                    "macOS",
+                    "Linux"
+                  ],
+                  "axisLabel": {
+                    "width": 180,
+                    "overflow": "truncate"
+                  },
+                  "axisLine": {
+                    "show": false
+                  },
+                  "axisTick": {
+                    "show": false
+                  }
+                },
+                "tooltip": {
+                  "trigger": "axis",
+                  "axisPointer": {
+                    "type": "shadow"
+                  },
+                  "formatter": "{b}: {c}%"
+                },
+                "series": [
+                  {
+                    "type": "bar",
+                    "data": [
+                      15.0,
+                      30.0,
+                      95.0
+                    ],
+                    "label": {
+                      "show": true,
+                      "position": "right",
+                      "formatter": "{c}%"
+                    },
+                    "barWidth": 16,
+                    "itemStyle": {
+                      "borderRadius": 4
+                    }
+                  }
+                ]
+              },
+              "height": 240
+            }
+          ],
+          "wide": false
+        }
+      ]
+    }
+  ]
+}

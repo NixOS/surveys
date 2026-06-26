@@ -1,0 +1,53 @@
+---
+// lib/site/src/layouts/Layout.astro
+import '../styles/global.css';
+import '../styles/route159.css';
+import '@fontsource-variable/roboto-flex/wdth.css';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="en" class="">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <script is:inline>
+      // Standalone dark-mode bootstrap. Default is light; dark applies only when
+      // explicitly opted into via localStorage. nixos.org's own bootstrap takes
+      // precedence when these components are consumed inside the homepage build,
+      // because <html class="dark"> is already set by then.
+      (() => {
+        if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-primary-white text-primary-black-15 dark:bg-secondary-afghani-blue-15 dark:text-primary-white-85">
+    <main class="mx-auto max-w-[1168px] px-4 py-20">
+      <slot />
+    </main>
+    <script>
+      // Heading deep-link UX: clicking an a.heading-link copies its URL to
+      // clipboard. The browser still handles the #id scroll on click; we just
+      // additionally copy. The icon pulses briefly via .heading-link-copied
+      // (style lives in global.css) so the user gets visible feedback.
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const anchor = target.closest<HTMLAnchorElement>('a.heading-link');
+        if (!anchor) return;
+        const url = new URL(anchor.href, window.location.origin);
+        navigator.clipboard.writeText(url.toString()).catch(() => {});
+        const icon = anchor.querySelector('.link-icon');
+        if (icon instanceof SVGElement) {
+          icon.classList.add('heading-link-copied');
+          window.setTimeout(() => icon.classList.remove('heading-link-copied'), 800);
+        }
+      });
+    </script>
+  </body>
+</html>

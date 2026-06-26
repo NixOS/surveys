@@ -48,3 +48,43 @@ Contributions are welcome!
 We encourage transparency and community participation in all stages of the survey process, from question design to result interpretation.
 If you'd like to propose a new survey or help with analysis, feel free to open an issue or pull request.
 For larger proposals, consider discussing them on [Discourse](https://discourse.nixos.org) or in the relevant team meetings (e.g., [Marketing Team](https://github.com/nixos/marketing)).
+
+## Survey data: vendored vs. computed
+
+The processed chart data (`results-2025.json`) is **vendored** — committed at
+`overlays/top-level/nixos-surveys-community-2025-data/results-2025.json`. The raw
+survey CSV contains PII and is never committed, so vendoring lets anyone build
+the site and edit components, styling, and client-side chart behavior without it.
+
+### Contributing without the CSV (most contributors)
+
+```
+nix develop
+dev                          # serves the site against the vendored data
+nix build .#nixos-surveys-site
+```
+
+`dev` hot-reloads Astro components, CSS, and client chart code. The Python data
+pipeline is frozen in this mode — changes to `community/2025/process.py`,
+`commentary.md`, `survey.yaml`, or `render_echarts.py` won't appear unless the
+data is recomputed (see below), or you edit the vendored JSON directly for a
+one-off.
+
+### Working with the raw CSV (data maintainers)
+
+1. Add the CSV to the Nix store:
+   ```
+   nix-store --add-fixed sha256 /path/to/nix-community-survey-2025-completed-responses.csv
+   ```
+2. Iterate live (recomputes from the CSV, watches the pipeline):
+   ```
+   nix develop
+   dev --live
+   ```
+3. When the data should change for everyone, regenerate and commit the vendored
+   file:
+   ```
+   vendor-data
+   git add overlays/top-level/nixos-surveys-community-2025-data/results-2025.json
+   git commit
+   ```

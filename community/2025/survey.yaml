@@ -6,7 +6,8 @@ intro: >
   Please note that when we only say "Nix" in a question, we refer to the Nix command-line tool.
   When we want to refer to the Nix language, Nixpkgs, NixOS, or the Nix ecosystem as a whole, we'll be clear with the terms.
 questions:
-  - prompt: Where do you live?
+  - id: country
+    prompt: Where do you live?
     type: single
     choices:
       - Africa
@@ -17,7 +18,8 @@ questions:
       - North America
       - Oceania
       - Prefer not to say
-  - prompt: What is your age in years?
+  - id: age
+    prompt: What is your age in years?
     type: single
     choices:
       - Under 18
@@ -28,7 +30,8 @@ questions:
       - 55-64
       - 65 or older
       - Prefer not to say
-  - prompt: What is your gender identity?
+  - id: gender_identity
+    prompt: What is your gender identity?
     type: single
     choices:
       - Man
@@ -36,13 +39,15 @@ questions:
       - Non-binary/non-conforming
       - I identify in another way
       - Prefer not to say
-  - prompt: Do you identify as transgender?
+  - id: transgender
+    prompt: Do you identify as transgender?
     type: single
     choices:
       - Yes
       - No
       - Prefer not to say
-  - prompt: How many years of programming experience do you have (including time spent learning or studying)?
+  - id: years_programming
+    prompt: How many years of programming experience do you have (including time spent learning or studying)?
     type: single
     choices:
       # https://survey.stackoverflow.co/2024/developer-profile#experience
@@ -60,7 +65,8 @@ questions:
       - 45 to 49 years
       - More than 50 years
       - Prefer not to say
-  - prompt: Which of the following best describes your primary role or occupation?
+  - id: role
+    prompt: Which of the following best describes your primary role or occupation?
     type: single
     choices:
       # https://survey.stackoverflow.co/2024/developer-profile#developer-roles
@@ -98,7 +104,8 @@ questions:
       - UX / UI designer
       - Other
       - Prefer not to say
-  - prompt: What best describes your economic sector?
+  - id: industry
+    prompt: What best describes your economic sector?
     type: single
     choices:
       - Academia or education
@@ -128,7 +135,8 @@ questions:
       - Telecommunications or networking
       - Transportation or logistics
       - Other
-  - prompt: What best describes your software domain?
+  - id: domain
+    prompt: What best describes your software domain?
     type: single
     choices:
       - Programming languages, compilers, or code analysis tooling
@@ -150,14 +158,17 @@ questions:
       - Information security / cybersecurity (client-facing)
       - Blockchain / cryptocurrency / web3
       - Other
-  - prompt: Can we reach out to you about sponsoring the project in the future?
+  - id: sponsor_outreach
+    prompt: Can we reach out to you about sponsoring the project in the future?
     type: single
     choices:
       - Yes
       - No
-  - prompt: If you replied Yes to the previous question, please provide an email so we may contact you.
+  - id: sponsor_email
+    prompt: If you replied Yes to the previous question, please provide an email so we may contact you.
     type: text
-  - prompt: Which operating systems do you regularly use on your devices (e.g. for development, work, or personal use)?
+  - id: operating_systems
+    prompt: Which operating systems do you regularly use on your devices (e.g. for development, work, or personal use)?
     type: multiple
     choices:
       - GNU/Linux
@@ -169,7 +180,8 @@ questions:
       - ChromeOS
       - Other
       - Prefer not to say
-  - prompt: >
+  - id: target_triple
+    prompt: >
       Which target triple best describes your system?
       Run "uname -a" if you are not sure.
     type: multiple
@@ -183,7 +195,8 @@ questions:
       - aarch64-linux-musl - pkgsMusl, pkgsStatic, or bootstrap
       - riscv64-linux-gnu
       - Other
-  - prompt: If you use NixOS stable, how was your experience upgrading to the new stable version (25.05)?
+  - id: stable_upgrade
+    prompt: If you use NixOS stable, how was your experience upgrading to the new stable version (25.05)?
     type: single
     choices:
       - I had severe issues and could not make the upgrade.
@@ -193,7 +206,8 @@ questions:
       - I had no issues.
       - I have not upgraded.
       - I did not know there was a new stable release.
-  - prompt: Which of these best describe your involvement with the Nix ecosystem?
+  - id: involvement
+    prompt: Which of these best describe your involvement with the Nix ecosystem?
     type: multiple
     choices:
       - I don't use Nix
@@ -206,7 +220,8 @@ questions:
       - I maintain packages in Nixpkgs
       - I have merge access to Nixpkgs
       - I develop tools or infrastructure that use or integrate with Nix, Nixpkgs, or NixOS
-  - prompt: How many years have you been using Nix (at any level of involvement)?
+  - id: years_using_nix
+    prompt: How many years have you been using Nix (at any level of involvement)?
     type: single
     choices:
       - I don't use Nix
@@ -218,7 +233,8 @@ questions:
       - 9 to 10 years
       - 11 or more years
       - Prefer not to say
-  - prompt: How would you describe your skill level with Nix?
+  - id: skill_level
+    prompt: How would you describe your skill level with Nix?
     type: single
     choices:
       - I have never used Nix
@@ -226,7 +242,8 @@ questions:
       - Intermediate
       - Advanced
       - Prefer not to say
-  - prompt: Which of these describe you?
+  - id: traits
+    prompt: Which of these describe you?
     type: multiple
     choices:
       - I usually rely on blog posts, video tutorials, or examples to help me write expressions.
@@ -241,7 +258,8 @@ questions:
       - I understand a portion of the ecosystem enough to make architectural choices (e.g. one of the language frameworks, stdenv, modules, Nix experimental features, etc).
       - I have read some portion of the Nix source code and understand it.
       - I completely understand all Nix error messages.
-  - prompt: >
+  - id: first_heard_which
+    prompt: >
       Did you hear about Nix or NixOS first?
       If you heard about both at the same time, select which one first made you interested in the Nix ecosystem.
     type: single
@@ -249,7 +267,8 @@ questions:
       - Nix
       - NixOS
       - I don’t remember
-  - prompt: How did you first hear about Nix or NixOS?
+  - id: first_heard_how
+    prompt: How did you first hear about Nix or NixOS?
     type: single
     choices:
       - At work
@@ -267,7 +286,8 @@ questions:
       - By searching online (e.g. Google)
       - Other
       - I don’t remember
-  - prompt: |
+  - id: user_types
+    prompt: |
       Which user types do you identify with? Select all that apply:
       - A. You love the idea behind Nix or NixOS.
         Maybe you spread the word among friends and coworkers.
@@ -321,7 +341,8 @@ questions:
       - C. I use Nix to get things done
       - D. I (want to) work on Nix
       - E. I'm a decision-maker
-  - prompt: On which operating systems do you currently use Nix?
+  - id: nix_on_os
+    prompt: On which operating systems do you currently use Nix?
     type: multiple
     choices:
       - I don’t use Nix
@@ -334,7 +355,8 @@ questions:
       - Other
   # Query information about the installation method.
   # Also gives insight on the proportion of NixOS users since these would be the one who checked the `NixOS` box
-  - prompt: How have you installed Nix on any of your systems?
+  - id: install_method
+    prompt: How have you installed Nix on any of your systems?
     type: multiple
     choices:
       - Nix was preinstalled with NixOS
@@ -343,15 +365,18 @@ questions:
       - I used another package manager (e.g. Homebrew, APT)
       - I built Nix from source
       - Other
-  - prompt: Which of these do you use?
+  - id: nix_implementations
+    prompt: Which of these do you use?
     type: multiple
+    choices:
       - Nix
       - Tvix
       - Lix
       - Determinate Nix
       - Snix
       - None
-  - prompt: On what types of systems or infrastructure do you use Nix?
+  - id: infrastructure
+    prompt: On what types of systems or infrastructure do you use Nix?
     type: multiple
     choices:
       - I don’t use Nix
@@ -364,9 +389,11 @@ questions:
       - Mobile device
       - High-performance computing or academic cluster
       - Other
-  - prompt: "Which version of Nix do you use most often? (Enter the full SemVer version, e.g. 2.18.5. You can check by running `nix-env --version`.)"
+  - id: nix_version
+    prompt: "Which version of Nix do you use most often? (Enter the full SemVer version, e.g. 2.18.5. You can check by running `nix-env --version`.)"
     type: text
-  - prompt: Which NixOS releases do you currently use on any of your systems?
+  - id: nixos_releases
+    prompt: Which NixOS releases do you currently use on any of your systems?
     type: multiple
     choices:
       - unstable
@@ -376,7 +403,8 @@ questions:
       - "23.11 or older"
       - I don't know
       - I don't use NixOS
-  - prompt: How do you configure hardware on NixOS?
+  - id: hardware_configuration
+    prompt: How do you configure hardware on NixOS?
     type: multiple
     choices:
       - nixos-generate-config
@@ -384,7 +412,8 @@ questions:
       - nixos-facter
       - Manual configuration
       - Other
-  - prompt: Which software ecosystems do you use Nix with?
+  - id: software_ecosystems
+    prompt: Which software ecosystems do you use Nix with?
     type: multiple
     choices:
       - I don't use Nix
@@ -442,7 +471,8 @@ questions:
       - VBA
       - Visual Basic (.Net)
       - Zig
-  - prompt: Which Nix experimental features do you use?
+  - id: experimental_features
+    prompt: Which Nix experimental features do you use?
     type: multiple
     choices:
       - "Flakes (`flakes`)"
@@ -469,7 +499,8 @@ questions:
       - "Verify Git commit signatures with `builtins.fetchGit` (`verified-fetches`)"
       - I don’t use any experimental features
       - I’m not sure
-  - prompt: You can afford about 3 improvements. Which aspects of the Nix package manager do you pick?
+  - id: improvements
+    prompt: You can afford about 3 improvements. Which aspects of the Nix package manager do you pick?
     type: multiple
     choices:
       - Performance
@@ -484,39 +515,50 @@ questions:
       - FreeBSD support
       - Nix as a library (Unstable C++ API, C API, bindings in other languages)
       - Other (next question)
-  - prompt: >
+  - id: improvements_other
+    prompt: >
       If applicable, in which other areas would you like `nix` to improve?
     type: text
-  - prompt: Do you consider Nix part of your regular toolset?
+  - id: regular_toolset
+    prompt: Do you consider Nix part of your regular toolset?
     type: single
     choices:
       - Yes
       - No
-  - prompt: Does your workplace use Nix?
+  - id: workplace_uses_nix
+    prompt: Does your workplace use Nix?
     type: text
-  - prompt: Are you the one that made that decision?
+  - id: workplace_decision
+    prompt: Are you the one that made that decision?
     type: text
-  - prompt: What convinced your workplace to use Nix?
+  - id: workplace_convinced_to_use
+    prompt: What convinced your workplace to use Nix?
     type: text
-  - prompt: What prevented your workplace from using Nix?
+  - id: workplace_prevented_from_using
+    prompt: What prevented your workplace from using Nix?
     type: text
-  - prompt: What convinced you to use Nix in your workplace?
+  - id: personal_convinced_to_use
+    prompt: What convinced you to use Nix in your workplace?
     type: text
   # This question has been collapsed into one, so that we don't need conditional questions.
-  - prompt: >
+  - id: personal_holds_back
+    prompt: >
       If Nix is not part of your regular toolset, what holds you back from using it more?
       What could make it easier or more useful for you?
     type: text
-  - prompt: >
+  - id: workplace_holds_back
+    prompt: >
       If Nix is not part of your toolset at work, what holds back your team from using it more?
       What could make it easier or more useful for you?
     type: text
-  # This question has been collapsed into one, so that we don't need conditional questions.
-  - prompt: >
+  # This question has been collapsed into one, so that we don’t need conditional questions.
+  - id: nixos_blockers
+    prompt: >
       If you would like to use NixOS but aren’t currently able to, what’s preventing you?
       What could help make it possible?
     type: text
-  - prompt: Which objects do you interact with or search for most often across the ecosystem?
+  - id: objects_interact_with
+    prompt: Which objects do you interact with or search for most often across the ecosystem?
     type: ranking
     choices:
       - Package search (package names, program names)
@@ -549,7 +591,8 @@ questions:
       - Additional tools
       - Job postings
       - Paid support offers
-  - prompt: >
+  - id: help_resources
+    prompt: >
       When you're looking for help with Nix or NixOS, which resources do you turn to most often?
       (Rank your top 5. If you usually web search first, pick the resources you click on most.)
     type: ranking
@@ -571,7 +614,8 @@ questions:
       - Blog posts or tutorials
       - LLMs (Large Language Models)
       - Other
-  - prompt: "If you’ve contributed to Nixpkgs or are interested in contributing, which of the following describe your experience or situation?"
+  - id: contribution_experience
+    prompt: "If you’ve contributed to Nixpkgs or are interested in contributing, which of the following describe your experience or situation?"
     type: multiple
     choices:
       - I don’t plan to contribute.
@@ -585,7 +629,8 @@ questions:
       - I was able to contribute on my own.
       - I was able to contribute with help from the community.
       - I plan to contribute in the future.
-  - prompt: When you look for help with Nix or NixOS, how often do you find a useful or acceptable answer?
+  - id: help_success_frequency
+    prompt: When you look for help with Nix or NixOS, how often do you find a useful or acceptable answer?
     type: single
     choices:
       - Always
@@ -593,14 +638,18 @@ questions:
       - Sometimes
       - Rarely
       - Never
-  - prompt: What would encourage you to donate to the NixOS Foundation?
+  - id: donation_incentives
+    prompt: What would encourage you to donate to the NixOS Foundation?
     type: multiple
     choices:
       - Better insight (e.g. more regular and detailed financial and operational reports)
       - Donor perks (e.g. recognition on website, Discourse badges, swag, exclusive access)
       - The ability to deduct donations from tax
       - More options for ear-marking donations
-  - prompt: Which areas should the NixOS Foundation prioritise excess funds for?
+      - Official support or services
+      - A maintained Long-Term-Support release
+  - id: foundation_priorities
+    prompt: Which areas should the NixOS Foundation prioritise excess funds for?
     type: ranking
     choices:
       - Governance (e.g. policies, guidelines, processes)
@@ -618,5 +667,6 @@ questions:
       - Deployment systems (e.g. Nixops or a replacement)
       - CI systems (e.g. Hydra or a replacement)
   # Final question to get meta feedback on the survey from participants
-  - prompt: Do you have any feedback on how we can improve this survey for next time?
+  - id: survey_feedback
+    prompt: Do you have any feedback on how we can improve this survey for next time?
     type: text
