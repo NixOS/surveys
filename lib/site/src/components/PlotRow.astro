@@ -12,6 +12,7 @@ interface Props {
       option: Record<string, unknown>;
       height?: number;
       caption?: string;
+      key?: Array<{ label: string; color: string }>;
     }>;
     wide?: boolean;
   };
@@ -47,6 +48,16 @@ const rowClass: Record<NonNullable<Props['variant']>, string> = {
         {chart.caption && <div class="max-w-prose mb-4 text-sm" set:html={marked.parse(chart.caption)} />}
         <script type="application/json" set:html={JSON.stringify(chart.option)} />
         <div class="echarts-chart w-full" style={`height: ${chart.height ?? 320}px`}></div>
+        {chart.key && (
+          <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 list-none p-0 text-sm text-primary-black-65 dark:text-primary-white-65">
+            {chart.key.map(k => (
+              <li class="flex items-center gap-1.5">
+                <span class="inline-block h-3 w-3 shrink-0 rounded-sm" style={`background:${k.color}`}></span>
+                <span>{k.label}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </article>
   ))}

@@ -5,6 +5,7 @@ const ChartSpec = z.object({
   option: z.record(z.any()),
   height: z.number().int().positive().optional(),
   caption: z.string().optional(),
+  key: z.array(z.object({ label: z.string(), color: z.string() })).optional(),
 });
 
 const Row = z.object({

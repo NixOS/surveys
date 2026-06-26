@@ -251,6 +251,7 @@ def likert_bar(
     """
     pct = {b.label: round(b.percent, 1) for b in bins}
     series: list[dict[str, Any]] = []
+    key: list[dict[str, str]] = []
 
     for i, label in enumerate(positive):
         color = _LIKERT_POSITIVE_COLORS[min(i, len(_LIKERT_POSITIVE_COLORS) - 1)]
@@ -262,6 +263,7 @@ def likert_bar(
             "itemStyle": {"color": color},
             "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
         })
+        key.append({"label": label, "color": color})
     for i, label in enumerate(negative):
         color = _LIKERT_NEGATIVE_COLORS[min(i, len(_LIKERT_NEGATIVE_COLORS) - 1)]
         series.append({
@@ -272,6 +274,7 @@ def likert_bar(
             "itemStyle": {"color": color},
             "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
         })
+        key.append({"label": label, "color": color})
     for i, label in enumerate(neutral):
         color = _LIKERT_NEUTRAL_COLORS[min(i, len(_LIKERT_NEUTRAL_COLORS) - 1)]
         series.append({
@@ -282,12 +285,14 @@ def likert_bar(
             "itemStyle": {"color": color},
             "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
         })
+        key.append({"label": label, "color": color})
 
-    legend_top = 28 if title is not None else 0
-    grid_top = 64 if title is not None else 40
+    # No ECharts legend: the colour key is returned separately and rendered as
+    # HTML by the site. Its 7 long labels would otherwise wrap down into the
+    # plot. The bar starts just below the title.
+    grid_top = 36 if title is not None else 8
     option: dict[str, Any] = {
         "grid": {"left": 80, "right": 80, "top": grid_top, "bottom": 30},
-        "legend": {"top": legend_top},
         "tooltip": {"trigger": "item", "formatter": "{a}: {c}%"},
         "xAxis": {"type": "value", "max": 100, "axisLabel": {"formatter": "{value}%"}},
         "yAxis": {"type": "category", "data": [""]},
@@ -296,7 +301,7 @@ def likert_bar(
     if title is not None:
         option["title"] = {"text": title, "left": "left", "top": 0}
 
-    return ChartSpec(option=option, height=height if height is not None else 200)
+    return ChartSpec(option=option, height=height if height is not None else 140, key=key)
 
 
 # Per-series symbol + dash so lines stay distinguishable by shape and stroke,

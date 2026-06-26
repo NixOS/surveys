@@ -61,6 +61,10 @@ class ChartSpec:
     option: dict[str, Any]
     height: int | None = None
     caption: str | None = None
+    # Optional colour key rendered as HTML by the site instead of an in-chart
+    # ECharts legend. Used by likert_bar, whose long category labels would
+    # otherwise wrap down into the plot. Each entry: {"label": str, "color": str}.
+    key: list[dict[str, str]] | None = None
 
 
 @dataclass(frozen=True)

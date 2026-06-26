@@ -53,4 +53,6 @@ def _chart_dict(c: ChartSpec) -> dict[str, Any]:
         out["height"] = c.height
     if c.caption is not None:
         out["caption"] = c.caption
+    if c.key is not None:
+        out["key"] = c.key
     return out

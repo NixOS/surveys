@@ -193,14 +193,16 @@ def test_likert_bar_label_formatter():
     assert series[0]["label"]["formatter"] == "{c}%"
 
 
-def test_likert_bar_tooltip_and_legend():
+def test_likert_bar_tooltip_and_key():
     bins = [Bin(label="Yes", count=100, percent=100.0)]
     spec = likert_bar(bins, positive=["Yes"], negative=[], neutral=[])
     opt = spec.option
     assert opt["tooltip"]["trigger"] == "item"
     assert opt["tooltip"]["formatter"] == "{a}: {c}%"
-    assert "legend" in opt
-    assert opt["legend"].get("type") != "scroll"
+    # The colour key is rendered as HTML by the site, not an in-chart legend
+    # (its long labels would wrap down into the plot).
+    assert "legend" not in opt
+    assert spec.key == [{"label": "Yes", "color": opt["series"][0]["itemStyle"]["color"]}]
 
 
 def test_likert_bar_title():
