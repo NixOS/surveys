@@ -17,3 +17,8 @@ result-*
 # a build artifact (copied from a Nix derivation) and stays ignored.
 !lib/site/src/content/results/
 lib/site/src/content/results/results-*.json
+
+# The processed chart data is vendored (committed) so the site builds without
+# the raw PII CSV. Re-include it past the global `result*` / local `result-*`
+# ignores above.
+!overlays/top-level/nixos-surveys-community-2025-data/results-2025.json
