@@ -57,13 +57,15 @@ function makeTheme(mode: 'light' | 'dark') {
   const text = resolveColor(mode === 'light' ? colors['primary-black'][15] : colors['primary-white'][85]);
   const axis = resolveColor(mode === 'light' ? colors['primary-black'][75] : colors['primary-black'][35]);
   const grid = resolveColor(mode === 'light' ? colors['primary-black'][85] : colors['primary-black'][25]);
-  const bg = resolveColor(mode === 'light' ? colors['primary-white'].DEFAULT : colors['primary-black'][15]);
+  const bg = resolveColor(mode === 'light' ? colors['primary-white'].DEFAULT : colors['secondary-afghani-blue'][15]);
   return {
     color: PALETTE,
     backgroundColor: 'transparent',
     textStyle: { color: text },
     axisLine: { lineStyle: { color: axis } },
     splitLine: { lineStyle: { color: grid } },
+    title: { textStyle: { color: text } },
+    legend: { textStyle: { color: text } },
     tooltip: {
       backgroundColor: bg,
       borderColor: axis,

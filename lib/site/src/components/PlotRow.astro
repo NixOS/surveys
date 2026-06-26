@@ -21,8 +21,8 @@ interface Props {
 const { row, variant = 'neobrutalist' } = Astro.props;
 
 const rowClass: Record<NonNullable<Props['variant']>, string> = {
-  neobrutalist: 'rounded-xl overflow-hidden border-2 border-secondary-afghani-blue dark:border-secondary-afghani-blue-75 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200',
-  homepage: 'rounded-xl overflow-hidden border-2 border-secondary-afghani-blue dark:border-secondary-afghani-blue-75 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200',
+  neobrutalist: 'rounded-xl overflow-hidden border-2 border-secondary-afghani-blue dark:border-secondary-afghani-blue-75 bg-primary-white dark:bg-secondary-afghani-blue-15 shadow-sm hover:shadow-md transition-shadow duration-200',
+  homepage: 'rounded-xl overflow-hidden border-2 border-secondary-afghani-blue dark:border-secondary-afghani-blue-75 bg-primary-white dark:bg-secondary-afghani-blue-15 shadow-sm hover:shadow-md transition-shadow duration-200',
   bare: '',
 };
 
@@ -38,7 +38,7 @@ const rowClass: Record<NonNullable<Props['variant']>, string> = {
         </svg>
       </a>
     </h3>
-    <p class="mb-3 text-sm italic text-primary-black-65 dark:text-primary-white-45">{row.question}</p>
+    <p class="mb-3 text-sm italic text-primary-black-65 dark:text-primary-white-65">{row.question}</p>
     <div class="max-w-prose" set:html={marked.parse(row.commentary)} />
   </article>
   {row.charts.map((chart, i) => (
