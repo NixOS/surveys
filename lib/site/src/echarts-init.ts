@@ -233,16 +233,17 @@ export function initCharts(): void {
   document.querySelectorAll('[data-echarts-option]').forEach(el => observer.observe(el));
 
   new MutationObserver(() => {
+    // Re-theme already-initialized charts when the dark class flips: re-run
+    // initChart from the original embedded JSON rather than replaying
+    // getOption(), which bakes the prior theme's resolved colors in as explicit
+    // values that would override the new theme. Not-yet-initialized charts are
+    // skipped — they pick up the current theme when they lazily init.
     document.querySelectorAll<HTMLElement>('.echarts-chart').forEach(div => {
       const inst = echarts.getInstanceByDom(div);
       if (!inst) return;
-      const opt = inst.getOption() as Record<string, unknown>;
       inst.dispose();
-      injectVisualMapColors(opt);
-      injectHeatmapTooltip(opt);
-      injectSankeyTooltip(opt);
-      fixTooltipOverflow(opt);
-      echarts.init(div, currentTheme(), { renderer: 'svg' }).setOption(opt);
+      const card = div.closest('[data-echarts-option]');
+      if (card) initChart(card);
     });
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 }
