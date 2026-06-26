@@ -16,7 +16,7 @@ const surveys = (await getCollection('results'))
     {surveys.map(s => (
       <li>
         <a href={`/${s.data.series}/${s.data.year}/`}
-           class="block rounded-xl overflow-hidden border-2 border-secondary-afghani-blue dark:border-secondary-afghani-blue-75 bg-primary-white dark:bg-primary-black-15 shadow-sm hover:shadow-md transition-shadow duration-200 p-5 no-underline">
+           class="block rounded-xl overflow-hidden border-2 border-secondary-afghani-blue dark:border-secondary-afghani-blue-75 bg-primary-white dark:bg-primary-black-15 shadow-sm transition duration-200 p-5 no-underline hover:shadow-md hover:-translate-y-0.5 hover:bg-secondary-afghani-blue-95 dark:hover:bg-secondary-afghani-blue-25">
           <span class="block text-xl font-bold font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">{s.data.title}</span>
           {s.data.intro_meta && (
             <span class="mt-1 block text-sm text-primary-black-65 dark:text-primary-white-45">{s.data.intro_meta}</span>
