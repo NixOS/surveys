@@ -66,6 +66,14 @@ function makeTheme(mode: 'light' | 'dark') {
     splitLine: { lineStyle: { color: grid } },
     title: { textStyle: { color: text } },
     legend: { textStyle: { color: text } },
+    // ECharts assumes a light page: outside bar value labels (bar/lollipop/upset)
+    // and sankey node labels default to dark text + a white halo, unreadable in
+    // dark mode. Use the theme text color and drop the stroke. likert_bar sets
+    // its own per-segment label color so its inside labels keep their contrast
+    // despite this default.
+    bar: { label: { color: text, textBorderWidth: 0 } },
+    pictorialBar: { label: { color: text, textBorderWidth: 0 } },
+    sankey: { label: { color: text, textBorderWidth: 0 } },
     tooltip: {
       backgroundColor: bg,
       borderColor: axis,

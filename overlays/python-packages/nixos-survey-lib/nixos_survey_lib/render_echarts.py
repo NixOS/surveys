@@ -221,6 +221,17 @@ _LIKERT_NEUTRAL_COLORS = [
 ]
 
 
+def _label_on(fill: str) -> str:
+    """Legible label color (near-black or near-white) for text drawn on ``fill``.
+    Reproduces ECharts' inside-label auto-contrast explicitly, so likert segment
+    labels stay readable even though the theme sets a default bar-label color for
+    the outside labels that sit on the page background."""
+    h = fill.lstrip("#")
+    r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    luminance = 0.299 * r + 0.587 * g + 0.114 * b
+    return "#333333" if luminance > 0.6 else "#eeeeee"
+
+
 def likert_bar(
     bins: list[Bin],
     *,
@@ -249,7 +260,7 @@ def likert_bar(
             "stack": "likert",
             "data": [pct.get(label, 0.0)],
             "itemStyle": {"color": color},
-            "label": {"show": True, "formatter": "{c}%"},
+            "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
         })
     for i, label in enumerate(negative):
         color = _LIKERT_NEGATIVE_COLORS[min(i, len(_LIKERT_NEGATIVE_COLORS) - 1)]
@@ -259,7 +270,7 @@ def likert_bar(
             "stack": "likert",
             "data": [pct.get(label, 0.0)],
             "itemStyle": {"color": color},
-            "label": {"show": True, "formatter": "{c}%"},
+            "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
         })
     for i, label in enumerate(neutral):
         color = _LIKERT_NEUTRAL_COLORS[min(i, len(_LIKERT_NEUTRAL_COLORS) - 1)]
@@ -269,7 +280,7 @@ def likert_bar(
             "stack": "likert",
             "data": [pct.get(label, 0.0)],
             "itemStyle": {"color": color},
-            "label": {"show": True, "formatter": "{c}%"},
+            "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
         })
 
     legend_top = 28 if title is not None else 0
