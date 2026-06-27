@@ -1,0 +1,35 @@
+name: Deploy Surveys Site
+run-name: ${{ github.actor }} is deploying the surveys site
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: netlify-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+      - name: Build Site
+        run: |
+          nix build .\#nixos-surveys-site \
+            --print-build-logs \
+            --out-link result-deploy
+          mkdir --parents ./build
+          cp --recursive --dereference ./result-deploy/* ./build
+      - name: 'Publish to Netlify'
+        uses: 'nwtgck/actions-netlify@v4.0.0'
+        env:
+          NETLIFY_AUTH_TOKEN: '${{ secrets.NETLIFY_AUTH_TOKEN }}'
+          NETLIFY_SITE_ID: '${{ secrets.NETLIFY_SITE_ID }}'
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          deploy-message: 'Published from GitHub Actions'
+          publish-dir: './build'
+          production-deploy: true
