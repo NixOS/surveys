@@ -5,6 +5,11 @@ import Layout from '../layouts/Layout.astro';
 const surveys = (await getCollection('results'))
   .filter(r => r.data.year !== 9999)
   .sort((a, b) => b.data.year - a.data.year);
+
+// Base prefix for internal links. import.meta.env.BASE_URL may or may not carry
+// a trailing slash (config `base` adds one; the CLI `--base` flag does not), so
+// normalise to no trailing slash and add exactly one separator below.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <Layout title="NixOS Surveys">
   <h1 class="mb-4 text-4xl md:text-5xl font-bold font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">NixOS Surveys</h1>
@@ -15,7 +20,7 @@ const surveys = (await getCollection('results'))
   <ul class="grid gap-5 list-none p-0 grid-cols-[repeat(auto-fit,minmax(320px,520px))]">
     {surveys.map(s => (
       <li>
-        <a href={`/${s.data.series}/${s.data.year}/`}
+        <a href={`${base}/${s.data.series}/${s.data.year}/`}
            class="block rounded-xl overflow-hidden border-2 border-secondary-afghani-blue dark:border-secondary-afghani-blue-75 bg-primary-white dark:bg-secondary-afghani-blue-15 shadow-sm transition duration-200 p-5 no-underline hover:shadow-md hover:-translate-y-0.5 hover:bg-secondary-afghani-blue-95 dark:hover:bg-secondary-afghani-blue-25">
           <span class="block text-xl font-bold font-heading text-secondary-afghani-blue dark:text-secondary-afghani-blue-75">{s.data.title}</span>
           {s.data.intro_meta && (
