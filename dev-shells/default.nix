@@ -16,8 +16,10 @@ mapAttrs (system: pkgs: {
 
       # `dev` serves the site. Default: use the committed vendored JSON (no CSV
       # needed, no pipeline watching — Astro still HMRs all component/CSS/client
-      # edits). `dev --live`: recompute from the CSV (requires the CSV in the
-      # Nix store) and watchexec-rebuild on pipeline changes, as before.
+      # edits). `dev --live`: recompute from the real CSV (requires the CSV in
+      # the Nix store) and watchexec-rebuild on pipeline changes. `dev --dummy`:
+      # same, but from generated synthetic data — no CSV needed; use this to
+      # iterate on process.py / survey.yaml / nixos_survey_lib.
       dev() (
         if [ ! -d "lib/site" ]; then
           echo "[dev] must be run from the surveys repo root" >&2
@@ -28,23 +30,31 @@ mapAttrs (system: pkgs: {
         vendored="overlays/top-level/nixos-surveys-community-2025-data/results-2025.json"
         mkdir -p "$(dirname "$target")"
 
-        if [ "$1" = "--live" ]; then
-          data_drv=".#legacyPackages.x86_64-linux.nixos-surveys-community-2025-data-from-csv"
-          echo "[dev] live mode: building data from CSV..."
+        if [ "$1" = "--live" ] || [ "$1" = "--dummy" ]; then
+          if [ "$1" = "--live" ]; then
+            data_drv=".#legacyPackages.x86_64-linux.nixos-surveys-community-2025-data-from-csv"
+            echo "[dev] live mode: building data from CSV..."
+          else
+            data_drv=".#legacyPackages.x86_64-linux.nixos-surveys-community-2025-data-from-dummy"
+            echo "[dev] dummy mode: SYNTHETIC DATA — not real survey results."
+            echo "[dev] building data from generated fake responses..."
+          fi
           if ! out=$(nix build --no-link --print-out-paths "$data_drv"); then
             echo "[dev] data build failed." >&2
-            echo "      If the survey CSV is missing from /nix/store, add it:" >&2
-            echo "      nix-store --add-fixed sha256 <path-to-CSV>" >&2
+            if [ "$1" = "--live" ]; then
+              echo "      If the survey CSV is missing from /nix/store, add it:" >&2
+              echo "      nix-store --add-fixed sha256 <path-to-CSV>" >&2
+            fi
             return 1
           fi
           install -m 0644 "$out/results-2025.json" "$target"
-          echo "[dev] data ready (live) at $target"
+          echo "[dev] data ready at $target"
 
           watchexec -e py,md,yaml -w community/2025 -w overlays/python-packages/nixos-survey-lib --postpone -- bash -c '
-            out=$(nix build --no-link --print-out-paths .#legacyPackages.x86_64-linux.nixos-surveys-community-2025-data-from-csv) \
+            out=$(nix build --no-link --print-out-paths "$1") \
               && install -m 0644 "$out/results-2025.json" lib/site/src/content/results/results-2025.json \
               && echo "[dev] data updated"
-          ' &
+          ' _ "$data_drv" &
           watch_pid=$!
           trap 'kill $watch_pid 2>/dev/null' INT TERM EXIT
         else
@@ -86,6 +96,7 @@ mapAttrs (system: pkgs: {
       echo ""
       echo "Live dev (vendored data):  dev"
       echo "Live dev (recompute CSV):  dev --live"
+      echo "Live dev (synthetic data): dev --dummy"
       echo "Regenerate vendored JSON:  vendor-data"
       echo "Run tests:                 pytest overlays/python-packages/nixos-survey-lib/tests/"
     '';
