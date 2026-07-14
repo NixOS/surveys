@@ -70,6 +70,23 @@ pipeline is frozen in this mode — changes to `community/2025/process.py`,
 data is recomputed (see below), or you edit the vendored JSON directly for a
 one-off.
 
+To iterate on the pipeline itself without the CSV, use synthetic data:
+
+```
+dev --dummy                  # full pipeline against generated fake responses
+```
+
+This fabricates a deterministic fake CSV from `community/2025/survey.yaml`
+(see `community/2025/generate_dummy.py`), runs the full pipeline on it, and
+rebuilds on pipeline changes — exactly like `dev --live` but with no real
+data. The rendered numbers are meaningless; never present them as real
+results. To inspect the generated CSV itself:
+
+```
+nix build .#legacyPackages.x86_64-linux.nixos-surveys-community-2025-data-from-dummy
+ls result/
+```
+
 ### Working with the raw CSV (data maintainers)
 
 1. Add the CSV to the Nix store:
