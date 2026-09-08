@@ -8185,7 +8185,7 @@
           "id": "workplace_uses_nix",
           "title": "Workplace adoption",
           "question": "Does your workplace use Nix?",
-          "commentary": "Among respondents whose free-text answers could be normalised, 12.8%\nreported their workplace uses Nix and 29.2% said it does not. A\nmajority \u2014 57.9% \u2014 gave answers that fell into the \"Other\" category.\n\nFree-text answers normalised to Yes / No / Other.",
+          "commentary": "No (29.2%) outnumbers Yes (12.8%) more than two to one, and 20.5% gave\nanswers that were neither a clear yes nor a clear no. 37.5% left the\nquestion blank.\n\nFree-text answers normalised to Yes / No / Other; blanks are Skipped.",
           "charts": [
             {
               "option": {
@@ -8203,6 +8203,7 @@
                 "yAxis": {
                   "type": "category",
                   "data": [
+                    "Skipped",
                     "Other",
                     "No",
                     "Yes"
@@ -8229,7 +8230,8 @@
                   {
                     "type": "bar",
                     "data": [
-                      57.9,
+                      37.5,
+                      20.5,
                       29.2,
                       12.8
                     ],
@@ -8254,7 +8256,7 @@
           "id": "workplace_decision",
           "title": "Workplace decision-maker",
           "question": "Are you the one that made that decision?",
-          "commentary": "Of respondents in a Nix-using workplace, 15.7% report having made the\nadoption decision themselves; 23.9% did not. The largest share\n(60.4%) again falls into \"Other\".\n\nFree-text answers normalised to Yes / No / Other.",
+          "commentary": "Half of respondents (51.0%) left the question blank. 23.9% say they did\nnot make their workplace's adoption decision, 15.7% say they did, and\n9.4% gave an answer that was neither.\n\nFree-text answers normalised to Yes / No / Other; blanks are Skipped.",
           "charts": [
             {
               "option": {
@@ -8272,6 +8274,7 @@
                 "yAxis": {
                   "type": "category",
                   "data": [
+                    "Skipped",
                     "Other",
                     "No",
                     "Yes"
@@ -8298,7 +8301,8 @@
                   {
                     "type": "bar",
                     "data": [
-                      60.4,
+                      51.0,
+                      9.4,
                       23.9,
                       15.7
                     ],
