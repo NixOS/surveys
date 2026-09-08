@@ -28,6 +28,14 @@ def test_normalize_yes_no_custom_aliases():
     assert s.values.to_list() == ["Yes", "No", "Yes"]
 
 
+def test_normalize_yes_no_keeps_loader_skipped_sentinel():
+    # load_responses fills blank cells with the string "Skipped" before this
+    # runs; it must stay Skipped rather than fall through to Other.
+    t = _make_text(["Skipped", "yes", "Skipped", "no"])
+    s = normalize_yes_no(t)
+    assert s.values.to_list() == ["Skipped", "Yes", "Skipped", "No"]
+
+
 def test_extract_first_semver_extracts_canonical():
     t = _make_text(["2.18.5", "  2.24.1  ", "v3.0.0", "nix 1.2.3 release"])
     s = extract_first_semver(t)
