@@ -2225,13 +2225,7 @@
                         "name": "Knew"
                       },
                       {
-                        "name": "Didn't know"
-                      },
-                      {
                         "name": "Upgraded"
-                      },
-                      {
-                        "name": "Did not upgrade"
                       },
                       {
                         "name": "No issues"
@@ -2247,6 +2241,12 @@
                       },
                       {
                         "name": "Severe (stuck)"
+                      },
+                      {
+                        "name": "Did not upgrade"
+                      },
+                      {
+                        "name": "Didn't know"
                       }
                     ],
                     "links": [
@@ -2305,7 +2305,8 @@
                     },
                     "label": {
                       "overflow": "truncate"
-                    }
+                    },
+                    "layoutIterations": 0
                   }
                 ],
                 "title": {
