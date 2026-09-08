@@ -179,7 +179,7 @@ YouTube is the single largest channel (28.3%), well ahead of
 word-of-mouth from a friend or colleague (15.9%). 12.0% no longer
 remember. Blogs (7.3%), search (6.7%), Reddit (4.9%), and work
 introductions (4.6%) make up the next tier. Categories below 0.5% or
-fewer than 5 respondents are folded into "Other (combined)".
+fewer than 5 respondents are not shown.
 
 ## discovery_flow
 
