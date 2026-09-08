@@ -13,7 +13,12 @@ def test_horizontal_bar_basic_shape():
     opt = spec.option
     assert opt["yAxis"]["data"] == ["Asia", "North America", "Europe"]
     assert opt["series"][0]["type"] == "bar"
-    assert opt["series"][0]["data"] == [20.0, 20.0, 60.0]
+    assert opt["series"][0]["data"] == [
+        {"value": 20.0, "count": 20},
+        {"value": 20.0, "count": 20},
+        {"value": 60.0, "count": 60},
+    ]
+    assert opt["series"][0]["total"] == 100
     assert opt["title"]["text"] == "Country"
 
 
@@ -27,6 +32,7 @@ def test_horizontal_bar_empty_bins():
     spec = horizontal_bar([])
     assert spec.option["yAxis"]["data"] == []
     assert spec.option["series"][0]["data"] == []
+    assert spec.option["series"][0]["total"] == 0
 
 
 from nixos_survey_lib.render_echarts import heatmap
@@ -141,8 +147,17 @@ def test_likert_bar_100pct_stacked():
     assert all(s["stack"] == "likert" for s in series)
     # No negative values anywhere.
     for s in series:
-        for v in s["data"]:
-            assert v >= 0
+        for item in s["data"]:
+            assert item["value"] >= 0
+    assert series[0]["data"] == [{"value": 40.0, "count": 40}]
+    assert all(s["total"] == 100 for s in series)
+
+
+def test_likert_bar_missing_label_is_zero_segment():
+    bins = [Bin(label="Yes", count=100, percent=100.0, total=100)]
+    spec = likert_bar(bins, positive=["Yes"], negative=["No"], neutral=[])
+    assert spec.option["series"][1]["data"] == [{"value": 0.0, "count": 0}]
+    assert spec.option["series"][1]["total"] == 100
 
 
 def test_likert_bar_segment_order():
@@ -254,13 +269,23 @@ def test_lollipop_shape():
     assert stem["type"] == "bar"
     assert stem["barWidth"] == 2
     assert stem["itemStyle"]["color"] == "#4d6fb7"
-    assert stem["data"] == [10.0, 30.0, 90.0]
+    assert stem["data"] == [
+        {"value": 10.0, "count": 10},
+        {"value": 30.0, "count": 30},
+        {"value": 90.0, "count": 90},
+    ]
+    assert stem["total"] == 100
     assert stem["silent"] is True
     # Dot: pictorialBar carrying the label.
     assert dot["type"] == "pictorialBar"
     assert dot["symbol"] == "circle"
     assert dot["symbolPosition"] == "end"
-    assert dot["data"] == [10.0, 30.0, 90.0]
+    assert dot["data"] == [
+        {"value": 10.0, "count": 10},
+        {"value": 30.0, "count": 30},
+        {"value": 90.0, "count": 90},
+    ]
+    assert dot["total"] == 100
     assert dot["itemStyle"]["color"] == "#4d6fb7"
     assert dot["label"]["show"] is True
     assert dot["label"]["formatter"] == "{c}%"

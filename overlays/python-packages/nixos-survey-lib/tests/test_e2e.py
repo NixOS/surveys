@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from nixos_survey_lib.aggregate import (
     counts_multi,
@@ -13,14 +14,14 @@ from nixos_survey_lib.render_echarts import (
 from nixos_survey_lib.types import Page, Row, Section
 
 
-def test_e2e_pipeline_against_fixtures(fixtures_dir):
-    """End-to-end: load fixture survey, build a Page, serialize, diff against golden."""
+def _build_page(fixtures_dir: Path) -> Page:
+    """The fixture pipeline; also used to regenerate expected_results.json."""
     schema = load_schema(fixtures_dir / "tiny_survey.yaml")
     r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
 
     nix_versions = extract_first_semver(r.nix_version)
 
-    page = Page(
+    return Page(
         year=2025,
         title="Tiny Survey Test",
         sections=[
@@ -57,6 +58,9 @@ def test_e2e_pipeline_against_fixtures(fixtures_dir):
         ],
     )
 
-    actual = json.loads(page_to_json(page))
+
+def test_e2e_pipeline_against_fixtures(fixtures_dir):
+    """End-to-end: load fixture survey, build a Page, serialize, diff against golden."""
+    actual = json.loads(page_to_json(_build_page(fixtures_dir)))
     expected = json.loads((fixtures_dir / "expected_results.json").read_text())
     assert actual == expected
