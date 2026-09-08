@@ -382,16 +382,16 @@ and undisclosed experience.
 
 ## workplace_uses_nix
 
-Among respondents whose free-text answers could be normalised, 12.8%
-reported their workplace uses Nix and 29.2% said it does not. A
-majority — 57.9% — gave answers that fell into the "Other" category.
+No (29.2%) outnumbers Yes (12.8%) more than two to one, and 20.5% gave
+answers that were neither a clear yes nor a clear no. 37.5% left the
+question blank.
 
-Free-text answers normalised to Yes / No / Other.
+Free-text answers normalised to Yes / No / Other; blanks are Skipped.
 
 ## workplace_decision
 
-Of respondents in a Nix-using workplace, 15.7% report having made the
-adoption decision themselves; 23.9% did not. The largest share
-(60.4%) again falls into "Other".
+Half of respondents (51.0%) left the question blank. 23.9% say they did
+not make their workplace's adoption decision, 15.7% say they did, and
+9.4% gave an answer that was neither.
 
-Free-text answers normalised to Yes / No / Other.
+Free-text answers normalised to Yes / No / Other; blanks are Skipped.
