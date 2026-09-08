@@ -4,9 +4,9 @@ from nixos_survey_lib.types import Bin, ChartSpec
 
 def test_horizontal_bar_basic_shape():
     bins = [
-        Bin(label="Europe", count=60, percent=60.0),
-        Bin(label="North America", count=20, percent=20.0),
-        Bin(label="Asia", count=20, percent=20.0),
+        Bin(label="Europe", count=60, percent=60.0, total=100),
+        Bin(label="North America", count=20, percent=20.0, total=100),
+        Bin(label="Asia", count=20, percent=20.0, total=100),
     ]
     spec = horizontal_bar(bins, title="Country")
     assert isinstance(spec, ChartSpec)
@@ -18,7 +18,7 @@ def test_horizontal_bar_basic_shape():
 
 
 def test_horizontal_bar_preserves_provided_height():
-    bins = [Bin(label="A", count=1, percent=100.0)]
+    bins = [Bin(label="A", count=1, percent=100.0, total=1)]
     spec = horizontal_bar(bins, height=480)
     assert spec.height == 480
 
@@ -121,11 +121,11 @@ from nixos_survey_lib.render_echarts import likert_bar
 
 def test_likert_bar_100pct_stacked():
     bins = [
-        Bin(label="Strongly agree", count=40, percent=40.0),
-        Bin(label="Agree", count=30, percent=30.0),
-        Bin(label="Disagree", count=15, percent=15.0),
-        Bin(label="Strongly disagree", count=10, percent=10.0),
-        Bin(label="No opinion", count=5, percent=5.0),
+        Bin(label="Strongly agree", count=40, percent=40.0, total=100),
+        Bin(label="Agree", count=30, percent=30.0, total=100),
+        Bin(label="Disagree", count=15, percent=15.0, total=100),
+        Bin(label="Strongly disagree", count=10, percent=10.0, total=100),
+        Bin(label="No opinion", count=5, percent=5.0, total=100),
     ]
     spec = likert_bar(
         bins,
@@ -147,11 +147,11 @@ def test_likert_bar_100pct_stacked():
 
 def test_likert_bar_segment_order():
     bins = [
-        Bin(label="Strongly agree", count=40, percent=40.0),
-        Bin(label="Agree", count=30, percent=30.0),
-        Bin(label="Disagree", count=15, percent=15.0),
-        Bin(label="Strongly disagree", count=10, percent=10.0),
-        Bin(label="No opinion", count=5, percent=5.0),
+        Bin(label="Strongly agree", count=40, percent=40.0, total=100),
+        Bin(label="Agree", count=30, percent=30.0, total=100),
+        Bin(label="Disagree", count=15, percent=15.0, total=100),
+        Bin(label="Strongly disagree", count=10, percent=10.0, total=100),
+        Bin(label="No opinion", count=5, percent=5.0, total=100),
     ]
     spec = likert_bar(
         bins,
@@ -167,10 +167,10 @@ def test_likert_bar_segment_order():
 
 def test_likert_bar_hex_colors_and_distinct_neutrals():
     bins = [
-        Bin(label="Yes", count=60, percent=60.0),
-        Bin(label="No", count=20, percent=20.0),
-        Bin(label="Maybe", count=10, percent=10.0),
-        Bin(label="N/A", count=10, percent=10.0),
+        Bin(label="Yes", count=60, percent=60.0, total=100),
+        Bin(label="No", count=20, percent=20.0, total=100),
+        Bin(label="Maybe", count=10, percent=10.0, total=100),
+        Bin(label="N/A", count=10, percent=10.0, total=100),
     ]
     spec = likert_bar(
         bins,
@@ -187,14 +187,14 @@ def test_likert_bar_hex_colors_and_distinct_neutrals():
 
 
 def test_likert_bar_label_formatter():
-    bins = [Bin(label="Yes", count=100, percent=100.0)]
+    bins = [Bin(label="Yes", count=100, percent=100.0, total=100)]
     spec = likert_bar(bins, positive=["Yes"], negative=[], neutral=[])
     series = spec.option["series"]
     assert series[0]["label"]["formatter"] == "{c}%"
 
 
 def test_likert_bar_tooltip_and_key():
-    bins = [Bin(label="Yes", count=100, percent=100.0)]
+    bins = [Bin(label="Yes", count=100, percent=100.0, total=100)]
     spec = likert_bar(bins, positive=["Yes"], negative=[], neutral=[])
     opt = spec.option
     assert opt["tooltip"]["trigger"] == "item"
@@ -206,7 +206,7 @@ def test_likert_bar_tooltip_and_key():
 
 
 def test_likert_bar_title():
-    bins = [Bin(label="Yes", count=100, percent=100.0)]
+    bins = [Bin(label="Yes", count=100, percent=100.0, total=100)]
     spec = likert_bar(bins, positive=["Yes"], negative=[], neutral=[], title="My question")
     assert spec.option["title"]["text"] == "My question"
 
@@ -239,9 +239,9 @@ from nixos_survey_lib.render_echarts import lollipop
 
 def test_lollipop_shape():
     bins = [
-        Bin(label="Linux", count=90, percent=90.0),
-        Bin(label="macOS", count=30, percent=30.0),
-        Bin(label="Windows", count=10, percent=10.0),
+        Bin(label="Linux", count=90, percent=90.0, total=100),
+        Bin(label="macOS", count=30, percent=30.0, total=100),
+        Bin(label="Windows", count=10, percent=10.0, total=100),
     ]
     spec = lollipop(bins)
     opt = spec.option
@@ -400,13 +400,13 @@ def test_rank_distribution_bar_even_spacing_n5():
 def test_likert_bar_all_segment_colors_distinct():
     """2-positive / 3-negative / 2-neutral: all 7 segment colors must be unique."""
     bins = [
-        Bin(label="No issues", count=30, percent=30.0),
-        Bin(label="Minor issues", count=20, percent=20.0),
-        Bin(label="Moderate issues", count=15, percent=15.0),
-        Bin(label="Severe resolved", count=10, percent=10.0),
-        Bin(label="Severe stuck", count=10, percent=10.0),
-        Bin(label="N/A", count=8, percent=8.0),
-        Bin(label="Unknown", count=7, percent=7.0),
+        Bin(label="No issues", count=30, percent=30.0, total=100),
+        Bin(label="Minor issues", count=20, percent=20.0, total=100),
+        Bin(label="Moderate issues", count=15, percent=15.0, total=100),
+        Bin(label="Severe resolved", count=10, percent=10.0, total=100),
+        Bin(label="Severe stuck", count=10, percent=10.0, total=100),
+        Bin(label="N/A", count=8, percent=8.0, total=100),
+        Bin(label="Unknown", count=7, percent=7.0, total=100),
     ]
     spec = likert_bar(
         bins,

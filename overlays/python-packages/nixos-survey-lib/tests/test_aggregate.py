@@ -199,6 +199,29 @@ def test_counts_multi_combined_bucket_below_floor_is_dropped():
     assert [b.label for b in bins] == ["A"]
 
 
+def test_counts_single_total_is_denominator_after_exclude():
+    s = _sc(["Europe", "Europe", "Asia", "Skipped"])
+    bins = counts_single(s, exclude=["Skipped"], bucket_min_percent=None, bucket_min_count=None)
+    assert {b.total for b in bins} == {3}
+
+
+def test_counts_single_combined_bucket_carries_total():
+    # 8 A + 1 B + 1 C with min_count=2: B and C fold into the combined bucket,
+    # which must carry the same denominator as the kept bins.
+    s = _sc(["A"] * 8 + ["B", "C"])
+    bins = counts_single(s, bucket_min_percent=None, bucket_min_count=2)
+    assert {b.total for b in bins} == {10}
+
+
+def test_counts_multi_total_is_respondent_count():
+    m = _mc({
+        "Linux": ["Yes", "Yes", "Yes", "Yes"],
+        "macOS": ["No", "Yes", "Yes", "No"],
+    })
+    bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=None)
+    assert {b.total for b in bins} == {4}
+
+
 def test_crosstab_global_normalize():
     x = _sc(["A", "A", "B", "B"], qid="x")
     y = _sc(["P", "Q", "P", "Q"], qid="y")

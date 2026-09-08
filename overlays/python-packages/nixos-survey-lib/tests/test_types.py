@@ -45,10 +45,11 @@ from nixos_survey_lib.types import Bin, CrossTab
 
 
 def test_bin_construction():
-    b = Bin(label="Linux", count=14, percent=70.0)
+    b = Bin(label="Linux", count=14, percent=70.0, total=20)
     assert b.label == "Linux"
     assert b.count == 14
     assert b.percent == 70.0
+    assert b.total == 20
 
 
 def test_crosstab_construction():

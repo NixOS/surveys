@@ -97,7 +97,7 @@ def counts_single(
 
     rows = counts_df.to_dicts()
     return [
-        Bin(label=row["response"], count=int(row["count"]), percent=row["count"] / total * 100.0)
+        Bin(label=row["response"], count=int(row["count"]), percent=row["count"] / total * 100.0, total=total)
         for row in rows
     ]
 
@@ -124,7 +124,7 @@ def counts_multi(
         yes_count = int((series == "Yes").sum())
         rows.append((choice, yes_count))
 
-    bins = [Bin(label=c, count=n, percent=n / total * 100.0) for c, n in rows]
+    bins = [Bin(label=c, count=n, percent=n / total * 100.0, total=total) for c, n in rows]
     bins.sort(key=lambda b: b.percent, reverse=True)
 
     pct_active = bucket_min_percent is not None and bucket_min_percent > 0
@@ -145,7 +145,7 @@ def counts_multi(
             # sub-floor count; drop the rare bins instead.
             if not (count_active and other_count < bucket_min_count):
                 other_pct = sum(b.percent for b in rare)
-                keep.append(Bin(label=BUCKET_LABEL, count=other_count, percent=other_pct))
+                keep.append(Bin(label=BUCKET_LABEL, count=other_count, percent=other_pct, total=total))
         bins = keep
 
     return bins

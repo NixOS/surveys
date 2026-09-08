@@ -28,6 +28,7 @@ class Bin:
     label: str
     count: int
     percent: float
+    total: int  # denominator used for percent
 
 
 @dataclass(frozen=True)
