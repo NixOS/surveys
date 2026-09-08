@@ -773,3 +773,14 @@ def test_sankey_default_height():
     spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}])
     assert spec.height == 480
 
+
+def test_sankey_preserve_order_disables_layout_iterations():
+    spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}],
+                  preserve_order=True)
+    assert spec.option["series"][0]["layoutIterations"] == 0
+
+
+def test_sankey_default_keeps_automatic_layout():
+    spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}])
+    assert "layoutIterations" not in spec.option["series"][0]
+

@@ -468,11 +468,15 @@ def test_sankey_funnel_stage_d_severity():
     assert by[("Upgraded", "Severe (stuck)")] == 6
 
 
-def test_sankey_funnel_nodes_in_stage_order():
+def test_sankey_funnel_nodes_in_render_order():
+    # List order is the top-to-bottom render order per column once the
+    # renderer stops reshuffling nodes: the severity fan under Upgraded, then
+    # the two exits, so no ribbon crosses the fan.
     nodes, links = sankey_funnel(_stable())
     assert nodes == [
-        "All", "Knew", "Didn't know", "Upgraded", "Did not upgrade",
+        "All", "Knew", "Upgraded",
         "No issues", "Minor", "Moderate", "Severe (resolved)", "Severe (stuck)",
+        "Did not upgrade", "Didn't know",
     ]
 
 

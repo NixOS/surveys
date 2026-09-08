@@ -503,12 +503,18 @@ def sankey(
     *,
     title: str | None = None,
     height: int | None = None,
+    preserve_order: bool = False,
 ) -> ChartSpec:
     """Render a Sankey/alluvial ECharts option dict.
 
     ``nodes`` is a list of node names; ``links`` is a list of
     ``{"source", "target", "value"}`` dicts. No grid/axes and no explicit
     colors — the chart inherits the theme palette. A tooltip is included.
+
+    ``preserve_order`` disables ECharts' layout relaxation so nodes render
+    in ``nodes`` order within each column. Use it when the caller already
+    knows the crossing-free order; the default automatic layout suits
+    dense bipartite charts better.
     """
     option: dict[str, Any] = {
         "tooltip": {
@@ -524,6 +530,8 @@ def sankey(
             "label": {"overflow": "truncate"},
         }],
     }
+    if preserve_order:
+        option["series"][0]["layoutIterations"] = 0
     if title is not None:
         option["title"] = {"text": title, "left": "left", "top": 0}
     return ChartSpec(option=option, height=height if height is not None else 480)

@@ -228,7 +228,7 @@ def main(csv_path: str, out_path: str) -> None:
                             ],
                             title="Outcome mix (100%)",
                         ),
-                        sankey(su_funnel_nodes, su_funnel_links, title="Decision funnel"),
+                        sankey(su_funnel_nodes, su_funnel_links, title="Decision funnel", preserve_order=True),
                         sankey(su_cross_nodes, su_cross_links, title="Upgrade outcome by experience"),
                     ]),
                 Row("involvement", "Involvement", question=q("involvement"), commentary=cm["involvement"],
