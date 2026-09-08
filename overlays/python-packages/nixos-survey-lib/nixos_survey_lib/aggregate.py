@@ -68,7 +68,9 @@ def counts_single(
         if rare:
             rare_count = counts_df.filter(pl.col("response").is_in(rare))["count"].sum()
             counts_df = counts_df.filter(~pl.col("response").is_in(rare))
-            if bucket_action == "combine":
+            # A combined bucket below the count floor would itself disclose a
+            # sub-floor count; drop the rare bins instead.
+            if bucket_action == "combine" and not (count_active and int(rare_count) < bucket_min_count):
                 other_row = pl.DataFrame({
                     "response": [BUCKET_LABEL],
                     "count": pl.Series([int(rare_count)], dtype=pl.UInt32),
@@ -139,8 +141,11 @@ def counts_multi(
         rare = [b for b in bins if _is_rare(b)]
         if rare and bucket_action == "combine":
             other_count = sum(b.count for b in rare)
-            other_pct = sum(b.percent for b in rare)
-            keep.append(Bin(label=BUCKET_LABEL, count=other_count, percent=other_pct))
+            # A combined bucket below the count floor would itself disclose a
+            # sub-floor count; drop the rare bins instead.
+            if not (count_active and other_count < bucket_min_count):
+                other_pct = sum(b.percent for b in rare)
+                keep.append(Bin(label=BUCKET_LABEL, count=other_count, percent=other_pct))
         bins = keep
 
     return bins

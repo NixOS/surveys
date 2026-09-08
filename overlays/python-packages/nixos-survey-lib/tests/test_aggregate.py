@@ -60,17 +60,20 @@ def test_counts_single_bucket_min_count():
 
 
 def test_counts_single_bucket_thresholds_or():
-    # Thresholds: percent=2%, count=10. Total respondents = 107.
-    # A (100, ~93.5%) is above both — kept.
-    # B (5, ~4.7%) — above percent (2%), below count (10) → rare via count only.
-    # C (2, ~1.9%) — below percent (2%), below count (10) → rare via both.
-    # Both B and C end up bucketed because EITHER threshold fires (OR).
-    s = _sc(["A"] * 100 + ["B"] * 5 + ["C"] * 2)
+    # Thresholds: percent=2%, count=10. Total respondents = 110.
+    # A (100, ~90.9%) is above both — kept.
+    # B (8, ~7.3%) — above percent (2%), below count (10) → rare via count only.
+    # C (2, ~1.8%) — below percent (2%), below count (10) → rare via both.
+    # Both B and C end up bucketed because EITHER threshold fires (OR); their
+    # combined count (10) meets the count floor, so the bucket is emitted.
+    s = _sc(["A"] * 100 + ["B"] * 8 + ["C"] * 2)
     bins = counts_single(s, bucket_min_percent=2.0, bucket_min_count=10)
     by_label = {b.label: b for b in bins}
     assert "A" in by_label
     assert "Other (combined)" in by_label
-    assert by_label["Other (combined)"].count == 7
+    assert by_label["Other (combined)"].count == 10
+    assert "B" not in by_label
+    assert "C" not in by_label
 
 
 def test_counts_single_bucket_action_drop_removes_rare():
@@ -92,8 +95,9 @@ def test_counts_single_bucket_action_drop_removes_rare():
 def test_counts_single_does_not_collide_with_literal_other():
     # The data contains a literal "Other" choice; the rare-bucket must not
     # collide with it.
+    # Count floor off: this test is about the label, not the floor.
     s = _sc(["Other"] * 50 + ["Linux"] * 50 + ["BSD"] * 2)
-    bins = counts_single(s, bucket_min_percent=5.0)
+    bins = counts_single(s, bucket_min_percent=5.0, bucket_min_count=None)
     by_label = {b.label: b for b in bins}
     assert "Other" in by_label
     assert by_label["Other"].count == 50
@@ -144,7 +148,8 @@ def test_counts_multi_bucket_min_percent():
         "B": ["Yes"] * 1 + ["No"] * 99,
         "C": ["Yes"] * 1 + ["No"] * 99,
     })
-    bins = counts_multi(m, bucket_min_percent=5.0)
+    # Count floor off: this test isolates the percent threshold.
+    bins = counts_multi(m, bucket_min_percent=5.0, bucket_min_count=None)
     labels = {b.label for b in bins}
     assert "A" in labels
     assert "Other (combined)" in labels
@@ -174,6 +179,24 @@ def test_counts_multi_bucket_min_count():
     # B (4) and C (2) both below count threshold of 5.
     assert "Other (combined)" in labels
     assert "B" not in labels and "C" not in labels
+
+
+def test_counts_single_combined_bucket_below_floor_is_dropped():
+    # B (2) and C (2) are rare, and their combined 4 is still below the floor
+    # of 5: emitting the bucket would disclose a sub-floor count.
+    s = _sc(["A"] * 95 + ["B"] * 2 + ["C"] * 2)
+    bins = counts_single(s, bucket_min_percent=None, bucket_min_count=5)
+    assert [b.label for b in bins] == ["A"]
+
+
+def test_counts_multi_combined_bucket_below_floor_is_dropped():
+    m = _mc({
+        "A": ["Yes"] * 100,
+        "B": ["Yes"] * 2 + ["No"] * 98,
+        "C": ["Yes"] * 2 + ["No"] * 98,
+    })
+    bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=5)
+    assert [b.label for b in bins] == ["A"]
 
 
 def test_crosstab_global_normalize():
