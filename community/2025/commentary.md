@@ -70,10 +70,11 @@ experimental features; 7.9% are not sure.
 
 ## install_method
 
-Most respondents (78.4%) first met Nix through a NixOS installation.
-The official install script accounts for another 36.0%, followed by
-the `DeterminateSystems/nix-installer` at 15.8%. Self-built and
-third-party-packaged installations together cover the remaining 13.6%.
+Nix preinstalled with NixOS (78.4%) is the dominant route, with the
+official install script at 36.0% and `DeterminateSystems/nix-installer`
+at 15.8%. Another package manager (9.7%) and building from source (3.9%)
+trail. The shares exceed 100% because many respondents have installed Nix
+more than one way across their machines.
 
 ## nix_implementations
 
