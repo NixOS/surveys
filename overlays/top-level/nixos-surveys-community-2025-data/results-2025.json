@@ -1289,7 +1289,7 @@
           "id": "install_method",
           "title": "Install Method",
           "question": "How have you installed Nix on any of your systems?",
-          "commentary": "Most respondents (78.4%) first met Nix through a NixOS installation.\nThe official install script accounts for another 36.0%, followed by\nthe `DeterminateSystems/nix-installer` at 15.8%. Self-built and\nthird-party-packaged installations together cover the remaining 13.6%.",
+          "commentary": "Nix preinstalled with NixOS (78.4%) is the dominant route, with the\nofficial install script at 36.0% and `DeterminateSystems/nix-installer`\nat 15.8%. Another package manager (9.7%) and building from source (3.9%)\ntrail. The shares exceed 100% because many respondents have installed Nix\nmore than one way across their machines.",
           "charts": [
             {
               "option": {
