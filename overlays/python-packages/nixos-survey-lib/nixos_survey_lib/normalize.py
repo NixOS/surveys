@@ -13,13 +13,20 @@ def normalize_yes_no(
     yes_aliases: set[str] | frozenset[str] | None = None,
     no_aliases: set[str] | frozenset[str] | None = None,
 ) -> SingleChoice:
-    """Return a SingleChoice whose values are in {Yes, No, Other, Skipped}."""
+    """Return a SingleChoice whose values are in {Yes, No, Other, Skipped}.
+    Empty/null, and the loader's "Skipped" fill value, -> 'Skipped'."""
     yes_set = set(yes_aliases) if yes_aliases is not None else set(DEFAULT_YES_ALIASES)
     no_set = set(no_aliases) if no_aliases is not None else set(DEFAULT_NO_ALIASES)
 
-    normalized = r.values.cast(pl.Utf8).str.strip_chars().str.to_lowercase()
+    cleaned = (
+        r.values.cast(pl.Utf8)
+        .str.strip_chars()
+        .replace("", None)
+        .fill_null("Skipped")
+    )
+    normalized = cleaned.str.to_lowercase()
     out = (
-        pl.when(normalized.is_null() | (normalized == ""))
+        pl.when(cleaned == "Skipped")
         .then(pl.lit("Skipped"))
         .when(normalized.is_in(list(yes_set)))
         .then(pl.lit("Yes"))
