@@ -358,9 +358,13 @@ def sankey_funnel(
             for l in links
         ]
 
+    # List order is the top-to-bottom render order within each column when
+    # the renderer preserves order: severity fan under Upgraded, then the two
+    # exits, so no ribbon crosses the fan.
     node_order = [
-        "All", "Knew", "Didn't know", "Upgraded", "Did not upgrade",
+        "All", "Knew", "Upgraded",
         "No issues", "Minor", "Moderate", "Severe (resolved)", "Severe (stuck)",
+        "Did not upgrade", "Didn't know",
     ]
     used: set[str] = set()
     for l in links:
