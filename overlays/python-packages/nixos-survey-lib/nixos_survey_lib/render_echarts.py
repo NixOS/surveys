@@ -42,11 +42,15 @@ def horizontal_bar(
 ) -> ChartSpec:
     """Render a horizontal-bar ECharts option dict from a list of Bin.
 
-    The y-axis is reversed so the largest bar sits at the top.
+    The y-axis is reversed so the largest bar sits at the top. Each data item
+    is ``{"value": percent, "count": n}`` and the series carries ``total``
+    (the percent denominator) so the site can show "n of N" on hover;
+    ECharts plots ``value``.
     """
     reversed_bins = list(reversed(bins))
     labels = [b.label for b in reversed_bins]
-    values = [round(b.percent, 1) for b in reversed_bins]
+    values = [{"value": round(b.percent, 1), "count": b.count} for b in reversed_bins]
+    total = bins[0].total if bins else 0
 
     grid_top = 64 if title is not None else 40
     option: dict[str, Any] = {
@@ -67,6 +71,7 @@ def horizontal_bar(
         "series": [{
             "type": "bar",
             "data": values,
+            "total": total,
             "label": {"show": True, "position": "right", "formatter": "{c}%"},
             "barWidth": 16,
             "itemStyle": {"borderRadius": 4},
@@ -249,7 +254,8 @@ def likert_bar(
     then negative labels (orange shades), then neutral labels (distinct grays).
     All values are positive percents. Colors are hex literals.
     """
-    pct = {b.label: round(b.percent, 1) for b in bins}
+    items = {b.label: {"value": round(b.percent, 1), "count": b.count} for b in bins}
+    total = bins[0].total if bins else 0
     series: list[dict[str, Any]] = []
     key: list[dict[str, str]] = []
 
@@ -259,7 +265,8 @@ def likert_bar(
             "name": label,
             "type": "bar",
             "stack": "likert",
-            "data": [pct.get(label, 0.0)],
+            "data": [items.get(label, {"value": 0.0, "count": 0})],
+            "total": total,
             "itemStyle": {"color": color},
             "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
         })
@@ -270,7 +277,8 @@ def likert_bar(
             "name": label,
             "type": "bar",
             "stack": "likert",
-            "data": [pct.get(label, 0.0)],
+            "data": [items.get(label, {"value": 0.0, "count": 0})],
+            "total": total,
             "itemStyle": {"color": color},
             "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
         })
@@ -281,7 +289,8 @@ def likert_bar(
             "name": label,
             "type": "bar",
             "stack": "likert",
-            "data": [pct.get(label, 0.0)],
+            "data": [items.get(label, {"value": 0.0, "count": 0})],
+            "total": total,
             "itemStyle": {"color": color},
             "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
         })
@@ -368,10 +377,12 @@ def lollipop(
 ) -> ChartSpec:
     """Horizontal lollipop: a pictorialBar series whose stem is the bar body and
     whose dot (circle, at the end) marks the value. Largest sits at the top.
-    No explicit color (inherits theme palette)."""
+    No explicit color (inherits theme palette). Data items and ``total`` follow
+    ``horizontal_bar`` so the site can show "n of N" on hover."""
     reversed_bins = list(reversed(bins))
     labels = [b.label for b in reversed_bins]
-    values = [round(b.percent, 1) for b in reversed_bins]
+    values = [{"value": round(b.percent, 1), "count": b.count} for b in reversed_bins]
+    total = bins[0].total if bins else 0
 
     grid_top = 64 if title is not None else 40
     option: dict[str, Any] = {
@@ -395,6 +406,7 @@ def lollipop(
             {
                 "type": "bar",
                 "data": values,
+                "total": total,
                 "barWidth": 2,
                 "itemStyle": {"color": _PALETTE_HEX["blue_default"]},
                 "silent": True,
@@ -402,6 +414,7 @@ def lollipop(
             {
                 "type": "pictorialBar",
                 "data": values,
+                "total": total,
                 "symbol": "circle",
                 "symbolPosition": "end",
                 "symbolSize": 14,

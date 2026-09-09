@@ -187,6 +187,36 @@ function injectSankeyTooltip(option: Record<string, unknown>): void {
   };
 }
 
+// Bar-family charts (render_echarts.horizontal_bar / lollipop / likert_bar)
+// carry a respondent count on each data item and the percent denominator on
+// the series as `total`. String templates can't reach either, so inject a JS
+// formatter rendering "label: N% (n of D)". The percent is printed exactly as
+// the bar label prints it. Axis-triggered charts pass an array of params (one
+// per series; the first is the stem/bar series and carries what we need);
+// item-triggered charts (likert) pass one object whose seriesName is the
+// segment label. A JS formatter bypasses ECharts' template escaping, so the
+// label (survey text) is HTML-escaped explicitly.
+type CountTooltipParams = {
+  seriesIndex: number;
+  seriesName: string;
+  name: string;
+  value: number;
+  data: { count: number };
+};
+function injectCountTooltip(option: Record<string, unknown>): void {
+  const series = option.series as Array<{ total?: number }> | undefined;
+  if (!series || typeof series[0]?.total !== 'number') return;
+  const tooltip = (option.tooltip ?? {}) as Record<string, unknown>;
+  const byItem = tooltip.trigger === 'item';
+  tooltip.formatter = (params: CountTooltipParams | CountTooltipParams[]) => {
+    const p = Array.isArray(params) ? params[0] : params;
+    const total = series[p.seriesIndex]?.total ?? 0;
+    const label = echarts.format.encodeHTML(byItem ? p.seriesName : p.name);
+    return `${label}: ${p.value}% (${p.data.count.toLocaleString()} of ${total.toLocaleString()})`;
+  };
+  option.tooltip = tooltip;
+}
+
 // Result cards use overflow:hidden (for rounded corners), so a long ECharts
 // tooltip — rendered as an HTML div inside the chart — gets clipped at the card
 // edge. Append it to <body> to escape the clip, and cap its width so very long
@@ -243,6 +273,7 @@ function initChart(card: Element): void {
   injectLikertLabelLayout(option);
   injectHeatmapTooltip(option);
   injectSankeyTooltip(option);
+  injectCountTooltip(option);
   fixTooltipOverflow(option);
   echarts.init(div as HTMLElement, currentTheme(), { renderer: 'svg' }).setOption(option);
   resizeObserver.observe(div as HTMLElement);
