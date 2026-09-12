@@ -3,7 +3,6 @@
   buildPythonPackage,
   setuptools,
   polars,
-  pyyaml,
   pytestCheckHook,
 }:
 
@@ -19,7 +18,6 @@ buildPythonPackage {
   build-system = [ setuptools ];
   dependencies = [
     polars
-    pyyaml
   ];
 
   nativeCheckInputs = [ pytestCheckHook ];

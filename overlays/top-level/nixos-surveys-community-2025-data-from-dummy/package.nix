@@ -4,7 +4,7 @@
   nixosSurveysRepoRoot,
 }:
 
-# Synthetic data: generates a fake responses CSV from survey.yaml
+# Synthetic data: generates a fake responses CSV from survey.toml
 # (deterministic, seeded — see nixos_survey_lib.synthesize) and runs the
 # full pipeline on it. Lets contributors without the raw (PII) CSV run and
 # iterate on process.py / nixos_survey_lib. Same output contract as the
