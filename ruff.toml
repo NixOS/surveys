@@ -1,0 +1,16 @@
+line-length = 100
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "I"]
+ignore = [
+  # ruff format owns line length; E501 would only flag string literals it
+  # cannot split, such as the long prose strings in community/2025/process.py.
+  "E501",
+  # Single-letter loop variables named `l` are used throughout the sankey code.
+  "E741",
+]
+
+[lint.per-file-ignores]
+# Test modules import each function under test right above its tests.
+"**/tests/*.py" = ["E402"]
