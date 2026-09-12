@@ -1,4 +1,4 @@
-"""Generate a synthetic survey-response CSV from a SurveySchema.
+"""Generate a synthetic survey-response CSV from a Survey.
 
 Everything is fabricated; no real survey rows are involved anywhere.
 Output is byte-identical for a fixed (schema, rows, seed, text_pools) —
@@ -22,20 +22,12 @@ import random
 from pathlib import Path
 
 from .loader import normalize_prompt
-from .types import SurveySchema
+from .schema import Survey
 
 _PLACEHOLDER_TEXT = "Synthetic placeholder response."
 _WEIGHT_FLOOR = 0.02
 _SKIP_RANGE = (0.02, 0.15)
 _MULTI_RATE_RANGE = (0.05, 0.7)
-
-
-def _choice_str(choice: object) -> str:
-    """YAML 1.1 parses bare Yes/No choices as booleans; the survey
-    platform's CSV holds the strings."""
-    if isinstance(choice, bool):
-        return "Yes" if choice else "No"
-    return str(choice)
 
 
 def _skewed_weights(rng: random.Random, n: int) -> list[float]:
@@ -62,7 +54,7 @@ def _weighted_permutation(rng: random.Random, items: list[str], weights: list[fl
 
 
 def synthesize_csv(
-    schema: SurveySchema,
+    schema: Survey,
     out_path: Path,
     *,
     rows: int = 600,
@@ -83,7 +75,7 @@ def synthesize_csv(
         skip_rate = rng.uniform(*_SKIP_RANGE)
 
         if q.type == "single":
-            choices = [_choice_str(c) for c in q.choices]
+            choices = list(q.choices)
             weights = _skewed_weights(rng, len(choices))
             col = [
                 "" if rng.random() < skip_rate else rng.choices(choices, weights=weights)[0]
@@ -93,7 +85,7 @@ def synthesize_csv(
             columns.append(col)
 
         elif q.type == "multiple":
-            choices = [_choice_str(c) for c in q.choices]
+            choices = list(q.choices)
             include_rates = [rng.uniform(*_MULTI_RATE_RANGE) for _ in choices]
             cols: list[list[str]] = [[] for _ in choices]
             for _ in range(rows):
@@ -104,7 +96,7 @@ def synthesize_csv(
                 columns.append(col)
 
         elif q.type == "ranking":
-            choices = [_choice_str(c) for c in q.choices]
+            choices = list(q.choices)
             n = len(choices)
             weights = _skewed_weights(rng, n)
             cols = [[] for _ in range(n)]

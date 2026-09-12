@@ -1,18 +1,19 @@
 import csv
 
-from nixos_survey_lib.loader import load_responses, load_schema
+from nixos_survey_lib.loader import load_responses
+from nixos_survey_lib.schema import load_survey
 from nixos_survey_lib.synthesize import synthesize_csv
 
 
 def _generate(fixtures_dir, tmp_path, **kwargs):
-    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    schema = load_survey(fixtures_dir / "tiny_survey.toml")
     out = tmp_path / "synthetic.csv"
     synthesize_csv(schema, out, **kwargs)
     return schema, out
 
 
 def test_synthesize_deterministic_for_fixed_seed(fixtures_dir, tmp_path):
-    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    schema = load_survey(fixtures_dir / "tiny_survey.toml")
     a = tmp_path / "a.csv"
     b = tmp_path / "b.csv"
     synthesize_csv(schema, a, rows=50, seed=7)
@@ -21,7 +22,7 @@ def test_synthesize_deterministic_for_fixed_seed(fixtures_dir, tmp_path):
 
 
 def test_synthesize_differs_across_seeds(fixtures_dir, tmp_path):
-    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    schema = load_survey(fixtures_dir / "tiny_survey.toml")
     a = tmp_path / "a.csv"
     b = tmp_path / "b.csv"
     synthesize_csv(schema, a, rows=50, seed=7)
@@ -38,7 +39,7 @@ def test_synthesize_row_count(fixtures_dir, tmp_path):
 
 def test_synthesize_round_trips_through_loader(fixtures_dir, tmp_path):
     # load_responses hard-fails on any missing column and enforces strict
-    # YAML-choice / CSV-column equality for multi-choice questions, so a
+    # survey-choice / CSV-column equality for multi-choice questions, so a
     # clean round-trip is the core structural guarantee.
     schema, out = _generate(fixtures_dir, tmp_path, rows=200, seed=3)
     r = load_responses(out, schema=schema)
@@ -51,15 +52,6 @@ def test_synthesize_single_values_within_choices(fixtures_dir, tmp_path):
     values = set(r["country"].values.to_list())
     allowed = {"Africa", "Asia", "Europe", "North America", "Prefer not to say", "Skipped"}
     assert values <= allowed
-
-
-def test_synthesize_yaml_bool_choices_become_yes_no(fixtures_dir, tmp_path):
-    # long_prompt_question's choices parse as YAML booleans; the CSV must
-    # hold the strings the survey platform would have exported.
-    schema, out = _generate(fixtures_dir, tmp_path, rows=200, seed=3)
-    r = load_responses(out, schema=schema)
-    values = set(r["long_prompt_question"].values.to_list())
-    assert values <= {"Yes", "No", "Skipped"}
 
 
 def test_synthesize_multi_columns_are_yes_no(fixtures_dir, tmp_path):
@@ -92,8 +84,8 @@ def test_synthesize_rankings_are_full_permutations_or_skipped(fixtures_dir, tmp_
 def test_synthesize_text_pool_respected(fixtures_dir, tmp_path):
     pool = ["2.18.1", "no idea"]
     schema, out = _generate(
-        fixtures_dir, tmp_path, rows=100, seed=5, text_pools={"nix_version": pool}
+        fixtures_dir, tmp_path, rows=100, seed=5, text_pools={"nixVersion": pool}
     )
     r = load_responses(out, schema=schema)
-    values = set(r["nix_version"].values.to_list())
+    values = set(r["nixVersion"].values.to_list())
     assert values <= {"2.18.1", "no idea", "Skipped"}

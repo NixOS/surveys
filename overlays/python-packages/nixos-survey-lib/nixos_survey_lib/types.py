@@ -4,22 +4,11 @@ from typing import Any, Literal
 
 import polars as pl
 
-QuestionType = Literal["single", "multiple", "ranking", "text"]
-
-
-@dataclass(frozen=True)
-class Question:
-    id: str
-    prompt: str
-    type: QuestionType
-    choices: list[str] | None
-    csv_columns: list[str]
-
-
-@dataclass(frozen=True)
-class SurveySchema:
-    title: str
-    questions: list[Question]
+from .schema import (  # noqa: F401  QuestionType is re-exported for callers
+    Question,
+    QuestionType,
+    Survey,
+)
 
 
 @dataclass(frozen=True)
@@ -170,10 +159,10 @@ class Responses:
     Missing ids raise KeyError naming the available ids in the message.
     """
 
-    schema: SurveySchema
+    schema: Survey
     _by_id: dict[str, ResponseUnion]
 
-    def __init__(self, *, schema: SurveySchema, by_id: dict[str, ResponseUnion]) -> None:
+    def __init__(self, *, schema: Survey, by_id: dict[str, ResponseUnion]) -> None:
         self.schema = schema
         self._by_id = by_id
 

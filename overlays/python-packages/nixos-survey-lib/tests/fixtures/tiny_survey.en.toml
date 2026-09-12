@@ -1,0 +1,48 @@
+# English text for tiny_survey.toml. Prompts and choice texts must match the
+# column headers in tiny_responses.csv after the loader's normalization.
+[survey]
+title = "Tiny Test Survey"
+intro = "<p>A fixture survey.</p>"
+
+[groups.all]
+title = "All questions"
+
+[questions.country]
+prompt = "Where do you live?"
+choices.africa = "Africa"
+choices.asia = "Asia"
+choices.europe = "Europe"
+choices.northAmerica = "North America"
+choices.preferNot = "Prefer not to say"
+
+[questions.os]
+prompt = "Which operating systems do you use?"
+choices.linux = "Linux"
+choices.macos = "macOS"
+choices.windows = "Windows"
+
+[questions.priorities]
+prompt = "Rank your priorities."
+choices.performance = "Performance"
+choices.security = "Security"
+choices.documentation = "Documentation"
+
+[questions.nixVersion]
+prompt = "Which version of Nix do you use most often?"
+
+[questions.skill]
+prompt = "How would you describe your skill level with Nix?"
+choices.beginner = "Beginner"
+choices.intermediate = "Intermediate"
+choices.advanced = "Advanced"
+
+# Multi-line on purpose: the CSV header has this text on one line, and the
+# loader must collapse the whitespace to match it.
+[questions.longPrompt]
+prompt = """
+This is a deliberately long prompt
+that spans multiple lines in YAML
+to test whitespace normalization.
+"""
+choices.yes = "Yes"
+choices.no = "No"
