@@ -1,0 +1,666 @@
+[survey]
+id = 2025
+language = "en"
+languages = ["en"]
+
+[survey.privacy]
+anonymized = true
+save_ip_address = false
+save_referrer = false
+date_stamp = false
+save_timings = false
+
+[[groups]]
+id = "survey"
+
+[[groups.questions]]
+id = "country"
+type = "single"
+choices = [
+  "africa",
+  "asia",
+  "europe",
+  "latinAmericaTheCaribbean",
+  "middleEast",
+  "northAmerica",
+  "oceania",
+  "preferNotToSay",
+]
+
+[[groups.questions]]
+id = "age"
+type = "single"
+choices = [
+  "under18",
+  "age18to24",
+  "age25to34",
+  "age35to44",
+  "age45to54",
+  "age55to64",
+  "age65plus",
+  "preferNotToSay",
+]
+
+[[groups.questions]]
+id = "genderIdentity"
+type = "single"
+choices = [
+  "man",
+  "woman",
+  "nonBinaryNonConforming",
+  "identifyAnotherWay",
+  "preferNotToSay",
+]
+
+[[groups.questions]]
+id = "transgender"
+type = "single"
+choices = ["yes", "no", "preferNotToSay"]
+
+[[groups.questions]]
+id = "yearsProgramming"
+type = "single"
+choices = [
+  "iHaveNeverProgrammed",
+  "lessThan1Year",
+  "v1To4Years",
+  "v5To9Years",
+  "v10To14Years",
+  "v15To19Years",
+  "v20To24Years",
+  "v25To29Years",
+  "v30To34Years",
+  "v35To39Years",
+  "v40To44Years",
+  "v45To49Years",
+  "moreThan50Years",
+  "preferNotToSay",
+]
+
+[[groups.questions]]
+id = "role"
+type = "single"
+choices = [
+  "academicResearcher",
+  "backEndDeveloper",
+  "blockchainDeveloper",
+  "cloudInfraEngineer",
+  "dataBusinessAnalyst",
+  "dataEngineer",
+  "dataScientistOrMl",
+  "databaseAdministrator",
+  "devAiSpecialist",
+  "devopsSpecialist",
+  "developerExperience",
+  "developerAdvocate",
+  "educator",
+  "embeddedAppsDeveloper",
+  "enterpriseDesktopDev",
+  "frontEndDeveloper",
+  "fullStackDeveloper",
+  "gameDeveloper",
+  "hardwareEngineer",
+  "manager",
+  "marketingSalesPro",
+  "mobileDeveloper",
+  "productManager",
+  "qaTestEngineer",
+  "researchDevelopmentRole",
+  "scientist",
+  "securityProfessional",
+  "seniorExecutive",
+  "sreEngineer",
+  "student",
+  "systemNetworkAdmin",
+  "uxUiDesigner",
+  "other",
+  "preferNotToSay",
+]
+
+[[groups.questions]]
+id = "industry"
+type = "single"
+choices = [
+  "academiaOrEducation",
+  "educationalTechnology",
+  "scientificComputingHpc",
+  "machineLearningOrAi",
+  "administrative",
+  "agricultureFoodTech",
+  "artsEntertainmentOrMedia",
+  "entertainmentStreaming",
+  "automotive",
+  "commercialResearchDev",
+  "constructionOrRealEstate",
+  "consultingServices",
+  "consumerProducts",
+  "defenseIndustry",
+  "energyOrUtilities",
+  "financialInsurance",
+  "governmentOrPublicSector",
+  "governmentContracting",
+  "healthcarePharma",
+  "hospitalityFood",
+  "legalAndRegulatory",
+  "manufacturingIndustrial",
+  "nonProfitOrCharity",
+  "retailOrECommerce",
+  "telecomNetworking",
+  "transportLogistics",
+  "other",
+]
+
+[[groups.questions]]
+id = "domain"
+type = "single"
+choices = [
+  "progLangsTooling",
+  "systemOsDevelopment",
+  "operationalTooling",
+  "embeddedSystemsOrIot",
+  "webDevelopment",
+  "mobileDevelopment",
+  "gameDevelopment",
+  "proprietaryApps",
+  "softwareAsAService",
+  "openSourceSoftware",
+  "cloudPaasDev",
+  "cloudPaasOps",
+  "itOpsInternal",
+  "itOpsClientFacing",
+  "telecomNetworking",
+  "infosecInternal",
+  "infosecClientFacing",
+  "blockchainCryptoWeb3",
+  "other",
+]
+
+[[groups.questions]]
+id = "sponsorOutreach"
+type = "single"
+choices = ["yes", "no"]
+
+[[groups.questions]]
+id = "sponsorEmail"
+type = "text"
+
+[[groups.questions]]
+id = "operatingSystems"
+type = "multiple"
+choices = [
+  "gnuLinux",
+  "macos",
+  "windows",
+  "bsd",
+  "ios",
+  "android",
+  "chromeos",
+  "other",
+  "preferNotToSay",
+]
+
+[[groups.questions]]
+id = "targetTriple"
+type = "multiple"
+choices = [
+  "x8664LinuxGnu",
+  "aarch64LinuxGnu",
+  "aarch64AppleDarwin",
+  "x8664AppleDarwin",
+  "i686LinuxGnu",
+  "x8664LinuxMusl",
+  "aarch64LinuxMusl",
+  "riscv64LinuxGnu",
+  "other",
+]
+
+[[groups.questions]]
+id = "stableUpgrade"
+type = "single"
+choices = [
+  "severeCouldNotUpgrade",
+  "severeFiguredOut",
+  "iHadModerateIssues",
+  "iHadMinorIssues",
+  "iHadNoIssues",
+  "iHaveNotUpgraded",
+  "iDidNotKnow",
+]
+
+[[groups.questions]]
+id = "involvement"
+type = "multiple"
+choices = [
+  "iDontUseNix",
+  "iDontUseNixos",
+  "iUseNixos",
+  "iInstallSoftware",
+  "iDevelopSoftware",
+  "iManageMachines",
+  "iContributePackages",
+  "iMaintainPackages",
+  "iHaveMergeAccess",
+  "iDevelopTools",
+]
+
+[[groups.questions]]
+id = "yearsUsingNix"
+type = "single"
+choices = [
+  "iDontUseNix",
+  "lessThan1Year",
+  "v1To2Years",
+  "v3To4Years",
+  "v5To6Years",
+  "v7To8Years",
+  "v9To10Years",
+  "v11OrMoreYears",
+  "preferNotToSay",
+]
+
+[[groups.questions]]
+id = "skillLevel"
+type = "single"
+choices = [
+  "neverUsedNix",
+  "beginner",
+  "intermediate",
+  "advanced",
+  "preferNotToSay",
+]
+
+[[groups.questions]]
+id = "traits"
+type = "multiple"
+choices = [
+  "iRelyOnExamples",
+  "iWriteOwnExpressions",
+  "iUseModuleSystem",
+  "iWriteOwnModules",
+  "iUnderstandModuleDepth",
+  "iHaveUsedOverlays",
+  "iUnderstandOverlays",
+  "iComfortableContributing",
+  "iTeachOthers",
+  "iMakeArchitecturalChoices",
+  "iReadNixSource",
+  "iUnderstandErrorMessages",
+]
+
+[[groups.questions]]
+id = "firstHeardWhich"
+type = "single"
+choices = ["nix", "nixos", "dontRemember"]
+
+[[groups.questions]]
+id = "firstHeardHow"
+type = "single"
+choices = [
+  "atWork",
+  "atSchoolOrUniversity",
+  "friendOrColleague",
+  "blogOrWebsite",
+  "onPodcast",
+  "onYoutube",
+  "onReddit",
+  "onHackerNews",
+  "onTwitterX",
+  "onLinkedin",
+  "otherSocialMedia",
+  "academicOrConference",
+  "webSearch",
+  "other",
+  "dontRemember",
+]
+
+[[groups.questions]]
+id = "userTypes"
+type = "multiple"
+choices = [
+  "loveTheIdea",
+  "curiousHowNixWorks",
+  "getThingsDone",
+  "workOnNix",
+  "decisionMaker",
+]
+
+[[groups.questions]]
+id = "nixOnOs"
+type = "multiple"
+choices = [
+  "dontUseNix",
+  "nixos",
+  "otherLinuxDistro",
+  "macos",
+  "windowsViaWsl",
+  "bsd",
+  "android",
+  "other",
+]
+
+[[groups.questions]]
+id = "installMethod"
+type = "multiple"
+choices = [
+  "preinstalledWithNixos",
+  "officialInstallScript",
+  "usedDeterminateNix",
+  "otherPackageManager",
+  "builtFromSource",
+  "other",
+]
+
+[[groups.questions]]
+id = "nixImplementations"
+type = "multiple"
+choices = ["nix", "tvix", "lix", "determinateNix", "snix", "none"]
+
+[[groups.questions]]
+id = "infrastructure"
+type = "multiple"
+choices = [
+  "dontUseNix",
+  "personalComputer",
+  "workstationDevMachine",
+  "homeServer",
+  "ciEnvironment",
+  "productionServer",
+  "embeddedIotDevice",
+  "mobileDevice",
+  "hpcCluster",
+  "other",
+]
+
+[[groups.questions]]
+id = "nixVersion"
+type = "text"
+
+[[groups.questions]]
+id = "nixosReleases"
+type = "multiple"
+choices = [
+  "unstable",
+  "v2505",
+  "v2411",
+  "v2405",
+  "v2311OrOlder",
+  "iDontKnow",
+  "iDontUseNixos",
+]
+
+[[groups.questions]]
+id = "hardwareConfig"
+type = "multiple"
+choices = [
+  "nixosGenerateConfig",
+  "nixosHardwareRepository",
+  "nixosFacter",
+  "manualConfiguration",
+  "other",
+]
+
+[[groups.questions]]
+id = "softwareEcosystems"
+type = "multiple"
+choices = [
+  "iDontUseNix",
+  "nixosConfigurations",
+  "other",
+  "apl",
+  "ada",
+  "apex",
+  "assembly",
+  "bashShell",
+  "c",
+  "cSharp",
+  "cpp",
+  "clojure",
+  "cobol",
+  "crystal",
+  "dart",
+  "delphi",
+  "elixir",
+  "erlang",
+  "f",
+  "flow",
+  "fortran",
+  "gdscript",
+  "go",
+  "groovy",
+  "htmlCss",
+  "haskell",
+  "java",
+  "javascript",
+  "julia",
+  "kotlin",
+  "lisp",
+  "lua",
+  "matlab",
+  "nim",
+  "ocaml",
+  "objectiveC",
+  "php",
+  "perl",
+  "powershell",
+  "prolog",
+  "python",
+  "r",
+  "raku",
+  "ruby",
+  "rust",
+  "sas",
+  "sql",
+  "scala",
+  "solidity",
+  "swift",
+  "typescript",
+  "vba",
+  "visualBasicNet",
+  "zig",
+]
+
+[[groups.questions]]
+id = "experimentalFeatures"
+type = "multiple"
+choices = [
+  "flakes",
+  "nixCommand",
+  "blake3Hashing",
+  "caDerivations",
+  "pipeOperators",
+  "dynamicDerivations",
+  "gitHashing",
+  "recursiveNix",
+  "impureDerivations",
+  "fetchClosure",
+  "fetchTree",
+  "mountedSshStore",
+  "localOverlayStore",
+  "autoUidAllocation",
+  "cgroups",
+  "impureEnvVars",
+  "forceTrustSettings",
+  "noUrlLiterals",
+  "parseTomlTimestamps",
+  "readOnlyLocalStore",
+  "derivationBuilders",
+  "verifyGitCommits",
+  "notUsed",
+  "notSure",
+]
+
+[[groups.questions]]
+id = "improvements"
+type = "multiple"
+choices = [
+  "performance",
+  "languageUsability",
+  "flakes",
+  "nonExperimentalFeatures",
+  "security",
+  "errorMessages",
+  "nixReferenceManual",
+  "provenanceSboms",
+  "windowsSupport",
+  "freebsdSupport",
+  "nixAsLibrary",
+  "otherNextQuestion",
+]
+
+[[groups.questions]]
+id = "improvementsOther"
+type = "text"
+
+[[groups.questions]]
+id = "regularToolset"
+type = "single"
+choices = ["yes", "no"]
+
+[[groups.questions]]
+id = "workplaceUsesNix"
+type = "text"
+
+[[groups.questions]]
+id = "workplaceDecision"
+type = "text"
+
+[[groups.questions]]
+id = "workplaceConvinced"
+type = "text"
+
+[[groups.questions]]
+id = "workplacePrevented"
+type = "text"
+
+[[groups.questions]]
+id = "personalConvinced"
+type = "text"
+
+[[groups.questions]]
+id = "personalHoldsBack"
+type = "text"
+
+[[groups.questions]]
+id = "workplaceHoldsBack"
+type = "text"
+
+[[groups.questions]]
+id = "nixosBlockers"
+type = "text"
+
+[[groups.questions]]
+id = "objectsInteractWith"
+type = "ranking"
+choices = [
+  "packageSearch",
+  "nixosOptionSearch",
+  "nixosConfigExamples",
+  "packageExamples",
+  "packageParameters",
+  "developmentEnvironments",
+  "nixDev",
+  "tutorials",
+  "howToGuides",
+  "manuals",
+  "answersToQuestions",
+  "troubleshootingTips",
+  "functionDocumentation",
+  "nixLanguageFunctions",
+  "commandLineInterface",
+  "nixStandaloneInstaller",
+  "nixosInstaller",
+  "securityNotifications",
+  "sourceCodePackage",
+  "sourceCodeModule",
+  "sourceCodeNixItself",
+  "discourseConversations",
+  "pressInformation",
+  "reviewsAndTestimonials",
+  "communityUpdates",
+  "loreJokesMemes",
+  "releaseNotes",
+  "additionalTools",
+  "jobPostings",
+  "paidSupportOffers",
+]
+
+[[groups.questions]]
+id = "helpResources"
+type = "ranking"
+choices = [
+  "nixDev",
+  "referenceManuals",
+  "nixosWiki",
+  "unofficialWiki",
+  "discourseForum",
+  "matrixChannels",
+  "githubIssues",
+  "sourceCode",
+  "mastodon",
+  "twitterX",
+  "stackOverflow",
+  "discordUnofficial",
+  "redditNixOfficial",
+  "redditNixosUnofficial",
+  "blogPostsOrTutorials",
+  "llms",
+  "other",
+]
+
+[[groups.questions]]
+id = "contribExperience"
+type = "multiple"
+choices = [
+  "dontPlanToContribute",
+  "dontKnowHowToStart",
+  "iWantToContribute",
+  "iTriedToContribute",
+  "unhelpfulFeedback",
+  "itTookTooLong",
+  "cantContribute",
+  "alreadyHandledByOthers",
+  "contributedAlone",
+  "contributedWithHelp",
+  "iPlanToContribute",
+]
+
+[[groups.questions]]
+id = "helpSuccessFrequency"
+type = "single"
+choices = ["always", "often", "sometimes", "rarely", "never"]
+
+[[groups.questions]]
+id = "donationIncentives"
+type = "multiple"
+choices = [
+  "betterInsight",
+  "donorPerks",
+  "taxDeductible",
+  "earmarkingOptions",
+  "officialSupport",
+  "ltsRelease",
+]
+
+[[groups.questions]]
+id = "foundationPriorities"
+type = "ranking"
+choices = [
+  "governance",
+  "communityHealth",
+  "marketing",
+  "documentation",
+  "nixosReleases",
+  "nixImplementations",
+  "nixpkgsMaintenance",
+  "communityEvents",
+  "nixpkgsArchDx",
+  "improvedNixNixosSupport",
+  "security",
+  "officialInfrastructure",
+  "deploymentSystems",
+  "ciSystems",
+]
+
+[[groups.questions]]
+id = "surveyFeedback"
+type = "text"
