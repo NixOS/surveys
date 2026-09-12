@@ -1744,7 +1744,7 @@
         {
           "id": "target_triple",
           "title": "Target Triple",
-          "question": "Which target triple best describes your system? Run \"uname -a\" if you are not sure.\n",
+          "question": "Which target triple best describes your system? Run \"uname -a\" if you are not sure.",
           "commentary": "`x86_64-linux-gnu`: 94.5%. ARM combined (`aarch64-linux-gnu` 17.4% +\n`aarch64-apple-darwin` 16.2%) reaches 33.6%. RISC-V: 2.0%.",
           "charts": [
             {
@@ -4217,7 +4217,7 @@
         {
           "id": "first_heard_which",
           "title": "First heard of: Nix or NixOS",
-          "question": "Did you hear about Nix or NixOS first? If you heard about both at the same time, select which one first made you interested in the Nix ecosystem.\n",
+          "question": "Did you hear about Nix or NixOS first? If you heard about both at the same time, select which one first made you interested in the Nix ecosystem.",
           "commentary": "NixOS is the more common entry point into the ecosystem: 70.8% of\nrespondents heard about it first, against 20.0% who heard of Nix\nfirst. 7.6% no longer remember.",
           "charts": [
             {
@@ -4440,7 +4440,7 @@
         {
           "id": "discovery_flow",
           "title": "Discovery flow",
-          "question": "Did you hear about Nix or NixOS first? If you heard about both at the same time, select which one first made you interested in the Nix ecosystem.\n \u2192 How did you first hear about Nix or NixOS?",
+          "question": "Did you hear about Nix or NixOS first? If you heard about both at the same time, select which one first made you interested in the Nix ecosystem. \u2192 How did you first hear about Nix or NixOS?",
           "commentary": "This alluvial view links whether respondents first heard of Nix or NixOS\n(left) to the channel that introduced them (right). It re-expresses the two\ndiscovery questions as a single flow: NixOS-first respondents dominate every\nchannel, and YouTube and word-of-mouth carry the heaviest streams. Channels\nreaching fewer than 5 respondents in a given flow are dropped, so only the\nsubstantial paths are drawn.",
           "charts": [
             {
@@ -14156,7 +14156,7 @@
         {
           "id": "help_resources",
           "title": "Help resources",
-          "question": "When you're looking for help with Nix or NixOS, which resources do you turn to most often? (Rank your top 5. If you usually web search first, pick the resources you click on most.)\n",
+          "question": "When you're looking for help with Nix or NixOS, which resources do you turn to most often? (Rank your top 5. If you usually web search first, pick the resources you click on most.)",
           "commentary": "Each bar shows the share of respondents who placed a resource at each of their\ntop five positions, with the remainder unranked. The official NixOS Wiki and the\nreference manuals are placed in the top five most often, followed by GitHub\nissues and discussions. LLMs already appear in many top-five lists, ahead of\nnix.dev. Social channels \u2014 Reddit, Stack Overflow, Matrix, Discord \u2014 trail the\nofficial and code-adjacent sources; Mastodon and Twitter/X are rarely chosen for\nhelp-seeking.",
           "charts": [
             {
