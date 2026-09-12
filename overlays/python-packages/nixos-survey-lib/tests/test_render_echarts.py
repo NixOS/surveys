@@ -248,7 +248,6 @@ def test_line_chart_series_per_y_label():
     assert "itemStyle" not in series["Beginner"]
 
 
-
 from nixos_survey_lib.render_echarts import lollipop
 
 
@@ -298,7 +297,7 @@ def test_lollipop_shape():
 
 
 from nixos_survey_lib.render_echarts import rank_distribution_bar
-from nixos_survey_lib.types import RankDistribution, RankDistItem
+from nixos_survey_lib.types import RankDistItem, RankDistribution
 
 
 def test_rank_distribution_bar_shape_and_colors():
@@ -363,7 +362,7 @@ def test_rank_distribution_bar_monotonic_lightness_n3():
     # Each successive rank must be strictly lighter.
     for i in range(len(lightness) - 1):
         assert lightness[i] < lightness[i + 1], (
-            f"rank {i+1} ({lightness[i]:.3f}) not darker than rank {i+2} ({lightness[i+1]:.3f})"
+            f"rank {i + 1} ({lightness[i]:.3f}) not darker than rank {i + 2} ({lightness[i + 1]:.3f})"
         )
     # Rank 1 is the darkest of all ranked colors.
     assert lightness[0] == min(lightness)
@@ -381,7 +380,7 @@ def test_rank_distribution_bar_monotonic_lightness_n5():
     lightness = [_perceived_lightness(series[r]["itemStyle"]["color"]) for r in ranked]
     for i in range(len(lightness) - 1):
         assert lightness[i] < lightness[i + 1], (
-            f"rank {i+1} ({lightness[i]:.3f}) not darker than rank {i+2} ({lightness[i+1]:.3f})"
+            f"rank {i + 1} ({lightness[i]:.3f}) not darker than rank {i + 2} ({lightness[i + 1]:.3f})"
         )
     assert lightness[0] == min(lightness)
 
@@ -389,6 +388,7 @@ def test_rank_distribution_bar_monotonic_lightness_n5():
 def test_rank_distribution_bar_even_spacing_n3():
     """For N=3 ranked segments, even spacing picks ramp indices 0, 3, 6 (first, middle, last)."""
     from nixos_survey_lib.render_echarts import _RANK_DIST_BLUES
+
     dist = RankDistribution(
         segment_labels=["#1", "#2", "#3", "Unranked"],
         items=[RankDistItem(label="X", percents=[25.0, 25.0, 25.0, 25.0])],
@@ -407,6 +407,7 @@ def test_rank_distribution_bar_even_spacing_n3():
 def test_rank_distribution_bar_even_spacing_n5():
     """For N=5 ranked segments, even spacing picks ramp indices 0, 1~2, 3~4, 5, 6."""
     from nixos_survey_lib.render_echarts import _RANK_DIST_BLUES
+
     dist = RankDistribution(
         segment_labels=["#1", "#2", "#3", "#4", "#5", "Unranked"],
         items=[RankDistItem(label="X", percents=[16.0, 16.0, 16.0, 16.0, 16.0, 20.0])],
@@ -539,6 +540,7 @@ def test_upset_no_oklch_anywhere():
     combos, set_totals = _upset_inputs()
     opt = upset(combos, set_totals, 0, height=400).option
     import json
+
     assert "oklch" not in json.dumps(opt).lower()
 
 
@@ -548,10 +550,7 @@ def test_upset_connector_lines_span_filled_rows():
     #         (B, C) rows 1..2 -> connector from [2,1] to [2,2].
     combos, set_totals = _upset_inputs()
     opt = upset(combos, set_totals, 0, height=400).option
-    line_series = [
-        s for s in opt["series"]
-        if s["type"] == "line" and s.get("xAxisIndex") == 1
-    ]
+    line_series = [s for s in opt["series"] if s["type"] == "line" and s.get("xAxisIndex") == 1]
     # Map each connector by its constant column index.
     spans = {}
     for s in line_series:
@@ -738,10 +737,7 @@ def test_upset_connector_lines_have_tooltip_show_false():
     """Connector line series must not trigger tooltips."""
     combos, set_totals = _upset_inputs()
     opt = upset(combos, set_totals, 0, height=400).option
-    line_series = [
-        s for s in opt["series"]
-        if s["type"] == "line" and s.get("xAxisIndex") == 1
-    ]
+    line_series = [s for s in opt["series"] if s["type"] == "line" and s.get("xAxisIndex") == 1]
     assert len(line_series) >= 1, "expected at least one connector line"
     for s in line_series:
         assert s.get("tooltip", {}).get("show") is False
@@ -800,12 +796,10 @@ def test_sankey_default_height():
 
 
 def test_sankey_preserve_order_disables_layout_iterations():
-    spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}],
-                  preserve_order=True)
+    spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}], preserve_order=True)
     assert spec.option["series"][0]["layoutIterations"] == 0
 
 
 def test_sankey_default_keeps_automatic_layout():
     spec = sankey(["A", "B"], [{"source": "A", "target": "B", "value": 5}])
     assert "layoutIterations" not in spec.option["series"][0]
-

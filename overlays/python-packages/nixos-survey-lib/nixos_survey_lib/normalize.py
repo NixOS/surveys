@@ -2,7 +2,6 @@ import polars as pl
 
 from .types import Question, SingleChoice, TextResponse
 
-
 DEFAULT_YES_ALIASES: frozenset[str] = frozenset({"yes", "y", "yep", "yeah", "yes.", "yes!"})
 DEFAULT_NO_ALIASES: frozenset[str] = frozenset({"no", "n", "nope", "nah", "no.", "no!", "no :("})
 
@@ -18,12 +17,7 @@ def normalize_yes_no(
     yes_set = set(yes_aliases) if yes_aliases is not None else set(DEFAULT_YES_ALIASES)
     no_set = set(no_aliases) if no_aliases is not None else set(DEFAULT_NO_ALIASES)
 
-    cleaned = (
-        r.values.cast(pl.Utf8)
-        .str.strip_chars()
-        .replace("", None)
-        .fill_null("Skipped")
-    )
+    cleaned = r.values.cast(pl.Utf8).str.strip_chars().replace("", None).fill_null("Skipped")
     normalized = cleaned.str.to_lowercase()
     out = (
         pl.when(cleaned == "Skipped")
@@ -56,12 +50,7 @@ def extract_first_semver(
 ) -> SingleChoice:
     """Return a SingleChoice of 'major.minor.patch' extracted from free text.
     Empty/null -> 'Skipped'; non-matching text -> 'No Match'."""
-    cleaned = (
-        r.values.cast(pl.Utf8)
-        .str.strip_chars()
-        .replace("", None)
-        .fill_null(skipped_label)
-    )
+    cleaned = r.values.cast(pl.Utf8).str.strip_chars().replace("", None).fill_null(skipped_label)
     extracted = cleaned.str.extract(SEMVER_MMP_RE, group_index=1)
     out = (
         pl.when(cleaned == skipped_label)

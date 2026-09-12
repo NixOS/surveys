@@ -64,9 +64,7 @@ def load_schema(yaml_path: Path) -> SurveySchema:
             raise ValueError(f"question {q.get('prompt', '?')!r} is missing 'id'")
         qid = q["id"]
         if not qid.isidentifier():
-            raise ValueError(
-                f"question id {qid!r} is not a valid Python identifier"
-            )
+            raise ValueError(f"question id {qid!r} is not a valid Python identifier")
         if qid in seen_ids:
             raise ValueError(f"duplicate question id {qid!r}")
         seen_ids.add(qid)
@@ -84,12 +82,7 @@ def load_schema(yaml_path: Path) -> SurveySchema:
 
 def _clean_single_values(series: pl.Series) -> pl.Series:
     """Strip whitespace; empty/null -> 'Skipped'."""
-    return (
-        series.cast(pl.Utf8)
-        .str.strip_chars()
-        .replace("", None)
-        .fill_null("Skipped")
-    )
+    return series.cast(pl.Utf8).str.strip_chars().replace("", None).fill_null("Skipped")
 
 
 def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
@@ -124,8 +117,11 @@ def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
                     f"no CSV column matches question id {q.id!r} (prompt: {q.prompt!r})"
                 )
             updated = Question(
-                id=q.id, prompt=q.prompt, type=q.type,
-                choices=q.choices, csv_columns=[col],
+                id=q.id,
+                prompt=q.prompt,
+                type=q.type,
+                choices=q.choices,
+                csv_columns=[col],
             )
             by_id[q.id] = SingleChoice(question=updated, values=_clean_single_values(df[col]))
 
@@ -136,8 +132,11 @@ def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
                     f"no CSV column matches question id {q.id!r} (prompt: {q.prompt!r})"
                 )
             updated = Question(
-                id=q.id, prompt=q.prompt, type=q.type,
-                choices=q.choices, csv_columns=[col],
+                id=q.id,
+                prompt=q.prompt,
+                type=q.type,
+                choices=q.choices,
+                csv_columns=[col],
             )
             cleaned = _clean_single_values(df[col])
             by_id[q.id] = TextResponse(question=updated, values=cleaned)
@@ -160,18 +159,12 @@ def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
                 csv_only = csv_set - yaml_set
                 yaml_only = yaml_set - csv_set
                 if csv_only or yaml_only:
-                    parts = [
-                        f"choice mismatch for multi-choice question id {q.id!r}:"
-                    ]
+                    parts = [f"choice mismatch for multi-choice question id {q.id!r}:"]
                     if csv_only:
-                        parts.append(
-                            f"  CSV has {len(csv_only)} column(s) not in YAML choices:"
-                        )
+                        parts.append(f"  CSV has {len(csv_only)} column(s) not in YAML choices:")
                         parts.extend(f"    + {s!r}" for s in sorted(csv_only))
                     if yaml_only:
-                        parts.append(
-                            f"  YAML has {len(yaml_only)} choice(s) not in CSV columns:"
-                        )
+                        parts.append(f"  YAML has {len(yaml_only)} choice(s) not in CSV columns:")
                         parts.extend(f"    - {s!r}" for s in sorted(yaml_only))
                     raise ValueError("\n".join(parts))
                 choice_order = list(q.choices)
@@ -183,8 +176,11 @@ def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
                 choice_columns_dict[c] = df[col]
                 cols.append(col)
             updated = Question(
-                id=q.id, prompt=q.prompt, type=q.type,
-                choices=q.choices, csv_columns=cols,
+                id=q.id,
+                prompt=q.prompt,
+                type=q.type,
+                choices=q.choices,
+                csv_columns=cols,
             )
             by_id[q.id] = MultiChoice(question=updated, choice_columns=choice_columns_dict)
 
@@ -198,16 +194,17 @@ def load_responses(csv_path: Path, *, schema: SurveySchema) -> Responses:
             for col, suffix in matches:
                 m = re.match(r"^Rank\s+(\d+)$", suffix)
                 if not m:
-                    raise ValueError(
-                        f"ranking column {col!r} has non-'Rank N' suffix {suffix!r}"
-                    )
+                    raise ValueError(f"ranking column {col!r} has non-'Rank N' suffix {suffix!r}")
                 indexed.append((int(m.group(1)), col))
             indexed.sort()
             rank_cols = [df[col] for _, col in indexed]
             rcols = [col for _, col in indexed]
             updated = Question(
-                id=q.id, prompt=q.prompt, type=q.type,
-                choices=q.choices, csv_columns=rcols,
+                id=q.id,
+                prompt=q.prompt,
+                type=q.type,
+                choices=q.choices,
+                csv_columns=rcols,
             )
             by_id[q.id] = Ranking(question=updated, rank_columns=rank_cols)
 

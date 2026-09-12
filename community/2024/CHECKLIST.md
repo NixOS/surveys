@@ -1,62 +1,61 @@
 # Community Survey 2024 checklist
 
-
 - [x] Document the entire process of running the survey in a version controlled repository
-    - purpose: make the process outlast the volunteer team members (who are likely to drop out eventually)
+  - purpose: make the process outlast the volunteer team members (who are likely to drop out eventually)
 - [x] Ask community teams what information they need
-    - teams
-        - [x] Nix maintainers
-        - [x] Documentation
-        - [x] Nixpkgs Architecture
-        - [x] NixOS release managers
-        - [x] Moderation
-        - [x] Infrastructure
-        - [x] Security
-    - limited count (e.g. max 4)
-    - only yes/no, categorical or multiple choice
-    - no conditionality/branching
+  - teams
+    - [x] Nix maintainers
+    - [x] Documentation
+    - [x] Nixpkgs Architecture
+    - [x] NixOS release managers
+    - [x] Moderation
+    - [x] Infrastructure
+    - [x] Security
+  - limited count (e.g. max 4)
+  - only yes/no, categorical or multiple choice
+  - no conditionality/branching
 - (?) team-specific surveys throughout the year
 - [ ] Refine objectives
-    - [x] simplify as much as possible
-        - remove open-ended question (FFS!)
-    - [x] questions with too many "other" answers
-        - extract list of most frequent answers and add them to the choices
-    - [x] Nix/NixOS sections
-        - confusing
-        - collapse the Nix/NixOS questions into one?
-        - put NixOS questions first?
-    - [x] split sections by experience?
-        - ask users other questions than package maintainers?
-    - [x] sex/Gender question
-        - fix vocabulary
-        - refine it?
-        - remove it?
-            - what StackOverflow did
-    - [x] platfrom question
-        - more general "BSD"
-        - add Android
-    - [x] the channel question
-        - should be really about branches/releases
-    - [x] "how do you extend Nixpkgs" questions
-        - remove it
-    - [x] "how often you use" questions
-        - once you set something up you don't have to "use" it any more
-        - remove it
-        - ask which specific commands are used and how often?
+  - [x] simplify as much as possible
+    - remove open-ended question (FFS!)
+  - [x] questions with too many "other" answers
+    - extract list of most frequent answers and add them to the choices
+  - [x] Nix/NixOS sections
+    - confusing
+    - collapse the Nix/NixOS questions into one?
+    - put NixOS questions first?
+  - [x] split sections by experience?
+    - ask users other questions than package maintainers?
+  - [x] sex/Gender question
+    - fix vocabulary
+    - refine it?
+    - remove it?
+      - what StackOverflow did
+  - [x] platfrom question
+    - more general "BSD"
+    - add Android
+  - [x] the channel question
+    - should be really about branches/releases
+  - [x] "how do you extend Nixpkgs" questions
+    - remove it
+  - [x] "how often you use" questions
+    - once you set something up you don't have to "use" it any more
+    - remove it
+    - ask which specific commands are used and how often?
 - [x] Get reviews of the draft (e.g. in a GitHub repo) by community teams
 - [x] Implement the survey
 - [x] Open the survey
 - [x] Write announcement
 - [ ] Put a banner on the front page of the official websites
-    - [ ] nixos.org
-    - [ ] discourse.nixos.org
-    - [ ] nix.dev
-    - [ ] wiki.nixos.org
+  - [ ] nixos.org
+  - [ ] discourse.nixos.org
+  - [ ] nix.dev
+  - [ ] wiki.nixos.org
 - [x] Social media outreach
-    - [x] Reddit
-    - [x] Twitter
-    - [x] Mailinglist
-    - [x] Hacker News
-    - [x] Private/unofficial channels
+  - [x] Reddit
+  - [x] Twitter
+  - [x] Mailinglist
+  - [x] Hacker News
+  - [x] Private/unofficial channels
 - [x] Make analysis and write up evaluation
 - [x] Post results

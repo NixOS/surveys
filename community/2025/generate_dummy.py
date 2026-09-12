@@ -11,6 +11,7 @@ history and the answer formats the pipeline's normalizers handle
 questions need plausible variety, every other text question just needs
 a column to exist.
 """
+
 import sys
 from pathlib import Path
 
@@ -38,11 +39,20 @@ TEXT_POOLS = {
     # Charted via normalize_yes_no: recognized aliases plus free-form
     # strings that land in the "Other" bucket.
     "workplace_uses_nix": [
-        "Yes", "yes", "yep", "No", "no", "nope",
+        "Yes",
+        "yes",
+        "yep",
+        "No",
+        "no",
+        "nope",
         "Only on my team's CI",
     ],
     "workplace_decision": [
-        "Yes", "y", "No", "n", "nah",
+        "Yes",
+        "y",
+        "No",
+        "n",
+        "nah",
         "It was decided before I joined",
     ],
 }

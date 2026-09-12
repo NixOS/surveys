@@ -1,5 +1,4 @@
 import pytest
-
 from nixos_survey_lib.types import Question, SurveySchema
 
 
@@ -63,8 +62,7 @@ def test_crosstab_construction():
     assert ct.cells[1][1] == 8.0
 
 
-
-from nixos_survey_lib.types import ChartSpec, Row, Section, Page
+from nixos_survey_lib.types import ChartSpec, Page, Row, Section
 
 
 def test_chartspec_optional_height():
@@ -75,13 +73,25 @@ def test_chartspec_optional_height():
 
 
 def test_row_construction():
-    r = Row(id="country", title="Country", question="Where?", commentary="X.", charts=[ChartSpec(option={})])
+    r = Row(
+        id="country",
+        title="Country",
+        question="Where?",
+        commentary="X.",
+        charts=[ChartSpec(option={})],
+    )
     assert r.id == "country"
     assert len(r.charts) == 1
 
 
 def test_section_construction():
-    r = Row(id="country", title="Country", question="Where?", commentary="X.", charts=[ChartSpec(option={})])
+    r = Row(
+        id="country",
+        title="Country",
+        question="Where?",
+        commentary="X.",
+        charts=[ChartSpec(option={})],
+    )
     s = Section(id="people", heading="People", rows=[r])
     assert len(s.rows) == 1
 
@@ -92,8 +102,7 @@ def test_page_default_schema_version():
 
 
 import polars as pl
-
-from nixos_survey_lib.types import SingleChoice, MultiChoice, Ranking, TextResponse
+from nixos_survey_lib.types import MultiChoice, Ranking, SingleChoice, TextResponse
 
 
 def _q(qid: str, qtype: str = "single") -> Question:
