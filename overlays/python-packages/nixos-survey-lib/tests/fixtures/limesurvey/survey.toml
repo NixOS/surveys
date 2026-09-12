@@ -1,0 +1,54 @@
+# Golden fixture for the LimeSurvey emitter (see expected_survey.txt).
+# Covers all six type letters, other, max_answers, soft mandatory, a group
+# description, help text, an end text, and two languages.
+[survey]
+id = 424242
+language = "en"
+languages = ["en", "de"]
+
+[survey.privacy]
+anonymized = true
+save_ip_address = false
+save_referrer = false
+date_stamp = false
+save_timings = false
+
+[[groups]]
+id = "aboutYou"
+
+[[groups.questions]]
+id = "country"
+type = "single"
+choices = ["europe", "asia"]
+
+[[groups.questions]]
+id = "age"
+type = "single"
+display = "dropdown"
+mandatory = "on"
+choices = ["young", "old"]
+
+[[groups]]
+id = "usage"
+
+[[groups.questions]]
+id = "os"
+type = "multiple"
+other = true
+mandatory = "soft"
+choices = ["linux", "macos", "windows"]
+
+[[groups.questions]]
+id = "priorities"
+type = "ranking"
+max_answers = 2
+choices = ["perf", "security", "docs"]
+
+[[groups.questions]]
+id = "nixVersion"
+type = "text"
+size = "short"
+
+[[groups.questions]]
+id = "feedback"
+type = "text"

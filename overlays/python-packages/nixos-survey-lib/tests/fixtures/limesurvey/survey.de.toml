@@ -1,0 +1,42 @@
+# German text for the emitter golden fixture. Same keys as survey.en.toml;
+# the emitter must line the two up by position.
+[survey]
+title = "Kleine LimeSurvey-Vorlage"
+intro = "<p>Willkommen zur Testumfrage.</p>"
+end = "<p>Danke fürs Mitmachen.</p>"
+
+[groups.aboutYou]
+title = "Über dich"
+description = "Zwei Fragen zu dir."
+
+[groups.usage]
+title = "Nutzung"
+
+[questions.country]
+prompt = "Wo lebst du?"
+choices.europe = "Europa"
+choices.asia = "Asien"
+
+[questions.age]
+prompt = "Wie alt bist du?"
+choices.young = "Unter 30"
+choices.old = "30 oder älter"
+
+[questions.os]
+prompt = "Welche Betriebssysteme nutzt du?"
+help = "Mehrfachauswahl möglich."
+choices.linux = "GNU/Linux"
+choices.macos = "macOS"
+choices.windows = "Windows"
+
+[questions.priorities]
+prompt = "Ordne deine Prioritäten."
+choices.perf = "Leistung"
+choices.security = "Sicherheit"
+choices.docs = "Doku & Handbücher"
+
+[questions.nixVersion]
+prompt = "Welche Nix-Version nutzt du?"
+
+[questions.feedback]
+prompt = "Sonst noch etwas?"
