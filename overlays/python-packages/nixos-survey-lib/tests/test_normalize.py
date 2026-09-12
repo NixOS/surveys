@@ -1,5 +1,4 @@
 import polars as pl
-
 from nixos_survey_lib.normalize import extract_first_semver, normalize_yes_no
 from nixos_survey_lib.types import Question, TextResponse
 

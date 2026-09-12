@@ -3,7 +3,6 @@ from typing import Any
 
 from .types import Bin, ChartSpec, Combination, CrossTab, RankDistribution
 
-
 _BAR_ROW_PX = 28
 _BAR_CHROME_PX = 80
 
@@ -68,19 +67,23 @@ def horizontal_bar(
             "axisPointer": {"type": "shadow"},
             "formatter": "{b}: {c}%",
         },
-        "series": [{
-            "type": "bar",
-            "data": values,
-            "total": total,
-            "label": {"show": True, "position": "right", "formatter": "{c}%"},
-            "barWidth": 16,
-            "itemStyle": {"borderRadius": 4},
-        }],
+        "series": [
+            {
+                "type": "bar",
+                "data": values,
+                "total": total,
+                "label": {"show": True, "position": "right", "formatter": "{c}%"},
+                "barWidth": 16,
+                "itemStyle": {"borderRadius": 4},
+            }
+        ],
     }
     if title is not None:
         option["title"] = {"text": title, "left": "left", "top": 0}
 
-    return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(bins)))
+    return ChartSpec(
+        option=option, height=height if height is not None else _default_bar_height(len(bins))
+    )
 
 
 def _default_heatmap_height(x_count: int, y_count: int) -> int:
@@ -178,31 +181,35 @@ def heatmap(
             "axisLabel": {"width": 180, "overflow": "truncate", "interval": 0},
         },
         "visualMap": visual_map,
-        "series": [{
-            "type": "heatmap",
-            "data": data,
-            "label": (
-                {
-                    "show": True,
-                    "formatter": "{@[2]}×" if table.cell_kind == "lift" else "{@[2]}%",
-                }
-                if annotate
-                else {"show": False}
-            ),
-            "emphasis": {
-                "itemStyle": {
-                    "shadowBlur": 10,
-                    "shadowColor": "rgba(0,0,0,0.5)",
+        "series": [
+            {
+                "type": "heatmap",
+                "data": data,
+                "label": (
+                    {
+                        "show": True,
+                        "formatter": "{@[2]}×" if table.cell_kind == "lift" else "{@[2]}%",
+                    }
+                    if annotate
+                    else {"show": False}
+                ),
+                "emphasis": {
+                    "itemStyle": {
+                        "shadowBlur": 10,
+                        "shadowColor": "rgba(0,0,0,0.5)",
+                    },
                 },
-            },
-        }],
+            }
+        ],
     }
     if title is not None:
         option["title"] = {"text": title, "left": "left", "top": 0}
 
     return ChartSpec(
         option=option,
-        height=height if height is not None else _default_heatmap_height(len(table.x_labels), len(table.y_labels)),
+        height=height
+        if height is not None
+        else _default_heatmap_height(len(table.x_labels), len(table.y_labels)),
     )
 
 
@@ -232,7 +239,7 @@ def _label_on(fill: str) -> str:
     labels stay readable even though the theme sets a default bar-label color for
     the outside labels that sit on the page background."""
     h = fill.lstrip("#")
-    r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    r, g, b = (int(h[i : i + 2], 16) / 255 for i in (0, 2, 4))
     luminance = 0.299 * r + 0.587 * g + 0.114 * b
     return "#333333" if luminance > 0.6 else "#eeeeee"
 
@@ -261,39 +268,45 @@ def likert_bar(
 
     for i, label in enumerate(positive):
         color = _LIKERT_POSITIVE_COLORS[min(i, len(_LIKERT_POSITIVE_COLORS) - 1)]
-        series.append({
-            "name": label,
-            "type": "bar",
-            "stack": "likert",
-            "data": [items.get(label, {"value": 0.0, "count": 0})],
-            "total": total,
-            "itemStyle": {"color": color},
-            "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
-        })
+        series.append(
+            {
+                "name": label,
+                "type": "bar",
+                "stack": "likert",
+                "data": [items.get(label, {"value": 0.0, "count": 0})],
+                "total": total,
+                "itemStyle": {"color": color},
+                "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
+            }
+        )
         key.append({"label": label, "color": color})
     for i, label in enumerate(negative):
         color = _LIKERT_NEGATIVE_COLORS[min(i, len(_LIKERT_NEGATIVE_COLORS) - 1)]
-        series.append({
-            "name": label,
-            "type": "bar",
-            "stack": "likert",
-            "data": [items.get(label, {"value": 0.0, "count": 0})],
-            "total": total,
-            "itemStyle": {"color": color},
-            "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
-        })
+        series.append(
+            {
+                "name": label,
+                "type": "bar",
+                "stack": "likert",
+                "data": [items.get(label, {"value": 0.0, "count": 0})],
+                "total": total,
+                "itemStyle": {"color": color},
+                "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
+            }
+        )
         key.append({"label": label, "color": color})
     for i, label in enumerate(neutral):
         color = _LIKERT_NEUTRAL_COLORS[min(i, len(_LIKERT_NEUTRAL_COLORS) - 1)]
-        series.append({
-            "name": label,
-            "type": "bar",
-            "stack": "likert",
-            "data": [items.get(label, {"value": 0.0, "count": 0})],
-            "total": total,
-            "itemStyle": {"color": color},
-            "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
-        })
+        series.append(
+            {
+                "name": label,
+                "type": "bar",
+                "stack": "likert",
+                "data": [items.get(label, {"value": 0.0, "count": 0})],
+                "total": total,
+                "itemStyle": {"color": color},
+                "label": {"show": True, "formatter": "{c}%", "color": _label_on(color)},
+            }
+        )
         key.append({"label": label, "color": color})
 
     # No ECharts legend: the colour key is returned separately and rendered as
@@ -335,18 +348,20 @@ def line_chart(
     series: list[dict[str, Any]] = []
     for yi, y_label in enumerate(table.y_labels):
         values = [round(table.cells[xi][yi], 1) for xi in range(len(table.x_labels))]
-        series.append({
-            "name": y_label,
-            "type": "line",
-            "data": values,
-            "smooth": False,
-            "symbol": _LINE_SYMBOLS[yi % len(_LINE_SYMBOLS)],
-            "symbolSize": 8,
-            "lineStyle": {
-                "type": _LINE_DASHES[(yi // len(_LINE_SYMBOLS)) % len(_LINE_DASHES)],
-                "width": 2,
-            },
-        })
+        series.append(
+            {
+                "name": y_label,
+                "type": "line",
+                "data": values,
+                "smooth": False,
+                "symbol": _LINE_SYMBOLS[yi % len(_LINE_SYMBOLS)],
+                "symbolSize": 8,
+                "lineStyle": {
+                    "type": _LINE_DASHES[(yi // len(_LINE_SYMBOLS)) % len(_LINE_DASHES)],
+                    "width": 2,
+                },
+            }
+        )
 
     legend_top = 28 if title is not None else 0
     grid_top = 64 if title is not None else 40
@@ -366,7 +381,6 @@ def line_chart(
         option["title"] = {"text": title, "left": "left", "top": 0}
 
     return ChartSpec(option=option, height=height if height is not None else 360)
-
 
 
 def lollipop(
@@ -426,7 +440,9 @@ def lollipop(
     if title is not None:
         option["title"] = {"text": title, "left": "left", "top": 0}
 
-    return ChartSpec(option=option, height=height if height is not None else _default_bar_height(len(bins)))
+    return ChartSpec(
+        option=option, height=height if height is not None else _default_bar_height(len(bins))
+    )
 
 
 # Sequential blue ramp for rank-distribution segments: monotonically dark→light.
@@ -477,13 +493,15 @@ def rank_distribution_bar(
             ramp = _RANK_DIST_BLUES
             idx = round(si * (len(ramp) - 1) / max(n_ranked - 1, 1))
             color = ramp[idx]
-        series.append({
-            "name": seg_label,
-            "type": "bar",
-            "stack": "total",
-            "data": [round(it.percents[si], 1) for it in items],
-            "itemStyle": {"color": color},
-        })
+        series.append(
+            {
+                "name": seg_label,
+                "type": "bar",
+                "stack": "total",
+                "data": [round(it.percents[si], 1) for it in items],
+                "itemStyle": {"color": color},
+            }
+        )
 
     legend_top = 28 if title is not None else 0
     grid_top = 64 if title is not None else 40
@@ -534,14 +552,16 @@ def sankey(
             "trigger": "item",
             "triggerOn": "mousemove",
         },
-        "series": [{
-            "type": "sankey",
-            "data": [{"name": n} for n in nodes],
-            "links": links,
-            "emphasis": {"focus": "adjacency"},
-            "lineStyle": {"color": "gradient", "curveness": 0.5},
-            "label": {"overflow": "truncate"},
-        }],
+        "series": [
+            {
+                "type": "sankey",
+                "data": [{"name": n} for n in nodes],
+                "links": links,
+                "emphasis": {"focus": "adjacency"},
+                "lineStyle": {"color": "gradient", "curveness": 0.5},
+                "label": {"overflow": "truncate"},
+            }
+        ],
     }
     if preserve_order:
         option["series"][0]["layoutIterations"] = 0
@@ -617,11 +637,13 @@ def upset(
         member_set = set(combo.members)
         for ri, set_label in enumerate(row_names):
             filled = set_label in member_set
-            dot_data.append({
-                "value": [ci, ri],
-                "name": combo_names[ci],
-                "itemStyle": {"color": _UPSET_DOT_FILLED if filled else _UPSET_DOT_FADED},
-            })
+            dot_data.append(
+                {
+                    "value": [ci, ri],
+                    "name": combo_names[ci],
+                    "itemStyle": {"color": _UPSET_DOT_FILLED if filled else _UPSET_DOT_FADED},
+                }
+            )
 
     # Connector lines: one 2-point line series per column spanning the topmost
     # to bottommost filled row. Expressed as a plain `line` series (NOT a
@@ -631,35 +653,30 @@ def upset(
     connector_series: list[dict[str, Any]] = []
     for ci, combo in enumerate(combos):
         member_set = set(combo.members)
-        filled_rows = [
-            ri for ri, set_label in enumerate(row_names)
-            if set_label in member_set
-        ]
+        filled_rows = [ri for ri, set_label in enumerate(row_names) if set_label in member_set]
         if len(filled_rows) < 2:
             continue
         r_min, r_max = min(filled_rows), max(filled_rows)
-        connector_series.append({
-            "type": "line",
-            "xAxisIndex": 1,
-            "yAxisIndex": 1,
-            "data": [[ci, r_min], [ci, r_max]],
-            "symbol": "none",
-            "lineStyle": {"color": _UPSET_DOT_FILLED, "width": 2},
-            "z": 1,
-            "silent": True,
-            "tooltip": {"show": False},
-        })
+        connector_series.append(
+            {
+                "type": "line",
+                "xAxisIndex": 1,
+                "yAxisIndex": 1,
+                "data": [[ci, r_min], [ci, r_max]],
+                "symbol": "none",
+                "lineStyle": {"color": _UPSET_DOT_FILLED, "width": 2},
+                "z": 1,
+                "silent": True,
+                "tooltip": {"show": False},
+            }
+        )
 
     # Top bar data items: objects with value + name for {b} tooltip.
-    top_bar_data = [
-        {"value": c.size, "name": combo_names[ci]}
-        for ci, c in enumerate(combos)
-    ]
+    top_bar_data = [{"value": c.size, "name": combo_names[ci]} for ci, c in enumerate(combos)]
 
     # Left totals bar data items: objects with value + name for {b} tooltip.
     left_bar_data = [
-        {"value": total, "name": f"{_display_code(name)}: {total}"}
-        for name, total in set_totals
+        {"value": total, "name": f"{_display_code(name)}: {total}"} for name, total in set_totals
     ]
 
     option: dict[str, Any] = {
@@ -674,20 +691,32 @@ def upset(
         "xAxis": [
             # 0: top bar category (intersection columns), labels hidden
             {
-                "type": "category", "data": col_categories, "gridIndex": 0,
-                "axisLabel": {"show": False}, "axisTick": {"show": False},
+                "type": "category",
+                "data": col_categories,
+                "gridIndex": 0,
+                "axisLabel": {"show": False},
+                "axisTick": {"show": False},
                 "axisLine": {"show": False},
             },
             # 1: dot-matrix category (shares the intersection columns)
             {
-                "type": "category", "data": col_categories, "gridIndex": 1,
-                "axisLabel": {"show": False}, "axisTick": {"show": False},
-                "axisLine": {"show": False}, "splitLine": {"show": False},
+                "type": "category",
+                "data": col_categories,
+                "gridIndex": 1,
+                "axisLabel": {"show": False},
+                "axisTick": {"show": False},
+                "axisLine": {"show": False},
+                "splitLine": {"show": False},
             },
             # 2: left bar value axis, grows leftward; max capped so the
             # longest bar's label stays inside the grid (fix 1).
-            {"type": "value", "gridIndex": 2, "inverse": True, "show": False,
-             "max": totals_axis_max},
+            {
+                "type": "value",
+                "gridIndex": 2,
+                "inverse": True,
+                "show": False,
+                "max": totals_axis_max,
+            },
         ],
         "yAxis": [
             # 0: top bar value axis
@@ -695,36 +724,49 @@ def upset(
             # 1: dot-matrix set rows — labels hidden; codes live on the
             # totals-bar axis to the left so there is no overlap.
             {
-                "type": "category", "data": row_names, "gridIndex": 1,
-                "inverse": True, "axisTick": {"show": False},
-                "axisLine": {"show": False}, "splitLine": {"show": False},
+                "type": "category",
+                "data": row_names,
+                "gridIndex": 1,
+                "inverse": True,
+                "axisTick": {"show": False},
+                "axisLine": {"show": False},
+                "splitLine": {"show": False},
                 "axisLabel": {"show": False},
             },
             # 2: totals-bar set rows (aligned with dot-matrix) — shows short
             # codes (or full names when set_labels is None) on the far left.
             {
-                "type": "category", "data": display_codes, "gridIndex": 2,
-                "inverse": True, "axisTick": {"show": False},
+                "type": "category",
+                "data": display_codes,
+                "gridIndex": 2,
+                "inverse": True,
+                "axisTick": {"show": False},
                 "axisLine": {"show": False},
             },
         ],
         "tooltip": {"trigger": "item", "formatter": "{b}"},
         "series": [
             {
-                "type": "bar", "xAxisIndex": 0, "yAxisIndex": 0,
+                "type": "bar",
+                "xAxisIndex": 0,
+                "yAxisIndex": 0,
                 "data": top_bar_data,
                 "label": {"show": True, "position": "top", "formatter": "{c}"},
                 "barWidth": "60%",
             },
             *connector_series,
             {
-                "type": "scatter", "xAxisIndex": 1, "yAxisIndex": 1,
+                "type": "scatter",
+                "xAxisIndex": 1,
+                "yAxisIndex": 1,
                 "data": dot_data,
                 "symbolSize": 16,
                 "z": 2,
             },
             {
-                "type": "bar", "xAxisIndex": 2, "yAxisIndex": 2,
+                "type": "bar",
+                "xAxisIndex": 2,
+                "yAxisIndex": 2,
                 "data": left_bar_data,
                 "label": {"show": True, "position": "left", "formatter": "{c}"},
                 "barWidth": "60%",
@@ -735,7 +777,7 @@ def upset(
     if dropped_count > 0:
         option["title"] = {
             "subtext": f"{dropped_count} combination(s) not shown "
-                       f"(below 5 respondents or beyond the display cap).",
+            f"(below 5 respondents or beyond the display cap).",
             "left": "left",
         }
 
@@ -745,10 +787,7 @@ def upset(
     # source of truth (no separate hand-maintained list).
     caption: str | None = None
     if set_labels is not None:
-        key_lines = "\n".join(
-            f"- **{code}** — {full}" for full, code in set_labels.items()
-        )
+        key_lines = "\n".join(f"- **{code}** — {full}" for full, code in set_labels.items())
         caption = "**UpSet row key** (short code → full statement):\n\n" + key_lines
 
     return ChartSpec(option=option, height=height, caption=caption)
-

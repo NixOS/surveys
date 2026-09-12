@@ -15,10 +15,12 @@ As always, the survey is **anonymous**.
 Aggregated statistics and major findings will be published on Discourse.
 
 Check out the announcements and results from past years:
+
 - [Nix Community Survey 2023](https://discourse.nixos.org/t/nix-community-survey-2023/28988/1)
 - [NixOS Community Survey 2022](https://discourse.nixos.org/t/nixos-community-survey-2022/17952)
 
 We used last year's feedback to improve yet again.
+
 - The survey is lighter to complete.
 - Question prompts are more inclusive.
 

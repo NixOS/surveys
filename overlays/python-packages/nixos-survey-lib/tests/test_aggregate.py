@@ -1,11 +1,13 @@
 import polars as pl
 import pytest
-
 from nixos_survey_lib.aggregate import (
-    counts_multi, counts_single, crosstab, crosstab_multi,
+    counts_multi,
+    counts_single,
+    crosstab,
+    crosstab_multi,
     upset_combinations,
 )
-from nixos_survey_lib.types import Bin, Combination, MultiChoice, Question, Ranking, SingleChoice
+from nixos_survey_lib.types import MultiChoice, Question, Ranking, SingleChoice
 
 
 def _sc(values: list[str], qid: str = "country") -> SingleChoice:
@@ -25,7 +27,9 @@ def test_counts_single_basic():
 
 def test_counts_single_respects_order():
     s = _sc(["Asia", "Europe", "Asia", "Europe"])
-    bins = counts_single(s, order=["Europe", "Asia"], bucket_min_percent=None, bucket_min_count=None)
+    bins = counts_single(
+        s, order=["Europe", "Asia"], bucket_min_percent=None, bucket_min_count=None
+    )
     assert [b.label for b in bins] == ["Europe", "Asia"]
 
 
@@ -113,15 +117,19 @@ def test_counts_single_empty():
 
 def _mc(choice_columns: dict[str, list[str]]) -> MultiChoice:
     q = Question(id="x", prompt="x", type="multiple", choices=list(choice_columns), csv_columns=[])
-    return MultiChoice(question=q, choice_columns={k: pl.Series(v) for k, v in choice_columns.items()})
+    return MultiChoice(
+        question=q, choice_columns={k: pl.Series(v) for k, v in choice_columns.items()}
+    )
 
 
 def test_counts_multi_basic():
-    m = _mc({
-        "Linux": ["Yes", "Yes", "Yes", "Yes"],
-        "macOS": ["No", "Yes", "Yes", "No"],
-        "Windows": ["No", "No", "No", "Yes"],
-    })
+    m = _mc(
+        {
+            "Linux": ["Yes", "Yes", "Yes", "Yes"],
+            "macOS": ["No", "Yes", "Yes", "No"],
+            "Windows": ["No", "No", "No", "Yes"],
+        }
+    )
     bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=None)
     by_label = {b.label: b for b in bins}
     assert by_label["Linux"].count == 4
@@ -133,21 +141,25 @@ def test_counts_multi_basic():
 
 
 def test_counts_multi_sorted_by_percent_desc():
-    m = _mc({
-        "A": ["No", "Yes"],
-        "B": ["Yes", "Yes"],
-        "C": ["No", "No"],
-    })
+    m = _mc(
+        {
+            "A": ["No", "Yes"],
+            "B": ["Yes", "Yes"],
+            "C": ["No", "No"],
+        }
+    )
     bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=None)
     assert [b.label for b in bins] == ["B", "A", "C"]
 
 
 def test_counts_multi_bucket_min_percent():
-    m = _mc({
-        "A": ["Yes"] * 100,
-        "B": ["Yes"] * 1 + ["No"] * 99,
-        "C": ["Yes"] * 1 + ["No"] * 99,
-    })
+    m = _mc(
+        {
+            "A": ["Yes"] * 100,
+            "B": ["Yes"] * 1 + ["No"] * 99,
+            "C": ["Yes"] * 1 + ["No"] * 99,
+        }
+    )
     # Count floor off: this test isolates the percent threshold.
     bins = counts_multi(m, bucket_min_percent=5.0, bucket_min_count=None)
     labels = {b.label for b in bins}
@@ -157,22 +169,26 @@ def test_counts_multi_bucket_min_percent():
 
 
 def test_counts_multi_bucket_action_drop_removes_rare():
-    m = _mc({
-        "A": ["Yes"] * 100,
-        "B": ["Yes"] * 4 + ["No"] * 96,
-        "C": ["Yes"] * 2 + ["No"] * 98,
-    })
+    m = _mc(
+        {
+            "A": ["Yes"] * 100,
+            "B": ["Yes"] * 4 + ["No"] * 96,
+            "C": ["Yes"] * 2 + ["No"] * 98,
+        }
+    )
     bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=5, bucket_action="drop")
     labels = {b.label for b in bins}
     assert labels == {"A"}
 
 
 def test_counts_multi_bucket_min_count():
-    m = _mc({
-        "A": ["Yes"] * 100,
-        "B": ["Yes"] * 4 + ["No"] * 96,
-        "C": ["Yes"] * 2 + ["No"] * 98,
-    })
+    m = _mc(
+        {
+            "A": ["Yes"] * 100,
+            "B": ["Yes"] * 4 + ["No"] * 96,
+            "C": ["Yes"] * 2 + ["No"] * 98,
+        }
+    )
     bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=5)
     labels = {b.label for b in bins}
     assert "A" in labels
@@ -190,11 +206,13 @@ def test_counts_single_combined_bucket_below_floor_is_dropped():
 
 
 def test_counts_multi_combined_bucket_below_floor_is_dropped():
-    m = _mc({
-        "A": ["Yes"] * 100,
-        "B": ["Yes"] * 2 + ["No"] * 98,
-        "C": ["Yes"] * 2 + ["No"] * 98,
-    })
+    m = _mc(
+        {
+            "A": ["Yes"] * 100,
+            "B": ["Yes"] * 2 + ["No"] * 98,
+            "C": ["Yes"] * 2 + ["No"] * 98,
+        }
+    )
     bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=5)
     assert [b.label for b in bins] == ["A"]
 
@@ -214,10 +232,12 @@ def test_counts_single_combined_bucket_carries_total():
 
 
 def test_counts_multi_total_is_respondent_count():
-    m = _mc({
-        "Linux": ["Yes", "Yes", "Yes", "Yes"],
-        "macOS": ["No", "Yes", "Yes", "No"],
-    })
+    m = _mc(
+        {
+            "Linux": ["Yes", "Yes", "Yes", "Yes"],
+            "macOS": ["No", "Yes", "Yes", "No"],
+        }
+    )
     bins = counts_multi(m, bucket_min_percent=None, bucket_min_count=None)
     assert {b.total for b in bins} == {4}
 
@@ -249,8 +269,9 @@ def test_crosstab_y_normalize():
 def test_crosstab_excludes_values():
     x = _sc(["A", "B", "Skipped"], qid="x")
     y = _sc(["P", "Q", "P"], qid="y")
-    ct = crosstab(x, y, normalize="global", x_exclude=["Skipped"],
-                  x_order=["A", "B"], y_order=["P", "Q"])
+    ct = crosstab(
+        x, y, normalize="global", x_exclude=["Skipped"], x_order=["A", "B"], y_order=["P", "Q"]
+    )
     assert "Skipped" not in ct.x_labels
 
 
@@ -264,10 +285,12 @@ def test_crosstab_empty_returns_empty():
 
 
 def _mc_long() -> tuple[MultiChoice, SingleChoice]:
-    m = _mc({
-        "trait_A": ["Yes", "Yes", "No", "No"],
-        "trait_B": ["Yes", "No", "Yes", "No"],
-    })
+    m = _mc(
+        {
+            "trait_A": ["Yes", "Yes", "No", "No"],
+            "trait_B": ["Yes", "No", "Yes", "No"],
+        }
+    )
     s = _sc(["Beginner", "Advanced", "Beginner", "Advanced"], qid="skill")
     return m, s
 
@@ -277,7 +300,9 @@ def test_crosstab_multi_rate():
     ct = crosstab_multi(m, s, denominator="rate", x_order=["Beginner", "Advanced"])
     assert ct.cell_kind == "rate_pct"
     # cells[xi][yi]: xi indexes x_labels (single values), yi indexes y_labels (traits)
-    by_label = {(t, x): ct.cells[j][i] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
+    by_label = {
+        (t, x): ct.cells[j][i] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)
+    }
     assert by_label[("trait_A", "Beginner")] == pytest.approx(50.0)
     assert by_label[("trait_A", "Advanced")] == pytest.approx(50.0)
 
@@ -287,7 +312,9 @@ def test_crosstab_multi_composition():
     ct = crosstab_multi(m, s, denominator="composition", x_order=["Beginner", "Advanced"])
     assert ct.cell_kind == "composition_pct"
     # cells[xi][yi]: xi indexes x_labels (single values), yi indexes y_labels (traits)
-    by_label = {(t, x): ct.cells[j][i] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
+    by_label = {
+        (t, x): ct.cells[j][i] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)
+    }
     assert by_label[("trait_A", "Beginner")] == pytest.approx(50.0)
     assert by_label[("trait_A", "Advanced")] == pytest.approx(50.0)
 
@@ -297,7 +324,9 @@ def test_crosstab_multi_lift():
     ct = crosstab_multi(m, s, denominator="lift", x_order=["Beginner", "Advanced"])
     assert ct.cell_kind == "lift"
     # cells[xi][yi]: xi indexes x_labels (single values), yi indexes y_labels (traits)
-    by_label = {(t, x): ct.cells[j][i] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)}
+    by_label = {
+        (t, x): ct.cells[j][i] for i, t in enumerate(ct.y_labels) for j, x in enumerate(ct.x_labels)
+    }
     assert by_label[("trait_A", "Beginner")] == pytest.approx(1.0)
 
 
@@ -308,19 +337,20 @@ def _rk(rows: list[list[str | None]]) -> Ranking:
     return Ranking(question=q, rank_columns=[pl.Series(c) for c in cols])
 
 
-
 from nixos_survey_lib.aggregate import rank_distribution
 from nixos_survey_lib.types import RankDistribution
 
 
 def test_rank_distribution_per_position_basic():
     # 4 respondents, 3 positions.
-    r = _rk([
-        ["A", "B", "C"],
-        ["A", "C", "B"],
-        ["B", "A", "C"],
-        ["C", "A", "B"],
-    ])
+    r = _rk(
+        [
+            ["A", "B", "C"],
+            ["A", "C", "B"],
+            ["B", "A", "C"],
+            ["C", "A", "B"],
+        ]
+    )
     dist = rank_distribution(r, min_count=1)
     assert isinstance(dist, RankDistribution)
     assert dist.segment_labels == ["#1", "#2", "#3", "Unranked"]
@@ -341,19 +371,20 @@ def test_rank_distribution_sorted_by_avg_rank_not_top_share():
     #   (avg rank 2.5, top-band share 25%).
     # Old sort (top-band desc) would put Q first.
     # New sort (avg rank asc) must put P first because 2.0 < 2.5.
-    r = _rk([
-        ["Q", "P", None],  # Q@1, P@2
-        ["X", "P", "Q"],   # X@1, P@2, Q@3
-        ["X", "P", "Q"],   # X@1, P@2, Q@3
-        ["X", "P", "Q"],   # X@1, P@2, Q@3
-    ])
+    r = _rk(
+        [
+            ["Q", "P", None],  # Q@1, P@2
+            ["X", "P", "Q"],  # X@1, P@2, Q@3
+            ["X", "P", "Q"],  # X@1, P@2, Q@3
+            ["X", "P", "Q"],  # X@1, P@2, Q@3
+        ]
+    )
     dist = rank_distribution(r, min_count=1)
     labels = [it.label for it in dist.items]
     p_idx = labels.index("P")
     q_idx = labels.index("Q")
     assert p_idx < q_idx, (
-        f"P (avg rank 2.0) should sort before Q (avg rank 2.5), "
-        f"but got order {labels}"
+        f"P (avg rank 2.0) should sort before Q (avg rank 2.5), but got order {labels}"
     )
 
 
@@ -364,13 +395,15 @@ def test_rank_distribution_sort_uses_banded_positions_only():
     # "Unranked".
     #   Borda (rank1=2, rank2=1): L = 2*2 = 4 > N = 1*3 = 3 -> L sorts above N;
     #   L's three #3 placements are past the band and score nothing.
-    r = _rk([
-        ["L", "N", "z1"],
-        ["L", "N", "z2"],
-        ["a", "N", "L"],
-        ["b", "c", "L"],
-        ["d", "e", "L"],
-    ])
+    r = _rk(
+        [
+            ["L", "N", "z1"],
+            ["L", "N", "z2"],
+            ["a", "N", "L"],
+            ["b", "c", "L"],
+            ["d", "e", "L"],
+        ]
+    )
     dist = rank_distribution(r, bands=[(1, 1), (2, 2)], min_count=2)
     labels = [it.label for it in dist.items]
     assert labels == ["L", "N"], (
@@ -388,13 +421,15 @@ def test_rank_distribution_sort_is_frequency_weighted():
     # would wrongly float the rare-but-high choice to the top.)
     #   Borda (rank1=2, rank2=1): rare = 2*1 = 2, common = 1*5 = 5
     #   -> common sorts above rare despite rare's lone #1.
-    r = _rk([
-        ["rare",   "common", None],
-        ["filler", "common", None],
-        ["filler", "common", None],
-        ["filler", "common", None],
-        ["filler", "common", None],
-    ])
+    r = _rk(
+        [
+            ["rare", "common", None],
+            ["filler", "common", None],
+            ["filler", "common", None],
+            ["filler", "common", None],
+            ["filler", "common", None],
+        ]
+    )
     dist = rank_distribution(r, bands=[(1, 1), (2, 2)], min_count=1)
     labels = [it.label for it in dist.items]
     assert labels.index("common") < labels.index("rare"), (
@@ -409,12 +444,14 @@ def test_rank_distribution_borda_scores_by_band_not_exact_position():
     #   "deep" is ranked #3 by four; "shallow" is ranked #1 by three.
     #   band score: deep = 2*4 = 8 > shallow = 2*3 = 6 -> deep sorts first.
     #   (Exact-position scoring would rank shallow first: 6*3=18 > 4*4=16.)
-    r = _rk([
-        ["shallow", None, "deep", None, None, None],
-        ["shallow", None, "deep", None, None, None],
-        ["shallow", None, "deep", None, None, None],
-        [None,      None, "deep", None, None, None],
-    ])
+    r = _rk(
+        [
+            ["shallow", None, "deep", None, None, None],
+            ["shallow", None, "deep", None, None, None],
+            ["shallow", None, "deep", None, None, None],
+            [None, None, "deep", None, None, None],
+        ]
+    )
     dist = rank_distribution(r, bands=[(1, 3), (4, 6)], min_count=1)
     labels = [it.label for it in dist.items]
     assert labels == ["deep", "shallow"], (
@@ -425,10 +462,12 @@ def test_rank_distribution_borda_scores_by_band_not_exact_position():
 
 def test_rank_distribution_unranked_share():
     # 2 respondents; choice D only appears for one of them, never for the other.
-    r = _rk([
-        ["A", "D"],
-        ["A", "B"],
-    ])
+    r = _rk(
+        [
+            ["A", "D"],
+            ["A", "B"],
+        ]
+    )
     dist = rank_distribution(r, min_count=1)
     by = {it.label: it.percents for it in dist.items}
     # D: rank2 x1 (50%), unranked = 100 - 50 = 50%.
@@ -450,9 +489,11 @@ def test_rank_distribution_suppresses_below_min_count():
 
 def test_rank_distribution_bands_collapse_tail_to_unranked():
     # 1 respondent ranking 4 positions; bands (1,2),(3,3); position 4 folds to unranked.
-    r = _rk([
-        ["A", "B", "C", "D"],
-    ])
+    r = _rk(
+        [
+            ["A", "B", "C", "D"],
+        ]
+    )
     dist = rank_distribution(r, bands=[(1, 2), (3, 3)], min_count=1)
     assert dist.segment_labels == ["1-2", "3", "Unranked"]
     by = {it.label: it.percents for it in dist.items}
@@ -520,9 +561,16 @@ def test_sankey_funnel_nodes_in_render_order():
     # the two exits, so no ribbon crosses the fan.
     nodes, links = sankey_funnel(_stable())
     assert nodes == [
-        "All", "Knew", "Upgraded",
-        "No issues", "Minor", "Moderate", "Severe (resolved)", "Severe (stuck)",
-        "Did not upgrade", "Didn't know",
+        "All",
+        "Knew",
+        "Upgraded",
+        "No issues",
+        "Minor",
+        "Moderate",
+        "Severe (resolved)",
+        "Severe (stuck)",
+        "Did not upgrade",
+        "Didn't know",
     ]
 
 
@@ -592,9 +640,11 @@ def test_sankey_links_x_band_groups_values():
 
 def test_sankey_links_y_map_groups_values():
     x = _sc(["3 to 4 years"] * 6, qid="years_using_nix")
-    y = _sc(["I had moderate issues."] * 3
-            + ["I had severe issues and could not make the upgrade."] * 3,
-            qid="outcome")
+    y = _sc(
+        ["I had moderate issues."] * 3
+        + ["I had severe issues and could not make the upgrade."] * 3,
+        qid="outcome",
+    )
     ymap = {
         "I had moderate issues.": "Problems",
         "I had severe issues and could not make the upgrade.": "Problems",
@@ -620,6 +670,7 @@ def test_sankey_links_raises_on_x_y_collision():
     x = _sc(["Shared"] * 6, qid="x")
     y = _sc(["Shared"] * 6, qid="y")
     import pytest
+
     with pytest.raises(ValueError, match="collide"):
         sankey_links(x, y, min_count=1)
 
@@ -694,13 +745,17 @@ def test_upset_combinations_exclusive_membership_sizes():
     #   r3: B only
     #   r4: A & B & C
     #   r5: (none selected)
-    m = _mc({
-        "A": ["Yes", "Yes", "Yes", "No",  "Yes", "No"],
-        "B": ["No",  "No",  "Yes", "Yes", "Yes", "No"],
-        "C": ["No",  "No",  "No",  "No",  "Yes", "No"],
-    })
+    m = _mc(
+        {
+            "A": ["Yes", "Yes", "Yes", "No", "Yes", "No"],
+            "B": ["No", "No", "Yes", "Yes", "Yes", "No"],
+            "C": ["No", "No", "No", "No", "Yes", "No"],
+        }
+    )
     combos, set_totals, dropped = upset_combinations(
-        m, min_size=1, max_combos=20,
+        m,
+        min_size=1,
+        max_combos=20,
     )
 
     # Exclusive memberships and their sizes:
@@ -728,11 +783,13 @@ def test_upset_combinations_exclusive_membership_sizes():
 def test_upset_combinations_members_in_set_order_not_selection_order():
     # Even though respondent "selected" via columns, members must be ordered
     # by the set order (choice_columns key order), here A, B, C.
-    m = _mc({
-        "A": ["Yes"],
-        "B": ["Yes"],
-        "C": ["Yes"],
-    })
+    m = _mc(
+        {
+            "A": ["Yes"],
+            "B": ["Yes"],
+            "C": ["Yes"],
+        }
+    )
     combos, _set_totals, _dropped = upset_combinations(m, min_size=1, max_combos=20)
     assert len(combos) == 1
     assert combos[0].members == ("A", "B", "C")
@@ -742,10 +799,12 @@ def test_upset_combinations_members_in_set_order_not_selection_order():
 def test_upset_combinations_drops_below_min_size():
     # Sizes: (A,)=6, (B,)=3, (A,B)=2.  min_size=5 keeps only (A,).
     # 2 non-empty combinations are dropped -> dropped == 2.
-    m = _mc({
-        "A": ["Yes"] * 6 + ["No"] * 3 + ["Yes"] * 2,
-        "B": ["No"] * 6 + ["Yes"] * 3 + ["Yes"] * 2,
-    })
+    m = _mc(
+        {
+            "A": ["Yes"] * 6 + ["No"] * 3 + ["Yes"] * 2,
+            "B": ["No"] * 6 + ["Yes"] * 3 + ["Yes"] * 2,
+        }
+    )
     combos, _set_totals, dropped = upset_combinations(m, min_size=5, max_combos=20)
     assert [c.members for c in combos] == [("A",)]
     assert combos[0].size == 6
@@ -758,10 +817,12 @@ def test_upset_combinations_cap_counts_dropped():
     #   (A,)      size 5
     #   (B,)      size 6
     #   (A, B)    size 7
-    m = _mc({
-        "A": ["Yes"] * 5 + ["No"] * 6 + ["Yes"] * 7,
-        "B": ["No"] * 5 + ["Yes"] * 6 + ["Yes"] * 7,
-    })
+    m = _mc(
+        {
+            "A": ["Yes"] * 5 + ["No"] * 6 + ["Yes"] * 7,
+            "B": ["No"] * 5 + ["Yes"] * 6 + ["Yes"] * 7,
+        }
+    )
     combos, _set_totals, dropped = upset_combinations(m, min_size=5, max_combos=2)
     # Largest two by size: (A,B)=7, (B,)=6.
     assert [c.members for c in combos] == [("A", "B"), ("B",)]
@@ -780,10 +841,12 @@ def test_upset_combinations_default_min_size_is_five():
 def test_upset_combinations_set_totals_full_order():
     # set_totals always lists every set in choice order, even sets that never
     # appear in any kept combination.
-    m = _mc({
-        "A": ["Yes"] * 6,
-        "B": ["No"] * 6,
-        "C": ["No"] * 6,
-    })
+    m = _mc(
+        {
+            "A": ["Yes"] * 6,
+            "B": ["No"] * 6,
+            "C": ["No"] * 6,
+        }
+    )
     _combos, set_totals, _dropped = upset_combinations(m, min_size=5, max_combos=20)
     assert set_totals == [("A", 6), ("B", 0), ("C", 0)]

@@ -16,6 +16,7 @@ every choice comfortably clears the pipeline's min-count privacy
 suppression in single-column charts (floor * rows = 12 expected >>
 DEFAULT_BUCKET_MIN_COUNT).
 """
+
 import csv
 import random
 from pathlib import Path
@@ -45,9 +46,7 @@ def _skewed_weights(rng: random.Random, n: int) -> list[float]:
     return [floor + scale * r / total for r in raw]
 
 
-def _weighted_permutation(
-    rng: random.Random, items: list[str], weights: list[float]
-) -> list[str]:
+def _weighted_permutation(rng: random.Random, items: list[str], weights: list[float]) -> list[str]:
     """Plackett-Luce draw: pick without replacement proportional to weight,
     so high-weight items cluster at the top ranks while every permutation
     stays possible. An unweighted permutation would make rank charts
@@ -87,8 +86,7 @@ def synthesize_csv(
             choices = [_choice_str(c) for c in q.choices]
             weights = _skewed_weights(rng, len(choices))
             col = [
-                "" if rng.random() < skip_rate
-                else rng.choices(choices, weights=weights)[0]
+                "" if rng.random() < skip_rate else rng.choices(choices, weights=weights)[0]
                 for _ in range(rows)
             ]
             headers.append(prompt)
@@ -123,11 +121,7 @@ def synthesize_csv(
 
         elif q.type == "text":
             pool = pools.get(q.id, [_PLACEHOLDER_TEXT])
-            col = [
-                "" if rng.random() < skip_rate
-                else rng.choice(pool)
-                for _ in range(rows)
-            ]
+            col = ["" if rng.random() < skip_rate else rng.choice(pool) for _ in range(rows)]
             headers.append(prompt)
             columns.append(col)
 

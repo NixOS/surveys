@@ -1,8 +1,13 @@
 import textwrap
 
 import pytest
-
-from nixos_survey_lib.loader import load_commentary, load_responses, load_schema, normalize_prompt, strip_bracket_suffix
+from nixos_survey_lib.loader import (
+    load_commentary,
+    load_responses,
+    load_schema,
+    normalize_prompt,
+    strip_bracket_suffix,
+)
 
 
 def _write_yaml(tmp_path, text):
@@ -16,7 +21,12 @@ def test_load_schema_returns_all_questions(fixtures_dir):
     assert schema.title == "Tiny Test Survey"
     assert len(schema.questions) == 6
     assert [q.id for q in schema.questions] == [
-        "country", "os", "priorities", "nix_version", "skill", "long_prompt_question"
+        "country",
+        "os",
+        "priorities",
+        "nix_version",
+        "skill",
+        "long_prompt_question",
     ]
 
 
@@ -28,38 +38,50 @@ def test_load_schema_preserves_types_and_choices(fixtures_dir):
     assert by_id["priorities"].type == "ranking"
     assert by_id["nix_version"].type == "text"
     assert by_id["country"].choices == [
-        "Africa", "Asia", "Europe", "North America", "Prefer not to say"
+        "Africa",
+        "Asia",
+        "Europe",
+        "North America",
+        "Prefer not to say",
     ]
     assert by_id["nix_version"].choices is None
 
 
 def test_load_schema_rejects_missing_id(tmp_path):
-    p = _write_yaml(tmp_path, """
+    p = _write_yaml(
+        tmp_path,
+        """
         title: t
         questions:
           - prompt: hi
             type: single
             choices: [a]
-    """)
+    """,
+    )
     with pytest.raises(ValueError, match="missing 'id'"):
         load_schema(p)
 
 
 def test_load_schema_rejects_non_identifier_id(tmp_path):
-    p = _write_yaml(tmp_path, """
+    p = _write_yaml(
+        tmp_path,
+        """
         title: t
         questions:
           - id: "1bad"
             prompt: hi
             type: single
             choices: [a]
-    """)
+    """,
+    )
     with pytest.raises(ValueError, match="not a valid Python identifier"):
         load_schema(p)
 
 
 def test_load_schema_rejects_duplicate_ids(tmp_path):
-    p = _write_yaml(tmp_path, """
+    p = _write_yaml(
+        tmp_path,
+        """
         title: t
         questions:
           - id: dup
@@ -70,7 +92,8 @@ def test_load_schema_rejects_duplicate_ids(tmp_path):
             prompt: b
             type: single
             choices: [y]
-    """)
+    """,
+    )
     with pytest.raises(ValueError, match="duplicate question id"):
         load_schema(p)
 
@@ -200,7 +223,9 @@ def test_load_responses_errors_when_csv_has_extra_multi_choices(tmp_path):
     """If the CSV has multi-choice columns whose bracket suffix is not in
     the YAML question's choices, the loader must raise (silent drops hide
     real data-loss bugs)."""
-    yaml_p = _write_yaml(tmp_path, """
+    yaml_p = _write_yaml(
+        tmp_path,
+        """
         title: t
         questions:
           - id: os
@@ -209,7 +234,8 @@ def test_load_responses_errors_when_csv_has_extra_multi_choices(tmp_path):
             choices:
               - Linux
               - macOS
-    """)
+    """,
+    )
     csv_p = tmp_path / "responses.csv"
     csv_p.write_text(
         '"Which OS do you use? [Linux]","Which OS do you use? [macOS]","Which OS do you use? [Windows]"\n'
@@ -227,7 +253,9 @@ def test_load_responses_errors_when_csv_has_extra_multi_choices(tmp_path):
 def test_load_responses_errors_when_yaml_has_extra_multi_choices(tmp_path):
     """If the YAML lists choices that have no matching CSV column, the
     loader must raise."""
-    yaml_p = _write_yaml(tmp_path, """
+    yaml_p = _write_yaml(
+        tmp_path,
+        """
         title: t
         questions:
           - id: os
@@ -238,12 +266,10 @@ def test_load_responses_errors_when_yaml_has_extra_multi_choices(tmp_path):
               - macOS
               - Windows
               - BSD
-    """)
-    csv_p = tmp_path / "responses.csv"
-    csv_p.write_text(
-        '"Which OS do you use? [Linux]","Which OS do you use? [macOS]"\n'
-        '"Yes","No"\n'
+    """,
     )
+    csv_p = tmp_path / "responses.csv"
+    csv_p.write_text('"Which OS do you use? [Linux]","Which OS do you use? [macOS]"\n"Yes","No"\n')
     schema = load_schema(yaml_p)
     with pytest.raises(ValueError) as exc:
         load_responses(csv_p, schema=schema)

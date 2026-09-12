@@ -17,7 +17,10 @@ buildPythonPackage {
   src = ./.;
 
   build-system = [ setuptools ];
-  dependencies = [ polars pyyaml ];
+  dependencies = [
+    polars
+    pyyaml
+  ];
 
   nativeCheckInputs = [ pytestCheckHook ];
   pythonImportsCheck = [ "nixos_survey_lib" ];

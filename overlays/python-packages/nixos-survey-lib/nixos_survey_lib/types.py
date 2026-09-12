@@ -4,7 +4,6 @@ from typing import Any, Literal
 
 import polars as pl
 
-
 QuestionType = Literal["single", "multiple", "ranking", "text"]
 
 

@@ -25,36 +25,88 @@ def _build_page(fixtures_dir: Path) -> Page:
         year=2025,
         title="Tiny Survey Test",
         sections=[
-            Section("demographics", "Demographics", rows=[
-                Row("country", "Country",
-                    question=r.country.question.prompt,
-                    commentary="Europe leads in the synthetic fixture.",
-                    charts=[horizontal_bar(
-                        counts_single(r.country, bucket_min_percent=None, bucket_min_count=None))]),
-                Row("skill", "Skill",
-                    question=r.skill.question.prompt,
-                    commentary="Distribution across three buckets.",
-                    charts=[horizontal_bar(
-                        counts_single(r.skill, bucket_min_percent=None, bucket_min_count=None,
-                                       order=["Beginner", "Intermediate", "Advanced"]))]),
-            ]),
-            Section("tech", "Technology", rows=[
-                Row("os", "Operating systems",
-                    question=r.os.question.prompt,
-                    commentary="Linux universal.",
-                    charts=[horizontal_bar(counts_multi(r.os, bucket_min_percent=None, bucket_min_count=None))]),
-                Row("nix_version", "Nix version",
-                    question=r.nix_version.question.prompt,
-                    commentary="Extracted from free-text.",
-                    charts=[horizontal_bar(
-                        counts_single(nix_versions, bucket_min_percent=None, bucket_min_count=None))]),
-            ]),
-            Section("ranking", "Ranking", rows=[
-                Row("os2", "Operating systems (again)",
-                    question=r.os.question.prompt,
-                    commentary="Reuse os as a non-ranking placeholder.",
-                    charts=[horizontal_bar(counts_multi(r.os, bucket_min_percent=None, bucket_min_count=None))]),
-            ]),
+            Section(
+                "demographics",
+                "Demographics",
+                rows=[
+                    Row(
+                        "country",
+                        "Country",
+                        question=r.country.question.prompt,
+                        commentary="Europe leads in the synthetic fixture.",
+                        charts=[
+                            horizontal_bar(
+                                counts_single(
+                                    r.country, bucket_min_percent=None, bucket_min_count=None
+                                )
+                            )
+                        ],
+                    ),
+                    Row(
+                        "skill",
+                        "Skill",
+                        question=r.skill.question.prompt,
+                        commentary="Distribution across three buckets.",
+                        charts=[
+                            horizontal_bar(
+                                counts_single(
+                                    r.skill,
+                                    bucket_min_percent=None,
+                                    bucket_min_count=None,
+                                    order=["Beginner", "Intermediate", "Advanced"],
+                                )
+                            )
+                        ],
+                    ),
+                ],
+            ),
+            Section(
+                "tech",
+                "Technology",
+                rows=[
+                    Row(
+                        "os",
+                        "Operating systems",
+                        question=r.os.question.prompt,
+                        commentary="Linux universal.",
+                        charts=[
+                            horizontal_bar(
+                                counts_multi(r.os, bucket_min_percent=None, bucket_min_count=None)
+                            )
+                        ],
+                    ),
+                    Row(
+                        "nix_version",
+                        "Nix version",
+                        question=r.nix_version.question.prompt,
+                        commentary="Extracted from free-text.",
+                        charts=[
+                            horizontal_bar(
+                                counts_single(
+                                    nix_versions, bucket_min_percent=None, bucket_min_count=None
+                                )
+                            )
+                        ],
+                    ),
+                ],
+            ),
+            Section(
+                "ranking",
+                "Ranking",
+                rows=[
+                    Row(
+                        "os2",
+                        "Operating systems (again)",
+                        question=r.os.question.prompt,
+                        commentary="Reuse os as a non-ranking placeholder.",
+                        charts=[
+                            horizontal_bar(
+                                counts_multi(r.os, bucket_min_percent=None, bucket_min_count=None)
+                            )
+                        ],
+                    ),
+                ],
+            ),
         ],
     )
 

@@ -93,15 +93,27 @@ ls result/
    ```
    nix-store --add-fixed sha256 /path/to/nix-community-survey-2025-completed-responses.csv
    ```
-2. Iterate live (recomputes from the CSV, watches the pipeline):
+1. Iterate live (recomputes from the CSV, watches the pipeline):
    ```
    nix develop
    dev --live
    ```
-3. When the data should change for everyone, regenerate and commit the vendored
+1. When the data should change for everyone, regenerate and commit the vendored
    file:
    ```
    vendor-data
    git add overlays/top-level/nixos-surveys-community-2025-data/results-2025.json
    git commit
    ```
+
+## Formatting
+
+The repository is formatted with [treefmt-nix](https://github.com/numtide/treefmt-nix):
+nixfmt, deadnix, and statix for Nix; ruff for Python (`ruff.toml`); mdformat for
+Markdown; taplo for TOML. `commentary.md` files, the vendored results JSON, and the
+Astro site are excluded.
+
+```
+nix fmt          # format the tree
+nix flake check  # fails on unformatted files
+```

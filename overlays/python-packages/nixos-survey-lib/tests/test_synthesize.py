@@ -49,8 +49,7 @@ def test_synthesize_single_values_within_choices(fixtures_dir, tmp_path):
     schema, out = _generate(fixtures_dir, tmp_path, rows=200, seed=3)
     r = load_responses(out, schema=schema)
     values = set(r["country"].values.to_list())
-    allowed = {"Africa", "Asia", "Europe", "North America",
-               "Prefer not to say", "Skipped"}
+    allowed = {"Africa", "Asia", "Europe", "North America", "Prefer not to say", "Skipped"}
     assert values <= allowed
 
 
@@ -65,9 +64,11 @@ def test_synthesize_yaml_bool_choices_become_yes_no(fixtures_dir, tmp_path):
 
 def test_synthesize_multi_columns_are_yes_no(fixtures_dir, tmp_path):
     _, out = _generate(fixtures_dir, tmp_path, rows=100, seed=2)
-    cols = ["Which operating systems do you use? [Linux]",
-            "Which operating systems do you use? [macOS]",
-            "Which operating systems do you use? [Windows]"]
+    cols = [
+        "Which operating systems do you use? [Linux]",
+        "Which operating systems do you use? [macOS]",
+        "Which operating systems do you use? [Windows]",
+    ]
     with out.open(newline="") as f:
         values = {row[c] for row in csv.DictReader(f) for c in cols}
     assert values <= {"Yes", "No"}
@@ -75,9 +76,11 @@ def test_synthesize_multi_columns_are_yes_no(fixtures_dir, tmp_path):
 
 def test_synthesize_rankings_are_full_permutations_or_skipped(fixtures_dir, tmp_path):
     _, out = _generate(fixtures_dir, tmp_path, rows=200, seed=3)
-    rank_cols = ["Rank your priorities. [Rank 1]",
-                 "Rank your priorities. [Rank 2]",
-                 "Rank your priorities. [Rank 3]"]
+    rank_cols = [
+        "Rank your priorities. [Rank 1]",
+        "Rank your priorities. [Rank 2]",
+        "Rank your priorities. [Rank 3]",
+    ]
     with out.open(newline="") as f:
         for row in csv.DictReader(f):
             ranks = [row[c] for c in rank_cols]
@@ -88,8 +91,9 @@ def test_synthesize_rankings_are_full_permutations_or_skipped(fixtures_dir, tmp_
 
 def test_synthesize_text_pool_respected(fixtures_dir, tmp_path):
     pool = ["2.18.1", "no idea"]
-    schema, out = _generate(fixtures_dir, tmp_path, rows=100, seed=5,
-                            text_pools={"nix_version": pool})
+    schema, out = _generate(
+        fixtures_dir, tmp_path, rows=100, seed=5, text_pools={"nix_version": pool}
+    )
     r = load_responses(out, schema=schema)
     values = set(r["nix_version"].values.to_list())
     assert values <= {"2.18.1", "no idea", "Skipped"}

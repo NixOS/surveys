@@ -5,20 +5,22 @@ let
   inherit (lib.fixedPoints) composeManyExtensions;
   inherit (lib.filesystem) packagesFromDirectoryRecursive;
 
-  misc = final: prev: {
+  misc = _final: _prev: {
     nixosSurveysRepoRoot = ../.;
   };
 
-  top-level = final: prev:
+  top-level =
+    final: prev:
     packagesFromDirectoryRecursive {
       inherit (final) callPackage;
       inherit (prev) newScope;
       directory = ./top-level;
     };
 
-  python-packages = final: prev: {
+  python-packages = _final: prev: {
     pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-      (python-final: python-prev:
+      (
+        python-final: _python-prev:
         packagesFromDirectoryRecursive {
           inherit (python-final) callPackage newScope;
           directory = ./python-packages;

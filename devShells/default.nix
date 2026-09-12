@@ -6,9 +6,14 @@ in
 mapAttrs (system: pkgs: {
   default = pkgs.mkShell {
     packages = [
-      (pkgs.python3.withPackages (ps: [ ps.polars ps.pyyaml ps.pytest ]))
+      (pkgs.python3.withPackages (ps: [
+        ps.polars
+        ps.pyyaml
+        ps.pytest
+      ]))
       pkgs.nodejs_22
       pkgs.watchexec
+      inputs.self.formatter.${system}
     ];
 
     shellHook = ''

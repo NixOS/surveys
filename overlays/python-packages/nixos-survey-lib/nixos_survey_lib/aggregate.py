@@ -2,8 +2,16 @@ from typing import Literal
 
 import polars as pl
 
-from .types import Bin, Combination, CrossTab, MultiChoice, RankDistribution, RankDistItem, Ranking, SingleChoice
-
+from .types import (
+    Bin,
+    Combination,
+    CrossTab,
+    MultiChoice,
+    RankDistItem,
+    RankDistribution,
+    Ranking,
+    SingleChoice,
+)
 
 DEFAULT_BUCKET_MIN_PERCENT: float = 0.5
 # `5` matches the minimum-cell-size floor used by NCHS, California CHHS,
@@ -46,12 +54,7 @@ def counts_single(
     if total == 0:
         return []
 
-    counts_df = (
-        series.to_frame("response")
-        .group_by("response")
-        .len()
-        .rename({"len": "count"})
-    )
+    counts_df = series.to_frame("response").group_by("response").len().rename({"len": "count"})
 
     pct_active = bucket_min_percent is not None and bucket_min_percent > 0
     count_active = bucket_min_count is not None and bucket_min_count > 0
@@ -70,11 +73,15 @@ def counts_single(
             counts_df = counts_df.filter(~pl.col("response").is_in(rare))
             # A combined bucket below the count floor would itself disclose a
             # sub-floor count; drop the rare bins instead.
-            if bucket_action == "combine" and not (count_active and int(rare_count) < bucket_min_count):
-                other_row = pl.DataFrame({
-                    "response": [BUCKET_LABEL],
-                    "count": pl.Series([int(rare_count)], dtype=pl.UInt32),
-                })
+            if bucket_action == "combine" and not (
+                count_active and int(rare_count) < bucket_min_count
+            ):
+                other_row = pl.DataFrame(
+                    {
+                        "response": [BUCKET_LABEL],
+                        "count": pl.Series([int(rare_count)], dtype=pl.UInt32),
+                    }
+                )
                 counts_df = pl.concat([counts_df.select(["response", "count"]), other_row])
             else:
                 counts_df = counts_df.select(["response", "count"])
@@ -84,10 +91,12 @@ def counts_single(
     if order is not None:
         rank = {v: i for i, v in enumerate(order)}
         counts_df = counts_df.with_columns(
-            pl.col("response").map_elements(
+            pl.col("response")
+            .map_elements(
                 lambda v: rank.get(v, len(order)),
                 return_dtype=pl.Int64,
-            ).alias("_rank")
+            )
+            .alias("_rank")
         )
         counts_df = counts_df.sort("_rank").drop("_rank")
     else:
@@ -97,7 +106,12 @@ def counts_single(
 
     rows = counts_df.to_dicts()
     return [
-        Bin(label=row["response"], count=int(row["count"]), percent=row["count"] / total * 100.0, total=total)
+        Bin(
+            label=row["response"],
+            count=int(row["count"]),
+            percent=row["count"] / total * 100.0,
+            total=total,
+        )
         for row in rows
     ]
 
@@ -130,6 +144,7 @@ def counts_multi(
     pct_active = bucket_min_percent is not None and bucket_min_percent > 0
     count_active = bucket_min_count is not None and bucket_min_count > 0
     if pct_active or count_active:
+
         def _is_rare(b: Bin) -> bool:
             if pct_active and b.percent < bucket_min_percent:
                 return True
@@ -145,7 +160,9 @@ def counts_multi(
             # sub-floor count; drop the rare bins instead.
             if not (count_active and other_count < bucket_min_count):
                 other_pct = sum(b.percent for b in rare)
-                keep.append(Bin(label=BUCKET_LABEL, count=other_count, percent=other_pct, total=total))
+                keep.append(
+                    Bin(label=BUCKET_LABEL, count=other_count, percent=other_pct, total=total)
+                )
         bins = keep
 
     return bins
@@ -174,7 +191,9 @@ def crosstab(
     def _resolve_order(arg_order: list[str] | None, series_name: str) -> list[str]:
         actual = df[series_name].unique().to_list()
         if arg_order is None:
-            return df.group_by(series_name).len().sort("len", descending=True)[series_name].to_list()
+            return (
+                df.group_by(series_name).len().sort("len", descending=True)[series_name].to_list()
+            )
         seen: set[str] = set()
         result: list[str] = []
         for v in arg_order:
@@ -250,10 +269,7 @@ def crosstab_multi(
 
     actual_single = df["single"].unique().to_list()
     if x_order is None:
-        x_labels = (
-            df.group_by("single").len()
-            .sort("len", descending=True)["single"].to_list()
-        )
+        x_labels = df.group_by("single").len().sort("len", descending=True)["single"].to_list()
     else:
         seen: set[str] = set()
         x_labels = []
@@ -335,9 +351,7 @@ def sankey_funnel(
         "Severe (resolved)": counts.get(
             "I had severe issues but figured it out after some time.", 0
         ),
-        "Severe (stuck)": counts.get(
-            "I had severe issues and could not make the upgrade.", 0
-        ),
+        "Severe (stuck)": counts.get("I had severe issues and could not make the upgrade.", 0),
     }
     upgraded = sum(severity.values())
     knew = upgraded + did_not_upgrade
@@ -350,26 +364,28 @@ def sankey_funnel(
         {"source": "Knew", "target": "Did not upgrade", "value": did_not_upgrade},
     ]
     for sev_name, sev_count in severity.items():
-        candidate_links.append(
-            {"source": "Upgraded", "target": sev_name, "value": sev_count}
-        )
+        candidate_links.append({"source": "Upgraded", "target": sev_name, "value": sev_count})
 
     # Apply min_count suppression on raw counts before any conversion.
     links = [l for l in candidate_links if int(l["value"]) >= min_count]
 
     if as_percent and total > 0:
-        links = [
-            {**l, "value": round(int(l["value"]) / total * 100, 1)}
-            for l in links
-        ]
+        links = [{**l, "value": round(int(l["value"]) / total * 100, 1)} for l in links]
 
     # List order is the top-to-bottom render order within each column when
     # the renderer preserves order: severity fan under Upgraded, then the two
     # exits, so no ribbon crosses the fan.
     node_order = [
-        "All", "Knew", "Upgraded",
-        "No issues", "Minor", "Moderate", "Severe (resolved)", "Severe (stuck)",
-        "Did not upgrade", "Didn't know",
+        "All",
+        "Knew",
+        "Upgraded",
+        "No issues",
+        "Minor",
+        "Moderate",
+        "Severe (resolved)",
+        "Severe (stuck)",
+        "Did not upgrade",
+        "Didn't know",
     ]
     used: set[str] = set()
     for l in links:
@@ -439,11 +455,7 @@ def sankey_links(
     x_index = {n: i for i, n in enumerate(x_seen)}
     y_index = {n: i for i, n in enumerate(y_seen)}
     # Apply min_count suppression on raw counts before any conversion.
-    surviving_raw = [
-        (mx, my, c)
-        for (mx, my), c in pair_counts.items()
-        if c >= min_count
-    ]
+    surviving_raw = [(mx, my, c) for (mx, my), c in pair_counts.items() if c >= min_count]
     surviving_raw.sort(key=lambda t: (x_index[t[0]], y_index[t[1]]))
 
     if as_percent and total > 0:
@@ -452,10 +464,7 @@ def sankey_links(
             for mx, my, c in surviving_raw
         ]
     else:
-        surviving = [
-            {"source": mx, "target": my, "value": c}
-            for mx, my, c in surviving_raw
-        ]
+        surviving = [{"source": mx, "target": my, "value": c} for mx, my, c in surviving_raw]
 
     used: set[str] = set()
     for l in surviving:
@@ -490,19 +499,23 @@ def rank_distribution(
     # Map each 1-based position to a segment index, and build segment labels.
     if bands is None:
         segment_labels = [f"#{p}" for p in range(1, n_positions + 1)] + ["Unranked"]
+
         # position p (1-based) -> segment index p-1
         def seg_index(pos: int) -> int | None:
             return pos - 1 if 1 <= pos <= n_positions else None
+
         n_segments = n_positions
     else:
-        segment_labels = [
-            (f"{lo}-{hi}" if lo != hi else f"{lo}") for (lo, hi) in bands
-        ] + ["Unranked"]
+        segment_labels = [(f"{lo}-{hi}" if lo != hi else f"{lo}") for (lo, hi) in bands] + [
+            "Unranked"
+        ]
+
         def seg_index(pos: int) -> int | None:
             for i, (lo, hi) in enumerate(bands):
                 if lo <= pos <= hi:
                     return i
             return None  # past the last band -> unranked
+
         n_segments = len(bands)
 
     # Per choice: counts per segment, the overall ranked count (privacy floor),
@@ -511,8 +524,8 @@ def rank_distribution(
     # the last band fold into "Unranked" and score nothing. Scoring by band (not
     # exact position) keeps the order consistent with the bands actually shown.
     seg_counts: dict[str, list[int]] = {}
-    ranked_total: dict[str, int] = {}      # any position; for the privacy floor
-    borda_score: dict[str, int] = {}       # sum of (n_segments - band index)
+    ranked_total: dict[str, int] = {}  # any position; for the privacy floor
+    borda_score: dict[str, int] = {}  # sum of (n_segments - band index)
     for pos, series in enumerate(r.rank_columns, start=1):
         si = seg_index(pos)
         for v in series.to_list():
@@ -571,17 +584,13 @@ def upset_combinations(
     n = len(multi)
 
     set_totals: list[tuple[str, int]] = [
-        (label, int((multi.choice_columns[label] == "Yes").sum()))
-        for label in set_labels
+        (label, int((multi.choice_columns[label] == "Yes").sum())) for label in set_labels
     ]
 
     # Build each respondent's membership tuple in set order.
     membership_counts: dict[tuple[str, ...], int] = {}
     for i in range(n):
-        members = tuple(
-            label for label in set_labels
-            if multi.choice_columns[label][i] == "Yes"
-        )
+        members = tuple(label for label in set_labels if multi.choice_columns[label][i] == "Yes")
         if not members:
             continue  # empty membership is never a combination
         membership_counts[members] = membership_counts.get(members, 0) + 1
@@ -604,4 +613,3 @@ def upset_combinations(
     dropped_count = total_combos - len(combos)
 
     return combos, set_totals, dropped_count
-
