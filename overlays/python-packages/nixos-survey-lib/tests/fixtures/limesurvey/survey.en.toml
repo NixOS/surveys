@@ -1,0 +1,42 @@
+# English text for the emitter golden fixture. "Docs & manuals" exercises
+# HTML escaping in the output.
+[survey]
+title = "Tiny LimeSurvey Fixture"
+intro = "<p>Welcome to the fixture survey.</p>"
+end = "<p>Thanks for taking part.</p>"
+
+[groups.aboutYou]
+title = "About you"
+description = "Two questions about you."
+
+[groups.usage]
+title = "Usage"
+
+[questions.country]
+prompt = "Where do you live?"
+choices.europe = "Europe"
+choices.asia = "Asia"
+
+[questions.age]
+prompt = "How old are you?"
+choices.young = "Under 30"
+choices.old = "30 or older"
+
+[questions.os]
+prompt = "Which operating systems do you use?"
+help = "Pick all that apply."
+choices.linux = "GNU/Linux"
+choices.macos = "macOS"
+choices.windows = "Windows"
+
+[questions.priorities]
+prompt = "Rank your priorities."
+choices.perf = "Performance"
+choices.security = "Security"
+choices.docs = "Docs & manuals"
+
+[questions.nixVersion]
+prompt = "Which version of Nix do you use?"
+
+[questions.feedback]
+prompt = "Anything else?"

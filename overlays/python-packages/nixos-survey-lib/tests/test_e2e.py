@@ -5,21 +5,22 @@ from nixos_survey_lib.aggregate import (
     counts_multi,
     counts_single,
 )
-from nixos_survey_lib.loader import load_responses, load_schema
+from nixos_survey_lib.loader import load_responses
 from nixos_survey_lib.normalize import extract_first_semver
 from nixos_survey_lib.page import page_to_json
 from nixos_survey_lib.render_echarts import (
     horizontal_bar,
 )
+from nixos_survey_lib.schema import load_survey
 from nixos_survey_lib.types import Page, Row, Section
 
 
 def _build_page(fixtures_dir: Path) -> Page:
     """The fixture pipeline; also used to regenerate expected_results.json."""
-    schema = load_schema(fixtures_dir / "tiny_survey.yaml")
+    schema = load_survey(fixtures_dir / "tiny_survey.toml")
     r = load_responses(fixtures_dir / "tiny_responses.csv", schema=schema)
 
-    nix_versions = extract_first_semver(r.nix_version)
+    nix_versions = extract_first_semver(r.nixVersion)
 
     return Page(
         year=2025,
@@ -78,7 +79,7 @@ def _build_page(fixtures_dir: Path) -> Page:
                     Row(
                         "nix_version",
                         "Nix version",
-                        question=r.nix_version.question.prompt,
+                        question=r.nixVersion.question.prompt,
                         commentary="Extracted from free-text.",
                         charts=[
                             horizontal_bar(

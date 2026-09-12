@@ -27,7 +27,6 @@ from nixos_survey_lib.aggregate import (
 from nixos_survey_lib.loader import (
     load_commentary,
     load_responses,
-    load_schema,
 )
 from nixos_survey_lib.normalize import (
     extract_first_semver,
@@ -44,6 +43,7 @@ from nixos_survey_lib.render_echarts import (
     sankey,
     upset,
 )
+from nixos_survey_lib.schema import load_survey
 from nixos_survey_lib.types import Page, Row, Section
 
 # --- Ordinal orderings used by multiple rows ------------------------------
@@ -150,23 +150,23 @@ STABLE_UPGRADE_CROSS_EXCLUDE = [
 
 def main(csv_path: str, out_path: str) -> None:
     here = Path(__file__).resolve().parent
-    schema = load_schema(here / "survey.yaml")
+    schema = load_survey(here / "survey.toml")
     r = load_responses(Path(csv_path), schema=schema)
     cm = load_commentary(here / "commentary.md")
 
     # Nix version is free-text; extract semver and bucket rare ones.
-    nix_version = extract_first_semver(r.nix_version)
+    nix_version = extract_first_semver(r.nixVersion)
 
     # Free-text Yes/No questions
-    workplace_uses_nix = normalize_yes_no(r.workplace_uses_nix)
-    workplace_decision = normalize_yes_no(r.workplace_decision)
+    workplace_uses_nix = normalize_yes_no(r.workplaceUsesNix)
+    workplace_decision = normalize_yes_no(r.workplaceDecision)
 
     def q(qid: str) -> str:
         return r[qid].question.prompt
 
     _skill_x_exp_ct = crosstab(
-        r.years_using_nix,
-        r.skill_level,
+        r.yearsUsingNix,
+        r.skillLevel,
         normalize="y",
         x_order=YEARS_USING_NIX_ORDER,
         y_order=SKILL_ORDER,
@@ -175,24 +175,24 @@ def main(csv_path: str, out_path: str) -> None:
     )
     _traits_rate_exp_ct = crosstab_multi(
         r.traits,
-        r.years_using_nix,
+        r.yearsUsingNix,
         denominator="rate",
         x_order=YEARS_USING_NIX_ORDER,
         x_exclude=["Skipped", "Prefer not to say", "I don't use Nix"],
     )
 
-    su_funnel_nodes, su_funnel_links = sankey_funnel(r.stable_upgrade, as_percent=True)
+    su_funnel_nodes, su_funnel_links = sankey_funnel(r.stableUpgrade, as_percent=True)
     su_cross_nodes, su_cross_links = sankey_links(
-        r.years_using_nix,
-        r.stable_upgrade,
+        r.yearsUsingNix,
+        r.stableUpgrade,
         x_band=YEARS_USING_NIX_BAND,
         y_map=STABLE_UPGRADE_OUTCOME_MAP,
         exclude=STABLE_UPGRADE_CROSS_EXCLUDE,
         as_percent=True,
     )
     discovery_nodes, discovery_links = sankey_links(
-        r.first_heard_which,
-        r.first_heard_how,
+        r.firstHeardWhich,
+        r.firstHeardHow,
         x_band={"I don’t remember": "Don’t recall (Nix vs NixOS)"},
         exclude=["Skipped"],
         as_percent=True,
@@ -244,12 +244,12 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "gender_identity",
                         "Gender Identity",
-                        question=q("gender_identity"),
+                        question=q("genderIdentity"),
                         commentary=cm["gender_identity"],
                         charts=[
                             horizontal_bar(
                                 counts_single(
-                                    r.gender_identity, bucket_min_percent=None, bucket_action="drop"
+                                    r.genderIdentity, bucket_min_percent=None, bucket_action="drop"
                                 )
                             )
                         ],
@@ -270,12 +270,12 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "years_programming",
                         "Years Coding",
-                        question=q("years_programming"),
+                        question=q("yearsProgramming"),
                         commentary=cm["years_programming"],
                         charts=[
                             horizontal_bar(
                                 counts_single(
-                                    r.years_programming,
+                                    r.yearsProgramming,
                                     order=YEARS_PROGRAMMING_ORDER,
                                     bucket_min_percent=None,
                                     bucket_action="drop",
@@ -329,44 +329,44 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "operating_systems",
                         "Operating Systems",
-                        question=q("operating_systems"),
+                        question=q("operatingSystems"),
                         commentary=cm["operating_systems"],
-                        charts=[horizontal_bar(counts_multi(r.operating_systems))],
+                        charts=[horizontal_bar(counts_multi(r.operatingSystems))],
                     ),
                     Row(
                         "nix_on_os",
                         "Operating systems running Nix",
-                        question=q("nix_on_os"),
+                        question=q("nixOnOs"),
                         commentary=cm["nix_on_os"],
-                        charts=[horizontal_bar(counts_multi(r.nix_on_os))],
+                        charts=[horizontal_bar(counts_multi(r.nixOnOs))],
                     ),
                     Row(
                         "target_triple",
                         "Target Triple",
-                        question=q("target_triple"),
+                        question=q("targetTriple"),
                         commentary=cm["target_triple"],
-                        charts=[horizontal_bar(counts_multi(r.target_triple))],
+                        charts=[horizontal_bar(counts_multi(r.targetTriple))],
                     ),
                     Row(
                         "experimental_features",
                         "Experimental Features",
-                        question=q("experimental_features"),
+                        question=q("experimentalFeatures"),
                         commentary=cm["experimental_features"],
-                        charts=[lollipop(counts_multi(r.experimental_features))],
+                        charts=[lollipop(counts_multi(r.experimentalFeatures))],
                     ),
                     Row(
                         "install_method",
                         "Install Method",
-                        question=q("install_method"),
+                        question=q("installMethod"),
                         commentary=cm["install_method"],
-                        charts=[horizontal_bar(counts_multi(r.install_method))],
+                        charts=[horizontal_bar(counts_multi(r.installMethod))],
                     ),
                     Row(
                         "nix_implementations",
                         "Nix Implementations",
-                        question=q("nix_implementations"),
+                        question=q("nixImplementations"),
                         commentary=cm["nix_implementations"],
-                        charts=[horizontal_bar(counts_multi(r.nix_implementations))],
+                        charts=[horizontal_bar(counts_multi(r.nixImplementations))],
                     ),
                     Row(
                         "infrastructure",
@@ -378,30 +378,30 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "nix_version",
                         "Nix Version",
-                        question=q("nix_version"),
+                        question=q("nixVersion"),
                         commentary=cm["nix_version"],
                         charts=[lollipop(counts_single(nix_version, bucket_min_percent=0.1))],
                     ),
                     Row(
                         "nixos_releases",
                         "NixOS Release",
-                        question=q("nixos_releases"),
+                        question=q("nixosReleases"),
                         commentary=cm["nixos_releases"],
-                        charts=[horizontal_bar(counts_multi(r.nixos_releases))],
+                        charts=[horizontal_bar(counts_multi(r.nixosReleases))],
                     ),
                     Row(
                         "hardware_configuration",
                         "Hardware Configuration",
-                        question=q("hardware_configuration"),
+                        question=q("hardwareConfig"),
                         commentary=cm["hardware_configuration"],
-                        charts=[horizontal_bar(counts_multi(r.hardware_configuration))],
+                        charts=[horizontal_bar(counts_multi(r.hardwareConfig))],
                     ),
                     Row(
                         "software_ecosystems",
                         "Software Ecosystems",
-                        question=q("software_ecosystems"),
+                        question=q("softwareEcosystems"),
                         commentary=cm["software_ecosystems"],
-                        charts=[lollipop(counts_multi(r.software_ecosystems))],
+                        charts=[lollipop(counts_multi(r.softwareEcosystems))],
                     ),
                 ],
             ),
@@ -412,13 +412,13 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "stable_upgrade",
                         "Stable Upgrade",
-                        question=q("stable_upgrade"),
+                        question=q("stableUpgrade"),
                         commentary=cm["stable_upgrade"],
                         wide=True,
                         charts=[
                             likert_bar(
                                 counts_single(
-                                    r.stable_upgrade,
+                                    r.stableUpgrade,
                                     order=STABLE_UPGRADE_ORDER,
                                     exclude=["Skipped"],
                                     bucket_min_percent=None,
@@ -458,12 +458,12 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "years_using_nix",
                         "Years using Nix",
-                        question=q("years_using_nix"),
+                        question=q("yearsUsingNix"),
                         commentary=cm["years_using_nix"],
                         charts=[
                             horizontal_bar(
                                 counts_single(
-                                    r.years_using_nix,
+                                    r.yearsUsingNix,
                                     order=YEARS_USING_NIX_ORDER,
                                     bucket_min_percent=None,
                                 )
@@ -473,12 +473,12 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "skill_level",
                         "Nix Skill Level",
-                        question=q("skill_level"),
+                        question=q("skillLevel"),
                         commentary=cm["skill_level"],
                         charts=[
                             horizontal_bar(
                                 counts_single(
-                                    r.skill_level, order=SKILL_ORDER, bucket_min_percent=None
+                                    r.skillLevel, order=SKILL_ORDER, bucket_min_percent=None
                                 )
                             )
                         ],
@@ -486,21 +486,21 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "first_heard_which",
                         "First heard of: Nix or NixOS",
-                        question=q("first_heard_which"),
+                        question=q("firstHeardWhich"),
                         commentary=cm["first_heard_which"],
-                        charts=[horizontal_bar(counts_single(r.first_heard_which))],
+                        charts=[horizontal_bar(counts_single(r.firstHeardWhich))],
                     ),
                     Row(
                         "first_heard_how",
                         "First-exposure channel",
-                        question=q("first_heard_how"),
+                        question=q("firstHeardHow"),
                         commentary=cm["first_heard_how"],
-                        charts=[horizontal_bar(counts_single(r.first_heard_how))],
+                        charts=[horizontal_bar(counts_single(r.firstHeardHow))],
                     ),
                     Row(
                         "discovery_flow",
                         "Discovery flow",
-                        question=f"{q('first_heard_which')} → {q('first_heard_how')}",
+                        question=f"{q('firstHeardWhich')} → {q('firstHeardHow')}",
                         commentary=cm["discovery_flow"],
                         wide=True,
                         charts=[sankey(discovery_nodes, discovery_links)],
@@ -512,11 +512,11 @@ def main(csv_path: str, out_path: str) -> None:
                         commentary=cm["user_types"],
                         wide=True,
                         charts=[
-                            horizontal_bar(counts_multi(r.user_types)),
+                            horizontal_bar(counts_multi(r.userTypes)),
                             upset(
-                                *upset_combinations(r.user_types),
+                                *upset_combinations(r.userTypes),
                                 height=560,
-                                set_labels={c: c.split(".", 1)[0] for c in r.user_types.choices()},
+                                set_labels={c: c.split(".", 1)[0] for c in r.userTypes.choices()},
                             ),
                         ],
                     ),
@@ -537,19 +537,19 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "regular_toolset",
                         "Regular toolset",
-                        question=q("regular_toolset"),
+                        question=q("regularToolset"),
                         commentary=cm["regular_toolset"],
-                        charts=[horizontal_bar(counts_single(r.regular_toolset))],
+                        charts=[horizontal_bar(counts_single(r.regularToolset))],
                     ),
                     Row(
                         "help_success_frequency",
                         "Help-search success rate",
-                        question=q("help_success_frequency"),
+                        question=q("helpSuccessFrequency"),
                         commentary=cm["help_success_frequency"],
                         charts=[
                             horizontal_bar(
                                 counts_single(
-                                    r.help_success_frequency,
+                                    r.helpSuccessFrequency,
                                     order=HELP_FREQUENCY_ORDER,
                                     bucket_min_percent=None,
                                 )
@@ -559,14 +559,14 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "involvement_rate_by_experience",
                         "Involvement rate by years using Nix",
-                        question=f"{q('involvement')} × {q('years_using_nix')}",
+                        question=f"{q('involvement')} × {q('yearsUsingNix')}",
                         commentary=cm["involvement_rate_by_experience"],
                         wide=True,
                         charts=[
                             heatmap(
                                 crosstab_multi(
                                     r.involvement,
-                                    r.years_using_nix,
+                                    r.yearsUsingNix,
                                     denominator="rate",
                                     x_order=YEARS_USING_NIX_ORDER,
                                     x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
@@ -579,14 +579,14 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "involvement_lift_by_experience",
                         "Involvement lift by years using Nix",
-                        question=f"{q('involvement')} × {q('years_using_nix')}",
+                        question=f"{q('involvement')} × {q('yearsUsingNix')}",
                         commentary=cm["involvement_lift_by_experience"],
                         wide=True,
                         charts=[
                             heatmap(
                                 crosstab_multi(
                                     r.involvement,
-                                    r.years_using_nix,
+                                    r.yearsUsingNix,
                                     denominator="lift",
                                     x_order=YEARS_USING_NIX_ORDER,
                                     x_exclude=["I don't use Nix", "Prefer not to say", "Skipped"],
@@ -599,7 +599,7 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "skill_x_experience",
                         "Expertise vs Experience",
-                        question=f"{q('skill_level')} × {q('years_using_nix')}",
+                        question=f"{q('skillLevel')} × {q('yearsUsingNix')}",
                         commentary=cm["skill_x_experience"],
                         wide=True,
                         charts=[
@@ -612,14 +612,14 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "experience_x_skill",
                         "Experience vs Expertise",
-                        question=f"{q('years_using_nix')} × {q('skill_level')}",
+                        question=f"{q('yearsUsingNix')} × {q('skillLevel')}",
                         commentary=cm["experience_x_skill"],
                         wide=True,
                         charts=[
                             heatmap(
                                 crosstab(
-                                    r.skill_level,
-                                    r.years_using_nix,
+                                    r.skillLevel,
+                                    r.yearsUsingNix,
                                     normalize="y",
                                     x_order=SKILL_ORDER,
                                     y_order=YEARS_USING_NIX_ORDER,
@@ -638,14 +638,14 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "traits_rate_by_skill",
                         "Trait rate by skill level",
-                        question=f"{q('traits')} × {q('skill_level')}",
+                        question=f"{q('traits')} × {q('skillLevel')}",
                         commentary=cm["traits_rate_by_skill"],
                         wide=True,
                         charts=[
                             heatmap(
                                 crosstab_multi(
                                     r.traits,
-                                    r.skill_level,
+                                    r.skillLevel,
                                     denominator="rate",
                                     x_order=["Beginner", "Intermediate", "Advanced"],
                                     x_exclude=[
@@ -664,14 +664,14 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "traits_lift_by_skill",
                         "Trait lift by skill level",
-                        question=f"{q('traits')} × {q('skill_level')}",
+                        question=f"{q('traits')} × {q('skillLevel')}",
                         commentary=cm["traits_lift_by_skill"],
                         wide=True,
                         charts=[
                             heatmap(
                                 crosstab_multi(
                                     r.traits,
-                                    r.skill_level,
+                                    r.skillLevel,
                                     denominator="lift",
                                     x_order=["Beginner", "Intermediate", "Advanced"],
                                     x_exclude=[
@@ -688,7 +688,7 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "traits_rate_by_experience",
                         "Trait rate by years using Nix",
-                        question=f"{q('traits')} × {q('years_using_nix')}",
+                        question=f"{q('traits')} × {q('yearsUsingNix')}",
                         commentary=cm["traits_rate_by_experience"],
                         wide=True,
                         charts=[
@@ -700,14 +700,14 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "traits_lift_by_experience",
                         "Trait lift by years using Nix",
-                        question=f"{q('traits')} × {q('years_using_nix')}",
+                        question=f"{q('traits')} × {q('yearsUsingNix')}",
                         commentary=cm["traits_lift_by_experience"],
                         wide=True,
                         charts=[
                             heatmap(
                                 crosstab_multi(
                                     r.traits,
-                                    r.years_using_nix,
+                                    r.yearsUsingNix,
                                     denominator="lift",
                                     x_order=YEARS_USING_NIX_ORDER,
                                     x_exclude=["Skipped", "Prefer not to say", "I don't use Nix"],
@@ -726,7 +726,7 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "workplace_uses_nix",
                         "Workplace adoption",
-                        question=q("workplace_uses_nix"),
+                        question=q("workplaceUsesNix"),
                         commentary=cm["workplace_uses_nix"],
                         charts=[
                             horizontal_bar(
@@ -741,7 +741,7 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "workplace_decision",
                         "Workplace decision-maker",
-                        question=q("workplace_decision"),
+                        question=q("workplaceDecision"),
                         commentary=cm["workplace_decision"],
                         charts=[
                             horizontal_bar(
@@ -762,13 +762,13 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "contribution_experience",
                         "Contributor experience",
-                        question=q("contribution_experience"),
+                        question=q("contribExperience"),
                         commentary=cm["contribution_experience"],
                         wide=True,
                         charts=[
-                            horizontal_bar(counts_multi(r.contribution_experience)),
+                            horizontal_bar(counts_multi(r.contribExperience)),
                             upset(
-                                *upset_combinations(r.contribution_experience, max_combos=25),
+                                *upset_combinations(r.contribExperience, max_combos=25),
                                 height=760,
                                 set_labels={
                                     "I don’t plan to contribute.": "No plan",
@@ -795,19 +795,19 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "donation_incentives",
                         "Donation incentives",
-                        question=q("donation_incentives"),
+                        question=q("donationIncentives"),
                         commentary=cm["donation_incentives"],
-                        charts=[horizontal_bar(counts_multi(r.donation_incentives))],
+                        charts=[horizontal_bar(counts_multi(r.donationIncentives))],
                     ),
                     Row(
                         "foundation_priorities",
                         "Foundation funding priorities",
-                        question=q("foundation_priorities"),
+                        question=q("foundationPriorities"),
                         commentary=cm["foundation_priorities"],
                         charts=[
                             rank_distribution_bar(
                                 rank_distribution(
-                                    r.foundation_priorities, bands=[(1, 3), (4, 6), (7, 10)]
+                                    r.foundationPriorities, bands=[(1, 3), (4, 6), (7, 10)]
                                 ),
                                 bands=[(1, 3), (4, 6), (7, 10)],
                             )
@@ -822,12 +822,12 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "objects_interact_with",
                         "Objects you interact with",
-                        question=q("objects_interact_with"),
+                        question=q("objectsInteractWith"),
                         commentary=cm["objects_interact_with"],
                         charts=[
                             rank_distribution_bar(
                                 rank_distribution(
-                                    r.objects_interact_with, bands=[(1, 3), (4, 6), (7, 10)]
+                                    r.objectsInteractWith, bands=[(1, 3), (4, 6), (7, 10)]
                                 ),
                                 bands=[(1, 3), (4, 6), (7, 10)],
                             )
@@ -836,12 +836,12 @@ def main(csv_path: str, out_path: str) -> None:
                     Row(
                         "help_resources",
                         "Help resources",
-                        question=q("help_resources"),
+                        question=q("helpResources"),
                         commentary=cm["help_resources"],
                         charts=[
                             rank_distribution_bar(
                                 rank_distribution(
-                                    r.help_resources, bands=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
+                                    r.helpResources, bands=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
                                 ),
                                 bands=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)],
                             )

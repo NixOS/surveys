@@ -1,0 +1,45 @@
+# Structure of the loader test fixture. Text lives in tiny_survey.en.toml;
+# responses in tiny_responses.csv. Ids are LimeSurvey-valid codes.
+[survey]
+id = 4242
+language = "en"
+languages = ["en"]
+
+[survey.privacy]
+anonymized = true
+save_ip_address = false
+save_referrer = false
+date_stamp = false
+save_timings = false
+
+[[groups]]
+id = "all"
+
+[[groups.questions]]
+id = "country"
+type = "single"
+choices = ["africa", "asia", "europe", "northAmerica", "preferNot"]
+
+[[groups.questions]]
+id = "os"
+type = "multiple"
+choices = ["linux", "macos", "windows"]
+
+[[groups.questions]]
+id = "priorities"
+type = "ranking"
+choices = ["performance", "security", "documentation"]
+
+[[groups.questions]]
+id = "nixVersion"
+type = "text"
+
+[[groups.questions]]
+id = "skill"
+type = "single"
+choices = ["beginner", "intermediate", "advanced"]
+
+[[groups.questions]]
+id = "longPrompt"
+type = "single"
+choices = ["yes", "no"]

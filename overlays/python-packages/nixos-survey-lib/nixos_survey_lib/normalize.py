@@ -1,6 +1,8 @@
+from dataclasses import replace
+
 import polars as pl
 
-from .types import Question, SingleChoice, TextResponse
+from .types import SingleChoice, TextResponse
 
 DEFAULT_YES_ALIASES: frozenset[str] = frozenset({"yes", "y", "yep", "yeah", "yes.", "yes!"})
 DEFAULT_NO_ALIASES: frozenset[str] = frozenset({"no", "n", "nope", "nah", "no.", "no!", "no :("})
@@ -29,13 +31,7 @@ def normalize_yes_no(
         .otherwise(pl.lit("Other"))
     )
 
-    new_q = Question(
-        id=r.question.id,
-        prompt=r.question.prompt,
-        type="single",
-        choices=["Yes", "No", "Other", "Skipped"],
-        csv_columns=r.question.csv_columns,
-    )
+    new_q = replace(r.question, type="single", choices=["Yes", "No", "Other", "Skipped"])
     return SingleChoice(question=new_q, values=pl.select(out).to_series())
 
 
@@ -57,11 +53,5 @@ def extract_first_semver(
         .then(pl.lit(skipped_label))
         .otherwise(extracted.fill_null(no_match_label))
     )
-    new_q = Question(
-        id=r.question.id,
-        prompt=r.question.prompt,
-        type="single",
-        choices=None,
-        csv_columns=r.question.csv_columns,
-    )
+    new_q = replace(r.question, type="single", choices=None)
     return SingleChoice(question=new_q, values=pl.select(out).to_series())

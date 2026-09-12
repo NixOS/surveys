@@ -8,7 +8,6 @@ mapAttrs (system: pkgs: {
     packages = [
       (pkgs.python3.withPackages (ps: [
         ps.polars
-        ps.pyyaml
         ps.pytest
       ]))
       pkgs.nodejs_22
@@ -24,7 +23,7 @@ mapAttrs (system: pkgs: {
       # edits). `dev --live`: recompute from the real CSV (requires the CSV in
       # the Nix store) and watchexec-rebuild on pipeline changes. `dev --dummy`:
       # same, but from generated synthetic data — no CSV needed; use this to
-      # iterate on process.py / survey.yaml / nixos_survey_lib.
+      # iterate on process.py / survey.toml / nixos_survey_lib.
       dev() (
         if [ ! -d "lib/site" ]; then
           echo "[dev] must be run from the surveys repo root" >&2
@@ -55,7 +54,7 @@ mapAttrs (system: pkgs: {
           install -m 0644 "$out/results-2025.json" "$target"
           echo "[dev] data ready at $target"
 
-          watchexec -e py,md,yaml -w community/2025 -w overlays/python-packages/nixos-survey-lib --postpone -- bash -c '
+          watchexec -e py,md,toml -w community/2025 -w overlays/python-packages/nixos-survey-lib --postpone -- bash -c '
             out=$(nix build --no-link --print-out-paths "$1") \
               && install -m 0644 "$out/results-2025.json" lib/site/src/content/results/results-2025.json \
               && echo "[dev] data updated"

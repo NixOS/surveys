@@ -60,7 +60,38 @@ Write questions and their choices in this repository, one file per year.
 
 You may make a RFC (Request for Comment) when needed, from selected people or a broad audience, as you see fit.
 
-Implement survey (questions and their choices) in a survey tool.
+Write the survey as TOML in the year's directory (see `community/2025/`):
+
+- `survey.toml` holds the structure: survey id, languages, privacy flags,
+  groups, and questions with their type, flags, and choice keys. No text.
+- `survey.<lang>.toml` holds every human-readable string for one language:
+  title, intro, the optional end text, group titles and their optional
+  descriptions, prompts, help, and one line per choice key. Every language
+  listed in `survey.toml` needs one of these files.
+
+Question ids become LimeSurvey question codes, so they must start with a
+letter, contain only letters and digits, and be at most 20 characters.
+Loading fails with a message naming the file and id when a rule is broken.
+
+The `id` under `[survey]` is only a preference. LimeSurvey uses it when it is
+free and assigns a random one when it is already taken, so pick something
+memorable such as the survey year rather than the id of a survey already on
+the server.
+
+Prompts are emitted as a single line of plain text, so a prompt written as a
+bulleted list in TOML arrives in LimeSurvey flattened; put lists or
+instructions in `help`, or accept the flat text.
+
+Build the LimeSurvey import file and upload it:
+
+```
+nix build .#nixos-surveys-community-2025-limesurvey
+```
+
+Then in LimeSurvey go to Surveys > Create > Import, choose `result/survey.txt`,
+and import. Review the new survey in the admin UI before activating it; the
+privacy settings from `survey.toml` are already applied and cannot be changed
+after activation.
 
 Prepare announcement to open survey for participation.
 The announcement must at least contain
