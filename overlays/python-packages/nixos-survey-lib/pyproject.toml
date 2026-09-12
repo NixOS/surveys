@@ -9,6 +9,9 @@ description = "Processing pipeline for NixOS community survey responses"
 requires-python = ">=3.11"
 dependencies = ["polars>=1.0", "pyyaml"]
 
+[project.scripts]
+nixos-survey-limesurvey = "nixos_survey_lib.cli:main"
+
 [project.optional-dependencies]
 test = ["pytest>=8"]
 
