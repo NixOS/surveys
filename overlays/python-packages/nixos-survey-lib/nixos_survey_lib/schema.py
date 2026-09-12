@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal, TypeVar
 
@@ -96,6 +96,279 @@ class Structure:
     def questions(self) -> list[StructureQuestion]:
         """All questions in document order, across groups."""
         return [q for g in self.groups for q in g.questions]
+
+
+# --- resolved model ----------------------------------------------------------
+#
+# Downstream code reads reference-language text from these dataclasses. The
+# other languages live in Survey.texts and are only used by the converter.
+
+
+@dataclass(frozen=True)
+class Question:
+    """A question with its reference-language text. Every field after
+    `choices` has a default so callers that only know the original five
+    fields (id, prompt, type, choices, csv_columns) keep working."""
+
+    id: str
+    type: QuestionType
+    prompt: str
+    choices: list[str] | None
+    help: str | None = None
+    mandatory: Mandatory = "off"
+    other: bool = False
+    display: Display = "radio"
+    max_answers: int | None = None
+    size: TextSize = "long"
+    choice_keys: list[str] | None = None
+    csv_columns: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class Group:
+    """A group with its reference-language title and optional description."""
+
+    id: str
+    title: str
+    description: str | None
+    questions: list[Question]
+
+
+@dataclass(frozen=True)
+class QuestionText:
+    """One language's text for one question. ``choices`` follows the
+    structure file's key order, never the text file's."""
+
+    prompt: str
+    help: str | None
+    choices: list[str] | None
+
+
+@dataclass(frozen=True)
+class GroupText:
+    """One language's text for one group."""
+
+    title: str
+    description: str | None
+
+
+@dataclass(frozen=True)
+class LanguageTexts:
+    """Everything one text file provides, keyed by group and question id."""
+
+    language: str
+    title: str
+    intro: str
+    end: str | None
+    groups: dict[str, GroupText]
+    questions: dict[str, QuestionText]
+
+
+@dataclass(frozen=True)
+class Survey:
+    """The fully loaded survey. ``title``, ``intro``, ``end`` and the text on
+    ``groups`` are exactly ``texts[language]``; ``texts`` holds every
+    language, reference included, for the LimeSurvey converter."""
+
+    id: int
+    language: str
+    languages: list[str]
+    privacy: Privacy
+    groups: list[Group]
+    title: str
+    intro: str
+    end: str | None
+    texts: dict[str, LanguageTexts]
+
+    @property
+    def questions(self) -> list[Question]:
+        """All questions in document order, across groups."""
+        return [q for g in self.groups for q in g.questions]
+
+
+_TEXT_SURVEY_KEYS = ("title", "intro", "end")
+_TEXT_GROUP_KEYS = ("title", "description")
+_TEXT_QUESTION_KEYS = ("prompt", "help", "choices")
+
+
+def _text(value: Any, where: str) -> str:
+    """Validate a text value: a non-empty string that does not both start
+    and end with a double quote. LimeSurvey's importer strips one layer of
+    quotes from such cells (an Excel workaround), so ``"Other"`` would
+    arrive as ``Other``.
+
+    Text values are stripped of leading and trailing whitespace so that a
+    multi-line TOML string does not carry a trailing newline into a prompt,
+    and from there into the results JSON.
+    """
+    s = _as_str(value, where).strip()
+    if not s:
+        raise SurveyError(f"{where}: must not be empty")
+    if len(s) >= 2 and s.startswith('"') and s.endswith('"'):
+        raise SurveyError(
+            f"{where}: must not both start and end with a double quote; "
+            "LimeSurvey's importer strips them"
+        )
+    return s
+
+
+def _optional_text(tbl: dict[str, Any], key: str, where: str) -> str | None:
+    """A text value that may be absent. Present means the key exists; an
+    empty string is an error, never an absence."""
+    return _text(tbl[key], f"{where}: {key}") if key in tbl else None
+
+
+def text_file_path(structure_path: Path, language: str) -> Path:
+    """`survey.toml` + `de` -> `survey.de.toml`, in the same directory."""
+    structure_path = Path(structure_path)
+    return structure_path.with_name(f"{structure_path.stem}.{language}.toml")
+
+
+def load_texts(path: Path, language: str, structure: Structure) -> LanguageTexts:
+    """Read one language's text file and check it against the structure:
+    one table per group and question id, exactly the listed choice keys,
+    nothing extra."""
+    path = Path(path)
+    doc = _read_toml(path)
+    name = path.name
+    _check_keys(doc, ("survey", "groups", "questions"), name)
+
+    swhere = f"{name}: [survey]"
+    survey = _as_table(_require(doc, "survey", name), swhere)
+    _check_keys(survey, _TEXT_SURVEY_KEYS, swhere)
+    title = _text(_require(survey, "title", swhere), f"{swhere}: title")
+    intro = _text(_require(survey, "intro", swhere), f"{swhere}: intro")
+    end = _optional_text(survey, "end", swhere)
+
+    gwhere = f"{name}: [groups]"
+    groups_tbl = _as_table(_require(doc, "groups", name), gwhere)
+    _check_keys(groups_tbl, tuple(g.id for g in structure.groups), gwhere)
+    groups: dict[str, GroupText] = {}
+    for g in structure.groups:
+        where = f"{name}: [groups.{g.id}]"
+        tbl = _as_table(_require(groups_tbl, g.id, gwhere), where)
+        _check_keys(tbl, _TEXT_GROUP_KEYS, where)
+        groups[g.id] = GroupText(
+            title=_text(_require(tbl, "title", where), f"{where}: title"),
+            description=_optional_text(tbl, "description", where),
+        )
+
+    qwhere = f"{name}: [questions]"
+    questions_tbl = _as_table(_require(doc, "questions", name), qwhere)
+    _check_keys(questions_tbl, tuple(q.id for q in structure.questions), qwhere)
+    questions: dict[str, QuestionText] = {}
+    for q in structure.questions:
+        where = f"{name}: [questions.{q.id}]"
+        tbl = _as_table(_require(questions_tbl, q.id, qwhere), where)
+        _check_keys(tbl, _TEXT_QUESTION_KEYS, where)
+        prompt = _text(_require(tbl, "prompt", where), f"{where}: prompt")
+        help_text = _optional_text(tbl, "help", where)
+        choices: list[str] | None = None
+        if q.choice_keys is not None:
+            cwhere = f"{where}: choices"
+            ctbl = _as_table(_require(tbl, "choices", where), cwhere)
+            _check_keys(ctbl, tuple(q.choice_keys), cwhere)
+            choices = [_text(_require(ctbl, k, cwhere), f"{cwhere}.{k}") for k in q.choice_keys]
+        elif "choices" in tbl:
+            raise SurveyError(f"{where}: choices is not allowed on a text question")
+        questions[q.id] = QuestionText(prompt=prompt, help=help_text, choices=choices)
+
+    return LanguageTexts(
+        language=language,
+        title=title,
+        intro=intro,
+        end=end,
+        groups=groups,
+        questions=questions,
+    )
+
+
+def _check_optional_text_matches(ref: LanguageTexts, other: LanguageTexts, name: str) -> None:
+    """Optional text is present in every language or in none. The reference
+    language is the yardstick; ``name`` is the other file, for the message."""
+
+    def mismatch(what: str) -> None:
+        """Raise for one optional field that differs in presence."""
+        raise SurveyError(
+            f"{name}: {what} must be present in every language file or in none; "
+            f"reference language '{ref.language}' differs"
+        )
+
+    if (ref.end is None) != (other.end is None):
+        mismatch("[survey] end")
+    for gid, g in ref.groups.items():
+        if (g.description is None) != (other.groups[gid].description is None):
+            mismatch(f"[groups.{gid}] description")
+    for qid, q in ref.questions.items():
+        if (q.help is None) != (other.questions[qid].help is None):
+            mismatch(f"[questions.{qid}] help")
+
+
+def _resolve_question(q: StructureQuestion, t: QuestionText) -> Question:
+    """Combine a structure question with its reference-language text."""
+    return Question(
+        id=q.id,
+        type=q.type,
+        prompt=t.prompt,
+        choices=t.choices,
+        help=t.help,
+        mandatory=q.mandatory,
+        other=q.other,
+        display=q.display,
+        max_answers=q.max_answers,
+        size=q.size,
+        choice_keys=q.choice_keys,
+    )
+
+
+def load_survey(path: Path) -> Survey:
+    """Load the structure file at `path` and every text file beside it.
+
+    Order of checks: structure rules, then each text file against the
+    structure, then stray text files for unlisted languages, then optional
+    text presence across languages. Any failure raises SurveyError.
+    """
+    path = Path(path)
+    structure = load_structure(path)
+
+    texts: dict[str, LanguageTexts] = {}
+    for lang in structure.languages:
+        texts[lang] = load_texts(text_file_path(path, lang), lang, structure)
+
+    suffix = ".toml"
+    for stray in sorted(path.parent.glob(f"{path.stem}.*{suffix}")):
+        lang = stray.name[len(path.stem) + 1 : -len(suffix)]
+        if lang not in structure.languages:
+            raise SurveyError(
+                f"{stray.name}: text file for language '{lang}', "
+                f"which is not listed in {path.name} [survey] languages"
+            )
+
+    ref = texts[structure.language]
+    for lang, t in texts.items():
+        if lang != structure.language:
+            _check_optional_text_matches(ref, t, text_file_path(path, lang).name)
+
+    groups = [
+        Group(
+            id=g.id,
+            title=ref.groups[g.id].title,
+            description=ref.groups[g.id].description,
+            questions=[_resolve_question(q, ref.questions[q.id]) for q in g.questions],
+        )
+        for g in structure.groups
+    ]
+    return Survey(
+        id=structure.id,
+        language=structure.language,
+        languages=list(structure.languages),
+        privacy=structure.privacy,
+        groups=groups,
+        title=ref.title,
+        intro=ref.intro,
+        end=ref.end,
+        texts=texts,
+    )
 
 
 # --- generic helpers ---------------------------------------------------------
