@@ -8,7 +8,7 @@
 
   outputs = inputs: {
     overlays       = import ./overlays inputs;
-    legacyPackages = import ./legacy-packages inputs;
-    devShells      = import ./dev-shells inputs;
+    legacyPackages = import ./legacyPackages inputs;
+    devShells      = import ./devShells inputs;
   };
 }
