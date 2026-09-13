@@ -5,7 +5,11 @@ Shares its RPC plumbing with the import test next door; the two live in
 different derivations and neither can import the other, so the handful of
 lines below are duplicated deliberately.
 
-Usage: import.py <base-url> <survey.txt>
+Usage: import.py <base-url> <survey.txt> [browse-url]
+
+``base-url`` is how the VM reaches itself; ``browse-url`` is how the person
+running it reaches the VM, through the forwarded port. They differ, and
+printing the first one sends the reader somewhere they cannot open.
 """
 
 import base64
@@ -32,7 +36,7 @@ def rpc(url: str, method: str, *params):
     return result
 
 
-def main(base_url: str, tsv_path: str) -> None:
+def main(base_url: str, tsv_path: str, browse_url: str | None = None) -> None:
     """Import, activate, and print where to find the survey."""
     url = f"{base_url}/index.php/admin/remotecontrol"
     key = rpc(url, "get_session_key", "admin", "password")
@@ -44,10 +48,10 @@ def main(base_url: str, tsv_path: str) -> None:
         # renders but cannot be submitted, which is the half a reviewer needs.
         rpc(url, "activate_survey", key, sid)
         print(f"survey {sid} imported and activated")
-        print(f"take it at {base_url}/index.php/{sid}")
+        print(f"take it at {(browse_url or base_url).rstrip('/')}/index.php/{sid}")
     finally:
         rpc(url, "release_session_key", key)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3] if sys.argv[3:] else None)

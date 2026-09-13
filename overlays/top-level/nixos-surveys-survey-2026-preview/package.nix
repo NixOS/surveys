@@ -7,9 +7,8 @@
 # A throwaway LimeSurvey with the 2026 survey imported and activated, for
 # people to take rather than for assertions to run against.
 #
-#   echo "127.0.0.1 survey.local" | sudo tee -a /etc/hosts   # once
 #   nix run .#nixos-surveys-survey-2026-preview
-#   then open http://survey.local:8080
+#   then open http://localhost:8080
 #
 # nixos-surveys-limesurvey-import-test covers what the database holds after an
 # import. This covers what a respondent sees: whether a 250-option dropdown is
@@ -18,19 +17,18 @@
 # 2025 free-text feedback actually produced, and none of them is visible in a
 # diff.
 #
-# The host browses by the same name the guest uses because LimeSurvey builds
-# absolute URLs from the host it is served under.
+# The vhost is nginx's default server, so it answers whatever Host header the
+# browser sends and the host side needs no /etc/hosts entry. That matters on
+# NixOS, where /etc/hosts is generated and read-only. survey.local stays as the
+# guest-internal name because the import service below calls LimeSurvey over
+# HTTP during boot; LimeSurvey's publicurl is a relative baseUrl, so link
+# generation does not depend on which name the browser used.
 #
-# NOT VERIFIED END TO END. This derivation builds, the generated script does
-# carry `hostfwd=tcp::8080-:80`, the services.limesurvey block is the same one
-# nixos-surveys-limesurvey-import-test exercises and passes, and
-# activate_survey is a real RemoteControl method
-# (remotecontrol_handle.php:506). What has not been confirmed is that the
-# survey actually serves on the host's port 8080 after boot: booting an
-# interactive VM was not possible where this was written. Expect to spend a
-# few minutes on the first run. The two things most likely to need a fix are
-# LimeSurvey's absolute URLs under a host the browser resolves differently,
-# and import-survey racing the first-boot database install.
+# The first run needs about half a minute while LimeSurvey installs its
+# database; the import service waits for it. Verified in a NixOS test: nginx
+# answers a `Host: localhost` request, and the survey imports and activates.
+# The host-to-guest port forward itself is QEMU's, and the generated script
+# carries `hostfwd=tcp::8080-:80`.
 let
   machine = nixos (
     { pkgs, ... }:
@@ -43,6 +41,7 @@ let
         enable = true;
         webserver = "nginx";
         nginx.virtualHost.serverName = "survey.local";
+        nginx.virtualHost.default = true;
         encryptionKeyFile = pkgs.writeText "key" (lib.strings.replicate 32 "0");
         encryptionNonceFile = pkgs.writeText "nonce" (lib.strings.replicate 24 "0");
         # mkDefault so this merges with the module's own mkDefault'ed
@@ -69,7 +68,8 @@ let
           done
           ${lib.getExe pkgs.python3} ${./import.py} \
             http://survey.local \
-            ${nixos-surveys-community-2026-limesurvey}/survey.txt
+            ${nixos-surveys-community-2026-limesurvey}/survey.txt \
+            http://localhost:8080
         '';
       };
 
