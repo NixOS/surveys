@@ -49,14 +49,14 @@ def test_output_starts_with_bom(fixture_survey):
     assert tsv.encode("utf-8")[:3] == b"\xef\xbb\xbf"
 
 
-def test_header_has_sixteen_standard_columns_plus_max_answers():
+def test_header_is_limesurveys_columns_plus_our_attributes():
     """The header is LimeSurvey's sixteen fixed columns, in its order, plus
-    the one attribute column we use. The importer reads every non-empty cell
+    the two attribute columns we use. The importer reads every non-empty cell
     whose column is not in its skip list (class, type/scale, name, text,
     validation, relevance, help, language, mandatory, other, same_default,
     same_script, default) as a question attribute. That includes id,
     related_id and encrypted, which is why those cells stay empty."""
-    assert len(COLUMNS) == 17
+    assert len(COLUMNS) == 18
     assert COLUMNS[:16] == (
         "id",
         "related_id",
@@ -76,6 +76,19 @@ def test_header_has_sixteen_standard_columns_plus_max_answers():
         "same_script",
     )
     assert COLUMNS[16] == "max_answers"
+    assert COLUMNS[17] == "answer_order"
+
+
+def test_answer_order_on_reference_row_only(fixture_survey):
+    """alphasort in the TOML becomes LimeSurvey's answer_order attribute,
+    which supersedes the legacy alphasort one and is what the admin UI writes.
+    Like max_answers it is language-independent, so only the reference row
+    carries it."""
+    rows = [
+        r for r in _rows(to_tsv(fixture_survey)) if r["class"] == "Q" and r["name"] == "country"
+    ]
+    by_lang = {r["language"]: r["answer_order"] for r in rows}
+    assert by_lang == {"en": "alphabetical", "de": ""}
 
 
 def test_row_rejects_unknown_column():

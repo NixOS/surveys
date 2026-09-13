@@ -19,6 +19,7 @@ id = "aboutYou"
 [[groups.questions]]
 id = "country"
 type = "single"
+alphasort = true
 choices = ["europe", "asia"]
 
 [[groups.questions]]

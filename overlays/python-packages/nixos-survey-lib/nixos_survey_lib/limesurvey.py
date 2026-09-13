@@ -24,7 +24,7 @@ from .schema import LanguageTexts, Question, Survey
 BOM = "\ufeff"
 
 # LimeSurvey's exporter writes these sixteen columns in this order; the
-# header here ends with the one question attribute this converter uses. The
+# header here ends with the two question attributes this converter uses. The
 # importer reads every non-empty cell whose column is not in its skip list
 # (class, type/scale, name, text, validation, relevance, help, language,
 # mandatory, other, same_default, same_script, default) as a question
@@ -48,6 +48,7 @@ COLUMNS = (
     "same_default",
     "same_script",
     "max_answers",
+    "answer_order",
 )
 
 _WS = re.compile(r"\s+")
@@ -137,8 +138,15 @@ def _content_rows(survey: Survey, t: LanguageTexts, *, is_reference: bool) -> li
     """The G/Q/SQ/A block for one language.
 
     Group number and choice codes are positional so the importer can line
-    up translations. Attributes (max_answers) go on the reference-language
-    row only; the importer would otherwise store them once per language.
+    up translations. Attributes (max_answers, answer_order) go on the
+    reference-language row only; the importer would otherwise store them once
+    per language.
+
+    ``answer_order`` is LimeSurvey 6's name for alphabetical answer sorting.
+    It supersedes the legacy ``alphasort`` attribute, takes precedence over it
+    in Question::shouldOrderAnswersAlphabetically, and is what the admin UI
+    writes when anyone saves the question, so emitting the legacy name would
+    produce a setting that works until someone looks at it.
     """
     rows: list[list[str]] = []
     for number, group in enumerate(survey.groups, start=1):
@@ -168,6 +176,7 @@ def _content_rows(survey: Survey, t: LanguageTexts, *, is_reference: bool) -> li
                     max_answers=str(q.max_answers)
                     if is_reference and q.max_answers is not None
                     else "",
+                    answer_order="alphabetical" if is_reference and q.alphasort else "",
                 )
             )
             if qt.choices is None:

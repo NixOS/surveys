@@ -40,7 +40,17 @@ PRIVACY_KEYS = ("anonymized", "save_ip_address", "save_referrer", "date_stamp", 
 
 _SURVEY_KEYS = ("id", "language", "languages", "privacy")
 _GROUP_KEYS = ("id", "questions")
-_QUESTION_KEYS = ("id", "type", "mandatory", "choices", "other", "display", "max_answers", "size")
+_QUESTION_KEYS = (
+    "id",
+    "type",
+    "mandatory",
+    "choices",
+    "other",
+    "display",
+    "alphasort",
+    "max_answers",
+    "size",
+)
 _CHOICE_TYPES = ("single", "multiple", "ranking")
 
 
@@ -70,6 +80,7 @@ class StructureQuestion:
     choice_keys: list[str] | None
     other: bool
     display: Display
+    alphasort: bool
     max_answers: int | None
     size: TextSize
 
@@ -118,6 +129,7 @@ class Question:
     mandatory: Mandatory = "off"
     other: bool = False
     display: Display = "radio"
+    alphasort: bool = False
     max_answers: int | None = None
     size: TextSize = "long"
     choice_keys: list[str] | None = None
@@ -315,6 +327,7 @@ def _resolve_question(q: StructureQuestion, t: QuestionText) -> Question:
         mandatory=q.mandatory,
         other=q.other,
         display=q.display,
+        alphasort=q.alphasort,
         max_answers=q.max_answers,
         size=q.size,
         choice_keys=q.choice_keys,
@@ -575,6 +588,12 @@ def _parse_question(raw: Any, name: str, group_where: str) -> StructureQuestion:
             raise SurveyError(f"{where}: display is only allowed on single questions")
         display = _one_of(tbl["display"], DISPLAY_VALUES, f"{where}: display")
 
+    alphasort = False
+    if "alphasort" in tbl:
+        if qtype != "single":
+            raise SurveyError(f"{where}: alphasort is only allowed on single questions")
+        alphasort = _as_bool(tbl["alphasort"], f"{where}: alphasort")
+
     max_answers: int | None = None
     if "max_answers" in tbl:
         if qtype not in ("multiple", "ranking"):
@@ -601,6 +620,7 @@ def _parse_question(raw: Any, name: str, group_where: str) -> StructureQuestion:
         choice_keys=choice_keys,
         other=other,
         display=display,
+        alphasort=alphasort,
         max_answers=max_answers,
         size=size,
     )
