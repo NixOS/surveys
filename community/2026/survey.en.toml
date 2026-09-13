@@ -805,3 +805,86 @@ choices.sometimes = "Sometimes"
 choices.rarely = "Rarely"
 choices.never = "Never"
 choices.iDontLookForHelp = "I don't look for help with Nix or NixOS"
+
+[groups.contributing]
+title = "Contributing"
+
+[questions.contribStatus]
+prompt = "Which of these best describes your experience contributing to Nixpkgs?"
+choices.contributedMerged = "I have contributed and it was merged"
+choices.contributedNotMerged = "I have opened a contribution that was not merged"
+choices.triedNotCompleted = "I tried to contribute but did not complete it"
+choices.notTried = "I have not tried to contribute"
+choices.dontPlanTo = "I do not plan to contribute"
+
+[questions.contribBarriers]
+prompt = "Which of these have you run into when contributing to Nixpkgs, or when considering it?"
+choices.dontKnowHowToStart = "I do not know how to get started"
+choices.dontKnowHowToJoin = "I want to join an existing effort but do not know how"
+choices.gotStuck = "I got stuck after starting"
+choices.unhelpfulFeedback = "Feedback was unhelpful or unclear"
+choices.feedbackTooSlow = "Feedback took too long"
+choices.employerDisallows = "My employer does not allow it"
+choices.alreadyHandled = "What I wanted to work on was already handled by others"
+choices.noneOfThese = "None of these"
+
+[questions.contribSupport]
+prompt = "When you contributed to Nixpkgs, how did it go?"
+choices.managedAlone = "I managed on my own"
+choices.neededHelpGotIt = "I needed help from the community and got it"
+choices.neededHelpDidNotGetIt = "I needed help from the community and did not get it"
+choices.haveNotContributed = "I have not contributed"
+
+[questions.improvements]
+prompt = "Nix can afford three improvements. Which three do you pick?"
+choices.performance = "Performance"
+choices.languageUsability = "Language usability"
+choices.flakes = "Flakes"
+choices.nonExperimentalFeatures = "Make other features non-experimental"
+choices.security = "Security"
+choices.errorMessages = "Error messages"
+choices.documentation = "Documentation"
+choices.provenanceSboms = "Provenance / SBOMs"
+choices.windowsSupport = "Windows support"
+choices.freebsdSupport = "FreeBSD support"
+choices.nixAsLibrary = "Nix as a library (Unstable C++ API, C API, bindings in other languages)"
+choices.other = "Other"
+choices.diskUsage = "Disk usage and store size"
+
+
+[groups.foundation]
+title = "The NixOS Foundation"
+
+[questions.donationIncentives]
+prompt = "What would encourage you to donate to the NixOS Foundation?"
+choices.betterInsight = "Better insight (e.g. more regular and detailed financial and operational reports)"
+choices.donorPerks = "Donor perks (e.g. recognition on website, Discourse badges, swag, exclusive access)"
+choices.taxDeductible = "The ability to deduct donations from tax"
+choices.earmarkingOptions = "More options for ear-marking donations"
+choices.officialSupport = "Official support or services"
+choices.ltsRelease = "A maintained Long-Term-Support release"
+choices.iAlreadyDonate = "I already donate"
+
+[questions.foundationPriorities]
+prompt = "Which areas should the NixOS Foundation prioritise excess funds for?"
+choices.governance = "Governance (e.g. policies, guidelines, processes)"
+choices.communityHealth = "Community health (e.g. conflict resolution, moderation)"
+choices.marketing = "Marketing (e.g. website, social media)"
+choices.documentation = "Documentation"
+choices.nixosReleases = "NixOS releases"
+choices.nixImplementations = "Nix implementations"
+choices.nixpkgsMaintenance = "Nixpkgs package maintenance"
+choices.communityEvents = "Community events (non-NixCon)"
+choices.nixpkgsArchDx = "Nixpkgs architecture & developer experience"
+choices.improvedNixNixosSupport = "Improved Nix/NixOS support (e.g. hardware, platforms, installers)"
+choices.security = "Security"
+choices.officialInfrastructure = "Official infrastructure (e.g. faster builds and caches)"
+choices.deploymentSystems = "Deployment systems (e.g. Nixops or a replacement)"
+choices.ciSystems = "CI systems (e.g. Hydra or a replacement)"
+
+
+[groups.finally]
+title = "Finally"
+
+[questions.surveyFeedback]
+prompt = "Do you have any feedback on how we can improve this survey for next time?"

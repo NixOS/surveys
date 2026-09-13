@@ -1055,3 +1055,138 @@ choices = [
   "never",
   "iDontLookForHelp",
 ]
+
+[[groups]]
+id = "contributing"
+
+# Replaces contribExperience, which conflated three constructs in one
+# select-all: a respondent who tried, got stuck, then succeeded with help
+# ticked three options meaning different things, so the percentages could not
+# be read as a funnel. This gives the denominator.
+[[groups.questions]]
+id = "contribStatus"
+type = "single"
+choices = [
+  "contributedMerged",
+  "contributedNotMerged",
+  "triedNotCompleted",
+  "notTried",
+  "dontPlanTo",
+]
+
+[[groups.questions]]
+id = "contribBarriers"
+type = "multiple"
+choices = [
+  "dontKnowHowToStart",
+  "dontKnowHowToJoin",
+  "gotStuck",
+  "unhelpfulFeedback",
+  "feedbackTooSlow",
+  "employerDisallows",
+  "alreadyHandled",
+  "noneOfThese",
+]
+
+# neededHelpDidNotGetIt captures a group 2025 could not see: the only outcomes
+# offered were "on my own" and "with help". Accepted cost: with no branching,
+# roughly 2,000 respondents who never contributed will select
+# haveNotContributed.
+[[groups.questions]]
+id = "contribSupport"
+type = "single"
+choices = [
+  "managedAlone",
+  "neededHelpGotIt",
+  "neededHelpDidNotGetIt",
+  "haveNotContributed",
+]
+
+# Capped at 3; the 2025 prompt said "about 3" and enforced nothing.
+# nixReferenceManual becomes documentation: documentation is the largest theme
+# in the 773 write-ins at 27.6%, double the next, yet only 1.2% named the
+# reference manual and 39.4% of documentation writers never ticked the
+# existing option. otherNextQuestion becomes other, since the question it
+# pointed at is cut; kept because 255 people chose it and it measures whether
+# the list is incomplete. diskUsage is new: only 2.5% of write-ins, but with a
+# displacement signature, those writers ticked Performance at 63% against a
+# 37% base rate and Other at 58% against 29%.
+#
+# flakes is left exactly as it is. It bundles three incompatible demands (42
+# write-ins want flakes stabilised, 30 redesigned first, 10 dropped), so its
+# 1,708 votes are not interpretable. Recorded and deferred rather than fixed.
+[[groups.questions]]
+id = "improvements"
+type = "multiple"
+max_answers = 3
+choices = [
+  "performance",
+  "languageUsability",
+  "flakes",
+  "nonExperimentalFeatures",
+  "security",
+  "errorMessages",
+  "documentation",
+  "provenanceSboms",
+  "windowsSupport",
+  "freebsdSupport",
+  "nixAsLibrary",
+  "other",
+  "diskUsage",
+]
+
+[[groups]]
+id = "foundation"
+
+# Gains iAlreadyDonate. Third most-complained-about question in 2025 (18
+# objections), and the specific problem is that existing donors had no valid
+# answer, so current donors and never-donors were averaged together. A
+# does-not-apply escape would not have captured that.
+[[groups.questions]]
+id = "donationIncentives"
+type = "multiple"
+choices = [
+  "betterInsight",
+  "donorPerks",
+  "taxDeductible",
+  "earmarkingOptions",
+  "officialSupport",
+  "ltsRelease",
+  "iAlreadyDonate",
+]
+
+# Capped at 5, all 14 choices kept.
+[[groups.questions]]
+id = "foundationPriorities"
+type = "ranking"
+max_answers = 5
+choices = [
+  "governance",
+  "communityHealth",
+  "marketing",
+  "documentation",
+  "nixosReleases",
+  "nixImplementations",
+  "nixpkgsMaintenance",
+  "communityEvents",
+  "nixpkgsArchDx",
+  "improvedNixNixosSupport",
+  "security",
+  "officialInfrastructure",
+  "deploymentSystems",
+  "ciSystems",
+]
+
+[[groups]]
+id = "finally"
+
+# The survey's only free-text question, retained after an earlier draft cut it
+# on misread evidence. 20 respondents asked for MORE free text; the 15 who
+# complained about textareas were objecting to the workplace block, closed
+# yes/no questions wrongly rendered as textareas, and there is zero overlap
+# between the two groups. More decisively, the per-question complaint tally
+# this question produced reshaped four decisions in the 2026 design, and that
+# information is not obtainable any other way.
+[[groups.questions]]
+id = "surveyFeedback"
+type = "text"

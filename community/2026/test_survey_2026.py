@@ -415,3 +415,114 @@ def test_ranking_questions_get_no_escape_option(survey):
     assert qs["helpSuccessFrequency"].choice_keys[-1] == "iDontLookForHelp"
     for qid in ("objectsInteractWith", "helpResources"):
         assert not any(k.startswith("iDont") for k in qs[qid].choice_keys), qid
+
+
+def test_remaining_groups(survey):
+    ids = {g.id: [q.id for q in g.questions] for g in survey.groups}
+    assert ids["contributing"] == [
+        "contribStatus",
+        "contribBarriers",
+        "contribSupport",
+        "improvements",
+    ]
+    assert ids["foundation"] == ["donationIncentives", "foundationPriorities"]
+    assert ids["finally"] == ["surveyFeedback"]
+
+
+def test_the_instrument_is_forty_questions_in_eight_groups(survey):
+    assert [g.id for g in survey.groups] == [
+        "aboutYou",
+        "experience",
+        "usage",
+        "adoption",
+        "findingHelp",
+        "contributing",
+        "foundation",
+        "finally",
+    ]
+    assert sum(len(g.questions) for g in survey.groups) == 40
+
+
+def test_every_carried_question_is_present(survey):
+    """The byte-equality check above skips ids that are not in the instrument
+    yet, which is what lets it grow task by task. Now that the instrument is
+    complete, assert none of the nine went missing."""
+    present = set(questions(survey))
+    assert set(CARRIED_VERBATIM) <= present
+
+
+def test_survey_feedback_is_the_only_free_text_question(survey):
+    """2025 had twelve text questions. Ten are cut, nixVersion becomes single
+    choice, and this one is retained: the pool it produced reshaped four
+    decisions in the 2026 design and is not obtainable any other way."""
+    assert [q.id for g in survey.groups for q in g.questions if q.type == "text"] == [
+        "surveyFeedback"
+    ]
+
+
+def test_contribution_questions_are_a_funnel(survey):
+    """contribExperience conflated three constructs in one select-all, so its
+    percentages could not be read as a funnel. contribStatus now gives the
+    denominator and the other two are conditioned on it at analysis time."""
+    qs = questions(survey)
+    assert qs["contribStatus"].type == "single"
+    assert qs["contribSupport"].type == "single"
+    assert "neededHelpDidNotGetIt" in qs["contribSupport"].choice_keys
+    assert "contribExperience" not in qs
+
+
+def test_foundation_priorities_is_capped(survey):
+    """The third of the three rankings capped at 5; the other two are asserted
+    in the findingHelp group's test. All 14 choices are kept."""
+    q = questions(survey)["foundationPriorities"]
+    assert q.type == "ranking"
+    assert q.max_answers == 5
+    assert len(q.choices) == 14
+
+
+def test_improvements_is_capped_at_three(survey):
+    """The 2025 prompt said 'about 3' and enforced nothing."""
+    q = questions(survey)["improvements"]
+    assert q.max_answers == 3
+    assert len(q.choices) == 13
+    labels = dict(zip(q.choice_keys, q.choices))
+    assert labels["documentation"] == "Documentation"
+    assert labels["other"] == "Other"
+    assert "diskUsage" in labels
+    assert "nixReferenceManual" not in labels
+    assert "otherNextQuestion" not in labels
+    assert "flakes" in labels
+
+
+def test_donation_incentives_lets_existing_donors_say_so(survey):
+    """Third most-complained-about question in 2025: current donors had no
+    valid answer, so they were averaged together with never-donors."""
+    assert "iAlreadyDonate" in questions(survey)["donationIncentives"].choice_keys
+
+
+def test_no_removed_question_came_back(survey):
+    """The twelve cut in the 2026 design, plus contribExperience."""
+    removed = {
+        "sponsorOutreach",
+        "sponsorEmail",
+        "workplaceUsesNix",
+        "workplaceDecision",
+        "workplaceConvinced",
+        "workplacePrevented",
+        "personalConvinced",
+        "personalHoldsBack",
+        "workplaceHoldsBack",
+        "nixosBlockers",
+        "improvementsOther",
+        "userTypes",
+        "contribExperience",
+    }
+    assert set(questions(survey)) & removed == set()
+
+
+def test_no_group_description_or_question_help(survey):
+    """Not style: _check_optional_text_matches requires each optional field to
+    be present in every language file or in none, so adding one to English
+    later means adding it to four translations or the build fails."""
+    assert all(g.description is None for g in survey.groups)
+    assert all(q.help is None for g in survey.groups for q in g.questions)
