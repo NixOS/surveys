@@ -25,10 +25,14 @@
 # generation does not depend on which name the browser used.
 #
 # The first run needs about half a minute while LimeSurvey installs its
-# database; the import service waits for it. Verified in a NixOS test: nginx
-# answers a `Host: localhost` request, and the survey imports and activates.
-# The host-to-guest port forward itself is QEMU's, and the generated script
-# carries `hostfwd=tcp::8080-:80`.
+# database; the import service waits for it.
+#
+# Verified in NixOS tests: the survey imports and activates, and a request
+# from a second machine reaches nginx with a `Host: localhost` header. That
+# second part needs a two-node test. Curling the guest's own address from
+# inside the guest routes over `lo`, which the firewall exempts, so it
+# succeeds whether or not port 80 is open and proves nothing about the path
+# the host actually uses.
 let
   machine = nixos (
     { pkgs, ... }:
@@ -36,6 +40,12 @@ let
       networking.hostName = "survey";
       # LimeSurvey refuses hostnames without a dot.
       networking.hosts."127.0.0.1" = [ "survey.local" ];
+
+      # QEMU's hostfwd delivers to the guest's virtual NIC, not to loopback,
+      # so the default firewall drops it and the forwarded port answers
+      # nothing. Loopback is exempt, which is why a curl from inside the VM
+      # succeeds while the host sees a closed port.
+      networking.firewall.allowedTCPPorts = [ 80 ];
 
       services.limesurvey = {
         enable = true;
