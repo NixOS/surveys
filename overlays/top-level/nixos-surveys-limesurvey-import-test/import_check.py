@@ -1,6 +1,6 @@
 """Import a LimeSurvey TSV over JSON-RPC and assert on what comes back.
 
-Usage: import_check.py <base-url> <survey.txt> <expected_survey.txt>
+Usage: import_check.py <base-url> <survey.txt> <expected_survey.txt> <2026.txt>
 Runs inside the test VM against a fresh LimeSurvey; only the standard
 library is available. Exits non-zero, with the reason on stderr, on any
 RPC error or failed assertion.
@@ -99,11 +99,93 @@ def check_fixture(url: str, key: str, tsv_path: str) -> None:
     print("fixture assertions passed")
 
 
-def main(base_url: str, tsv_path: str, fixture_path: str) -> None:
-    """Import both files, then compare what LimeSurvey stored with what the
-    files say: for the 2025 survey the group count, top-level question count,
-    each question's code and type letter, and the survey-level privacy
-    settings; for the golden fixture the checks in check_fixture.
+def check_2026(url: str, key: str, tsv_path: str) -> None:
+    """Import the 2026 survey and assert on what LimeSurvey stored.
+
+    2026 is the first year with more than one group, with max_answers on a
+    multiple-choice question, with alphabetical answer order, and with a
+    250-option question. None of that is covered by the 2025 file or by the
+    golden fixture.
+    """
+    sid = import_tsv(url, key, tsv_path)
+
+    groups = rpc(url, "list_groups", key, sid)
+    assert len(groups) == 8, f"expected 8 groups, got {len(groups)}"
+    position = {int(g["gid"]): int(g["group_order"]) for g in groups}
+    names = [g["group_name"] for g in sorted(groups, key=lambda g: position[int(g["gid"])])]
+    assert names[0] == "About you" and names[-1] == "Finally", names
+
+    questions = [q for q in rpc(url, "list_questions", key, sid) if str(q["parent_qid"]) == "0"]
+    assert len(questions) == 40, f"expected 40 questions, got {len(questions)}"
+    by_code = {q["title"]: q for q in questions}
+
+    def attributes(qid: int) -> dict:
+        """get_question_properties returns the string 'No available attributes'
+        rather than an empty dict when a question has none."""
+        props = rpc(url, "get_question_properties", key, qid, ["attributes"])["attributes"]
+        assert isinstance(props, dict), f"attributes came back as {props!r}"
+        return props
+
+    # A 250-option dropdown is the one thing here that could hit an unknown
+    # limit, and alphabetical ordering is what makes it usable in five
+    # languages. LimeSurvey 6 stores our alphasort as answer_order.
+    country = by_code["country"]
+    assert country["type"] == "!", country["type"]
+    options = rpc(url, "get_question_properties", key, int(country["qid"]), ["answeroptions"])
+    assert len(options["answeroptions"]) == 250, len(options["answeroptions"])
+    assert attributes(int(country["qid"])).get("answer_order") == "alphabetical"
+
+    # max_answers on a multiple-choice question; the golden fixture only covers
+    # it on a ranking.
+    improvements = by_code["improvements"]
+    assert improvements["type"] == "M", improvements["type"]
+    assert attributes(int(improvements["qid"])).get("max_answers") == "3"
+
+    # installMethod and hardwareConfig are multiple, not single. Typing either
+    # as single ends its 2025 series and the build stays green, so the check
+    # belongs here as well as in test_survey_2026.py.
+    assert by_code["installMethod"]["type"] == "M", by_code["installMethod"]["type"]
+    assert by_code["hardwareConfig"]["type"] == "M", by_code["hardwareConfig"]["type"]
+
+    # The strings aggregate.sankey_funnel matches literally.
+    upgrade = by_code["stableUpgrade"]
+    options = rpc(url, "get_question_properties", key, int(upgrade["qid"]), ["answeroptions"])
+    stored = {o["answer"] for o in options["answeroptions"].values()}
+    for label in (
+        "I had severe issues and could not make the upgrade.",
+        "I had severe issues but figured it out after some time.",
+        "I had moderate issues.",
+        "I had minor issues.",
+        "I had no issues.",
+        "I have not upgraded.",
+        "I did not know there was a new stable release.",
+    ):
+        assert label in stored, label
+
+    props = rpc(
+        url,
+        "get_survey_properties",
+        key,
+        sid,
+        ["anonymized", "ipaddr", "refurl", "datestamp", "savetimings", "format"],
+    )
+    assert props == {
+        "anonymized": "Y",
+        "ipaddr": "N",
+        "refurl": "N",
+        "datestamp": "N",
+        "savetimings": "N",
+        "format": "G",
+    }, props
+    print("2026 assertions passed")
+
+
+def main(base_url: str, tsv_path: str, fixture_path: str, tsv_2026: str) -> None:
+    """Import all three files, then compare what LimeSurvey stored with what
+    the files say: for the 2025 survey the group count, top-level question
+    count, each question's code and type letter, and the survey-level privacy
+    settings; for the golden fixture the checks in check_fixture; for 2026 the
+    checks in check_2026.
     """
     url = f"{base_url}/index.php/admin/remotecontrol"
     key = rpc(url, "get_session_key", "admin", "password")
@@ -146,10 +228,11 @@ def main(base_url: str, tsv_path: str, fixture_path: str) -> None:
         print("2025 assertions passed")
 
         check_fixture(url, key, fixture_path)
+        check_2026(url, key, tsv_2026)
         print("all assertions passed")
     finally:
         rpc(url, "release_session_key", key)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
