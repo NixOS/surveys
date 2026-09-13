@@ -368,3 +368,50 @@ def test_questions_that_presuppose_nixos_offer_a_way_out(survey):
     qs = questions(survey)
     for qid in ("hardwareConfig", "nixosReleases", "stableUpgrade"):
         assert "iDontUseNixos" in qs[qid].choice_keys, qid
+
+
+def test_adoption_and_finding_help_groups(survey):
+    ids = {g.id: [q.id for q in g.questions] for g in survey.groups}
+    assert ids["adoption"] == ["regularToolset", "barriersPersonal", "barriersWork"]
+    assert ids["findingHelp"] == [
+        "objectsInteractWith",
+        "helpResources",
+        "helpSuccessFrequency",
+    ]
+
+
+def test_rankings_in_finding_help_are_capped(survey):
+    """objectsInteractWith asked for thirty ranked items with no cap; burden is
+    N(N-1)/2, so thirty implies 435 pairwise comparisons. helpResources said
+    'rank your top 5' and enforced nothing, which four respondents reported.
+    All choices are kept: the problem was the absence of a cap, not the length
+    of the list. The third capped ranking, foundationPriorities, is asserted in
+    its own group's test because it is built one task later."""
+    for qid, n in (("objectsInteractWith", 30), ("helpResources", 17)):
+        q = questions(survey)[qid]
+        assert q.type == "ranking", qid
+        assert q.max_answers == 5, qid
+        assert len(q.choices) == n, qid
+
+
+def test_barriers_are_two_questions_not_one(survey):
+    """Classifying all 2,642 free-text barrier answers found the personal and
+    workplace stems measure different constructs: documentation is 3.7% of
+    workplace answers and 30.4% of personal-use answers."""
+    qs = questions(survey)
+    personal, work = qs["barriersPersonal"], qs["barriersWork"]
+    assert personal.type == "multiple" and work.type == "multiple"
+    assert personal.choice_keys[-3:] == ["other", "nothingHoldsMeBack", "iDontUseNix"]
+    assert work.choice_keys[-3:] == ["other", "nothingStopsUs", "notRelevant"]
+    assert personal.max_answers is None and work.max_answers is None
+    assert len(personal.choices) == 15 and len(work.choices) == 12
+
+
+def test_ranking_questions_get_no_escape_option(survey):
+    """A non-qualification item a respondent must rank is incoherent: leaving
+    it unranked is already the escape, and helpSuccessFrequency in the same
+    group does the screening."""
+    qs = questions(survey)
+    assert qs["helpSuccessFrequency"].choice_keys[-1] == "iDontLookForHelp"
+    for qid in ("objectsInteractWith", "helpResources"):
+        assert not any(k.startswith("iDont") for k in qs[qid].choice_keys), qid

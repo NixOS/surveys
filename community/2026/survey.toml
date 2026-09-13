@@ -895,3 +895,163 @@ choices = [
   "iDontRunStable",
   "iDontUseNixos",
 ]
+
+[[groups]]
+id = "adoption"
+
+# The single headline adoption measure, and the one question whose meaning
+# turns entirely on what "Nix" refers to, so the prompt now names the package
+# manager. Choices unchanged. In 2025 this led into personalHoldsBack, which
+# is cut; it now leads into the two barriers questions in the same group.
+[[groups.questions]]
+id = "regularToolset"
+type = "single"
+choices = ["yes", "no"]
+
+# New. Restores the topic six free-text questions covered in 2025, none of
+# which was ever analysed. Two questions rather than one because classifying
+# all 2,642 answers found the personal and workplace stems measure different
+# constructs: documentation is 3.7% of workplace answers and 30.4% of
+# personal-use answers, an eightfold gap, so merging them returns a blend
+# determined by the stem wording and comparable to neither.
+#
+# Options come from the classification, not from priors. Four that looked
+# obvious failed against the data and are absent: error messages ranked 22nd
+# of 23 themes; "editor and tooling support" was far narrower than the
+# integration complaints people actually made; a single "does not support a
+# platform I need" caught only 111 of 290 platform answers because 184
+# describe an environment committed to another platform, a different claim;
+# and awareness was wrongly folded into "hard to convince".
+#
+# Order is thematic and then frozen. Ordering by observed frequency would be
+# self-reinforcing in later years.
+[[groups.questions]]
+id = "barriersPersonal"
+type = "multiple"
+choices = [
+  "learningCurve",
+  "nixLanguage",
+  "documentation",
+  "installSetup",
+  "packagingOwn",
+  "missingPackages",
+  "foreignBinaries",
+  "platformSupport",
+  "buildCost",
+  "keepingUp",
+  "noTime",
+  "existingWorks",
+  "other",
+  "nothingHoldsMeBack",
+  "iDontUseNix",
+]
+
+# The workplace half. Not capped: the point is to see everything that applies.
+[[groups.questions]]
+id = "barriersWork"
+type = "multiple"
+choices = [
+  "nobodyKnowsNix",
+  "hardToConvince",
+  "itPolicy",
+  "platformLockIn",
+  "teamLearningCurve",
+  "existingToolsWork",
+  "noCommercialSupport",
+  "hiring",
+  "governanceConcerns",
+  "other",
+  "nothingStopsUs",
+  "notRelevant",
+]
+
+[[groups]]
+id = "findingHelp"
+
+# Capped at 5. Asked for thirty ranked items with no cap in 2025; burden is
+# N(N-1)/2, so thirty items implies 435 pairwise comparisons. All 30 choices
+# are kept: the problem was the absence of a cap, not the length of the list.
+# Stem gains "Nix" so it names the ecosystem it is asking about.
+[[groups.questions]]
+id = "objectsInteractWith"
+type = "ranking"
+max_answers = 5
+choices = [
+  "packageSearch",
+  "nixosOptionSearch",
+  "nixosConfigExamples",
+  "packageExamples",
+  "packageParameters",
+  "developmentEnvironments",
+  "nixDev",
+  "tutorials",
+  "howToGuides",
+  "manuals",
+  "answersToQuestions",
+  "troubleshootingTips",
+  "functionDocumentation",
+  "nixLanguageFunctions",
+  "commandLineInterface",
+  "nixStandaloneInstaller",
+  "nixosInstaller",
+  "securityNotifications",
+  "sourceCodePackage",
+  "sourceCodeModule",
+  "sourceCodeNixItself",
+  "discourseConversations",
+  "pressInformation",
+  "reviewsAndTestimonials",
+  "communityUpdates",
+  "loreJokesMemes",
+  "releaseNotes",
+  "additionalTools",
+  "jobPostings",
+  "paidSupportOffers",
+]
+
+# Capped at 5. The 2025 prompt already said "rank your top 5" and enforced
+# nothing; four respondents reported exactly that. All 17 kept, because which
+# resources matter changes year over year.
+[[groups.questions]]
+id = "helpResources"
+type = "ranking"
+max_answers = 5
+choices = [
+  "nixDev",
+  "referenceManuals",
+  "nixosWiki",
+  "unofficialWiki",
+  "discourseForum",
+  "matrixChannels",
+  "githubIssues",
+  "sourceCode",
+  "mastodon",
+  "twitterX",
+  "stackOverflow",
+  "discordUnofficial",
+  "redditNixOfficial",
+  "redditNixosUnofficial",
+  "blogPostsOrTutorials",
+  "llms",
+  "other",
+]
+
+# Gains iDontLookForHelp. Highest skip rate of any closed question at 9.3%,
+# and the question presupposes an activity. The vague-quantifier scale is
+# left unchanged: Schaeffer establishes such scales are unsafe for absolute
+# levels, but Al Baghal found them to have higher predictive validity than
+# open numeric answers, and DeCastellarnau concluded no clear conclusion can
+# be drawn about replacing them. The two rankings above get no escape: a
+# non-qualification item a respondent must rank is incoherent, leaving it
+# unranked is already the escape, and this question does the screening.
+[[groups.questions]]
+id = "helpSuccessFrequency"
+type = "single"
+choices = [
+  "always",
+  "often",
+  "sometimes",
+  "rarely",
+  "never",
+  "iDontLookForHelp",
+]
