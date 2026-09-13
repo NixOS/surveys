@@ -271,3 +271,100 @@ def test_terminology_prompts_name_the_package_manager(survey):
     for qid in ("yearsUsingNix", "skillLevel"):
         assert "Nix package manager" in qs[qid].prompt, qid
     assert "Round to the nearest whole year" in qs["yearsUsingNix"].prompt
+
+
+def test_usage_group(survey):
+    group = next(g for g in survey.groups if g.id == "usage")
+    assert [q.id for q in group.questions] == [
+        "operatingSystems",
+        "nixOnOs",
+        "targetTriple",
+        "installMethod",
+        "nixImplementations",
+        "nixVersion",
+        "infrastructure",
+        "nixosReleases",
+        "hardwareConfig",
+        "softwareEcosystems",
+        "experimentalFeatures",
+        "stableUpgrade",
+    ]
+
+
+def test_stable_upgrade_labels_are_byte_exact(survey):
+    """aggregate.sankey_funnel matches these seven strings literally, trailing
+    full stops included. Rewording any of them makes that lookup return zero,
+    drops the link below the suppression floor, and renders the funnel chart
+    blank with no error raised."""
+    q = questions(survey)["stableUpgrade"]
+    labels = dict(zip(q.choice_keys, q.choices))
+    assert labels["severeCouldNotUpgrade"] == "I had severe issues and could not make the upgrade."
+    assert labels["severeFiguredOut"] == "I had severe issues but figured it out after some time."
+    assert labels["iHadModerateIssues"] == "I had moderate issues."
+    assert labels["iHadMinorIssues"] == "I had minor issues."
+    assert labels["iHadNoIssues"] == "I had no issues."
+    assert labels["iHaveNotUpgraded"] == "I have not upgraded."
+    assert labels["iDidNotKnow"] == "I did not know there was a new stable release."
+
+
+def test_stable_upgrade_separates_not_on_stable_from_not_upgraded(survey):
+    """The defect this restructure exists to fix: in 2025 unstable-only users
+    landed in 'I have not upgraded' (434) or skipped (602), and those mean
+    opposite things to a release manager."""
+    assert questions(survey)["stableUpgrade"].choice_keys[-2:] == [
+        "iDontRunStable",
+        "iDontUseNixos",
+    ]
+
+
+def test_nix_version_is_single_choice_radio(survey):
+    """Asked as free text in 2025: 1,204 skips (35.4%) and 216 answers where
+    the regex found nothing. Radio rather than dropdown so all 19 are visible
+    without clicking."""
+    q = questions(survey)["nixVersion"]
+    assert q.type == "single"
+    assert q.display == "radio"
+    assert len(q.choices) == 19
+
+
+def test_install_method_and_hardware_config_stay_multiple(survey):
+    """Both are multiple in 2025 and the spec changes neither. Typing either
+    as single would end its series with a green build: nothing in the schema
+    objects, and the converter just emits L instead of M."""
+    qs = questions(survey)
+    assert qs["installMethod"].type == "multiple"
+    assert qs["hardwareConfig"].type == "multiple"
+    assert len(qs["installMethod"].choices) == 11
+    assert "lixInstaller" in qs["installMethod"].choice_keys
+    assert "nixOnDroid" in qs["installMethod"].choice_keys
+    assert "containerOrCi" in qs["installMethod"].choice_keys
+
+
+def test_nix_implementations_keeps_tvix_and_snix_apart(survey):
+    """Snix is a fork of Tvix announced 2025-03-16, not a rename."""
+    assert questions(survey)["nixImplementations"].choice_keys == [
+        "nix",
+        "lix",
+        "determinateNix",
+        "snix",
+        "tvix",
+        "fix",
+        "none",
+    ]
+
+
+def test_software_ecosystems_drops_nixos_configurations(survey):
+    """A category error in a list of programming languages, and a third
+    measurement of something nixOnOs (90.0%) and involvement (87.1%) already
+    cover. It also sat in position 2 of 54, the primacy slot."""
+    q = questions(survey)["softwareEcosystems"]
+    assert len(q.choices) == 53
+    assert "NixOS configurations" not in q.choices
+
+
+def test_questions_that_presuppose_nixos_offer_a_way_out(survey):
+    """S1: conditional self-screening should be assumed unreliable by default,
+    so the escape lives in the option set rather than the stem."""
+    qs = questions(survey)
+    for qid in ("hardwareConfig", "nixosReleases", "stableUpgrade"):
+        assert "iDontUseNixos" in qs[qid].choice_keys, qid

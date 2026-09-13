@@ -602,3 +602,296 @@ choices = [
   "iHaveMergeAccess",
   "iDevelopTools",
 ]
+
+[[groups]]
+id = "usage"
+
+# Carried verbatim. "Other" is 109 (3.2%), mid-pack; no defect found.
+[[groups.questions]]
+id = "operatingSystems"
+type = "multiple"
+choices = [
+  "gnuLinux",
+  "macos",
+  "windows",
+  "bsd",
+  "ios",
+  "android",
+  "chromeos",
+  "other",
+  "preferNotToSay",
+]
+
+# Carried verbatim. Has its own I-don't-use-Nix escape; "Other" 0.9%.
+[[groups.questions]]
+id = "nixOnOs"
+type = "multiple"
+choices = [
+  "dontUseNix",
+  "nixos",
+  "otherLinuxDistro",
+  "macos",
+  "windowsViaWsl",
+  "bsd",
+  "android",
+  "other",
+]
+
+# Carried verbatim. The only source of CPU architecture data; "Other" 2.1%.
+[[groups.questions]]
+id = "targetTriple"
+type = "multiple"
+choices = [
+  "x8664LinuxGnu",
+  "aarch64LinuxGnu",
+  "aarch64AppleDarwin",
+  "x8664AppleDarwin",
+  "i686LinuxGnu",
+  "x8664LinuxMusl",
+  "aarch64LinuxMusl",
+  "riscv64LinuxGnu",
+  "other",
+]
+
+# Seven fixes, all to the option list; the type and prompt are unchanged.
+# 2025 drew 7.5% "Other" (256 people) and the research found what was in it:
+# 503 Lix users with no Lix installer option, 254 Android users with no
+# nix-on-droid, a factually wrong Homebrew example (there is no nix formula),
+# 1,222 responses (36.0%) on an "official script" option that no longer names
+# one thing now that NixOS/nix-installer is also official, and no home for
+# container or CI installs. Stays `multiple`: "on any of your systems" is
+# plural on purpose, and the new options exist for people who also installed
+# Nix another way somewhere else.
+[[groups.questions]]
+id = "installMethod"
+type = "multiple"
+choices = [
+  "preinstalledWithNixos",
+  "officialInstallScript",
+  "nixInstallerRust",
+  "determinateInstaller",
+  "lixInstaller",
+  "otherPackageManager",
+  "nixOnDroid",
+  "containerOrCi",
+  "builtFromSource",
+  "other",
+  "iDontUseNix",
+]
+
+# Prompt reworded to name what it is asking about; the 2025 wording carried no
+# meaning outside the question that preceded it, and that context is gone.
+# `fix` is a from-scratch evaluator in Zig, alpha as of September 2026. Tvix
+# and Snix stay separate: Snix is a fork of Tvix announced 2025-03-16, not a
+# rename. An extra option in a select-all costs almost nothing; removing one
+# is a series break.
+[[groups.questions]]
+id = "nixImplementations"
+type = "multiple"
+choices = ["nix", "lix", "determinateNix", "snix", "tvix", "fix", "none"]
+
+# Was a free-text SemVer box: 1,204 skips (35.4%, third highest in the survey)
+# and 216 answers where the regex found nothing. Now single choice, radio
+# rather than dropdown so all 19 are visible without clicking. Each bucket
+# names its implementation, so a bare version number is never ambiguous. Each
+# family gets a forward bucket because the survey runs October to December and
+# new releases will land mid-flight.
+[[groups.questions]]
+id = "nixVersion"
+type = "single"
+choices = [
+  "nix235plus",
+  "nix234",
+  "nix231",
+  "nix228",
+  "nix224older",
+  "nixOther",
+  "lix295plus",
+  "lix294",
+  "lix293",
+  "lix292older",
+  "determinate323plus",
+  "determinate322",
+  "determinate321",
+  "determinate320older",
+  "snix",
+  "tvix",
+  "fix",
+  "other",
+  "dontKnow",
+]
+
+# Carried verbatim. Has its escape; "Other" 1.5%.
+[[groups.questions]]
+id = "infrastructure"
+type = "multiple"
+choices = [
+  "dontUseNix",
+  "personalComputer",
+  "workstationDevMachine",
+  "homeServer",
+  "ciEnvironment",
+  "productionServer",
+  "embeddedIotDevice",
+  "mobileDevice",
+  "hpcCluster",
+  "other",
+]
+
+# Rolled forward one release.
+[[groups.questions]]
+id = "nixosReleases"
+type = "multiple"
+choices = [
+  "unstable",
+  "v2605",
+  "v2511",
+  "v2505",
+  "v2411OrOlder",
+  "iDontKnow",
+  "iDontUseNixos",
+]
+
+# Gains iDontUseNixos. The 2025 question offered no valid answer to a
+# respondent who does not use NixOS, while nixosReleases in the same group
+# did. Stays `multiple`: combining nixos-generate-config with nixos-hardware
+# is the common case.
+[[groups.questions]]
+id = "hardwareConfig"
+type = "multiple"
+choices = [
+  "nixosGenerateConfig",
+  "nixosHardwareRepository",
+  "nixosFacter",
+  "manualConfiguration",
+  "other",
+  "iDontUseNixos",
+]
+
+# "NixOS configurations" removed: a category error in a list of programming
+# languages, and a third measurement of something nixOnOs (90.0%) and
+# involvement (87.1%) already cover. It was also the least reliable of the
+# three, being one item in a 54-item checkbox, and it sat in position 2 of 54,
+# the primacy slot. The 51 language entries are kept in full, including the 14
+# that drew 17 or fewer responses: trimming them would be trimming on a
+# position artefact. Stem reworded to name the Nix package manager and to say
+# "languages" rather than "software ecosystems".
+[[groups.questions]]
+id = "softwareEcosystems"
+type = "multiple"
+choices = [
+  "iDontUseNix",
+  "other",
+  "apl",
+  "ada",
+  "apex",
+  "assembly",
+  "bashShell",
+  "c",
+  "cSharp",
+  "cpp",
+  "clojure",
+  "cobol",
+  "crystal",
+  "dart",
+  "delphi",
+  "elixir",
+  "erlang",
+  "f",
+  "flow",
+  "fortran",
+  "gdscript",
+  "go",
+  "groovy",
+  "htmlCss",
+  "haskell",
+  "java",
+  "javascript",
+  "julia",
+  "kotlin",
+  "lisp",
+  "lua",
+  "matlab",
+  "nim",
+  "ocaml",
+  "objectiveC",
+  "php",
+  "perl",
+  "powershell",
+  "prolog",
+  "python",
+  "r",
+  "raku",
+  "ruby",
+  "rust",
+  "sas",
+  "sql",
+  "scala",
+  "solidity",
+  "swift",
+  "typescript",
+  "vba",
+  "visualBasicNet",
+  "zig",
+]
+
+# Carried verbatim. The best-constructed escapes in the survey, correctly
+# distinguishing "I don't use any experimental features" from "I'm not sure".
+[[groups.questions]]
+id = "experimentalFeatures"
+type = "multiple"
+choices = [
+  "flakes",
+  "nixCommand",
+  "blake3Hashing",
+  "caDerivations",
+  "pipeOperators",
+  "dynamicDerivations",
+  "gitHashing",
+  "recursiveNix",
+  "impureDerivations",
+  "fetchClosure",
+  "fetchTree",
+  "mountedSshStore",
+  "localOverlayStore",
+  "autoUidAllocation",
+  "cgroups",
+  "impureEnvVars",
+  "forceTrustSettings",
+  "noUrlLiterals",
+  "parseTomlTimestamps",
+  "readOnlyLocalStore",
+  "derivationBuilders",
+  "verifyGitCommits",
+  "notUsed",
+  "notSure",
+]
+
+# Restructured. Three defects in 2025: the stem was conditional, so it
+# screened nobody; five options formed a severity ladder and two did not,
+# violating the rule that every option in an ordered set is a point on the
+# same continuum; and there was no "I don't run NixOS stable" option, so
+# unstable-only users landed in "I have not upgraded" (434) or skipped (602),
+# conflating two states that mean opposite things to a release manager.
+#
+# The five severity labels and the two existing escapes keep their 2025
+# wording CHARACTER FOR CHARACTER, trailing full stops included.
+# aggregate.sankey_funnel matches all seven literally; rewording any of them
+# makes that lookup return zero, drops the link below the suppression floor,
+# and renders the funnel chart blank with no error raised.
+#
+# This question hardcodes a release number and must be re-authored every year.
+[[groups.questions]]
+id = "stableUpgrade"
+type = "single"
+choices = [
+  "severeCouldNotUpgrade",
+  "severeFiguredOut",
+  "iHadModerateIssues",
+  "iHadMinorIssues",
+  "iHadNoIssues",
+  "iHaveNotUpgraded",
+  "iDidNotKnow",
+  "iDontRunStable",
+  "iDontUseNixos",
+]
