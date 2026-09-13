@@ -196,3 +196,78 @@ def test_role_gained_architect_and_the_non_employment_states(survey):
         assert key in q.choice_keys, key
     assert q.choice_keys[-2:] == ["other", "preferNotToSay"]
     assert len(q.choices) == 38
+
+
+def test_experience_group(survey):
+    group = next(g for g in survey.groups if g.id == "experience")
+    assert [q.id for q in group.questions] == [
+        "firstHeardWhich",
+        "firstHeardHow",
+        "yearsUsingNix",
+        "skillLevel",
+        "traits",
+        "involvement",
+    ]
+
+
+def test_traits_order_is_frozen(survey):
+    """Changing this list's length breaks the 2025 comparison for every item
+    in it, so all four additions land in one break and the order then freezes.
+    Measuring learning speed means comparing this year's under-one-year cohort
+    against last year's, which only works while the retained twelve keep their
+    wording."""
+    assert questions(survey)["traits"].choice_keys == [
+        "iRelyOnExamples",
+        "iWriteOwnExpressions",
+        "iUseModuleSystem",
+        "iWriteOwnModules",
+        "iUnderstandModuleDepth",
+        "iHaveUsedOverlays",
+        "iUnderstandOverlays",
+        "iWrittenDerivation",
+        "iUnderstandStdenv",
+        "iComfortableContributing",
+        "iTeachOthers",
+        "iMakeArchitecturalChoices",
+        "iReadNixSource",
+        "iCanDebugBuilds",
+        "iUnderstandErrorMessages",
+        "noneOfThese",
+    ]
+
+
+def test_traits_keeps_the_joke_and_fixes_the_typo(survey):
+    """'I completely understand all Nix error messages' is deliberate and is
+    the only extreme-tail marker in the question: 135 selections, 4.0%.
+    Softening it to 'usually' would move it to roughly 40% and turn the top of
+    the ladder into a mid-ladder item. 'aide' was a misspelling two
+    respondents reported."""
+    q = questions(survey)["traits"]
+    labels = dict(zip(q.choice_keys, q.choices))
+    assert labels["iUnderstandErrorMessages"] == "I completely understand all Nix error messages."
+    assert "aide" not in labels["iWriteOwnExpressions"]
+    assert "without aid." in labels["iWriteOwnExpressions"]
+
+
+def test_traits_retained_twelve_keep_their_2025_wording(survey, survey_2025):
+    """The cohort-versus-cohort comparison this question exists for depends on
+    it. Only iWriteOwnExpressions changes, and only to fix a typo."""
+    old = dict(
+        zip(questions(survey_2025)["traits"].choice_keys, questions(survey_2025)["traits"].choices)
+    )
+    new = dict(zip(questions(survey)["traits"].choice_keys, questions(survey)["traits"].choices))
+    for key, label in old.items():
+        if key == "iWriteOwnExpressions":
+            assert new[key] == label.replace("aide", "aid")
+        else:
+            assert new[key] == label, key
+
+
+def test_terminology_prompts_name_the_package_manager(survey):
+    """S2: the intro's paragraph defining Nix is removed, because a technical
+    audience resolves an ambiguous term silently and confidently rather than
+    asking. Terms are defined in the questions whose answers depend on them."""
+    qs = questions(survey)
+    for qid in ("yearsUsingNix", "skillLevel"):
+        assert "Nix package manager" in qs[qid].prompt, qid
+    assert "Round to the nearest whole year" in qs["yearsUsingNix"].prompt

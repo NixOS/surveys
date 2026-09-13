@@ -485,3 +485,120 @@ choices = [
   "other",
   "preferNotToSay",
 ]
+
+[[groups]]
+id = "experience"
+
+# Carried verbatim. Half of the discovery-flow sankey; no defect found.
+[[groups.questions]]
+id = "firstHeardWhich"
+type = "single"
+choices = ["nix", "nixos", "dontRemember"]
+
+# Carried verbatim. 15 channels and "Other" at 2.6%, so the list is
+# comprehensive.
+[[groups.questions]]
+id = "firstHeardHow"
+type = "single"
+choices = [
+  "atWork",
+  "atSchoolOrUniversity",
+  "friendOrColleague",
+  "blogOrWebsite",
+  "onPodcast",
+  "onYoutube",
+  "onReddit",
+  "onHackerNews",
+  "onTwitterX",
+  "onLinkedin",
+  "otherSocialMedia",
+  "academicOrConference",
+  "webSearch",
+  "other",
+  "dontRemember",
+]
+
+# Bands and labels unchanged so the series survives; only the prompt changes,
+# to name the Nix package manager (S2) and to say how to round. The research
+# prefers an open numeric answer, which the schema cannot express and which
+# produced 216 unparseable answers on nixVersion.
+[[groups.questions]]
+id = "yearsUsingNix"
+type = "single"
+choices = [
+  "iDontUseNix",
+  "lessThan1Year",
+  "v1To2Years",
+  "v3To4Years",
+  "v5To6Years",
+  "v7To8Years",
+  "v9To10Years",
+  "v11OrMoreYears",
+  "preferNotToSay",
+]
+
+# Behaviourally anchored. The 2025 scale did not discriminate: 84.5% were
+# Beginner or Intermediate while 1,555 people separately reported they can
+# write their own NixOS modules. "Advanced" had no referent, so respondents
+# anchored against an imagined expert. Same keys, same length, new labels.
+[[groups.questions]]
+id = "skillLevel"
+type = "single"
+choices = [
+  "neverUsedNix",
+  "beginner",
+  "intermediate",
+  "advanced",
+  "preferNotToSay",
+]
+
+# Measures technical ability behaviourally, to complement skillLevel, so the
+# project can see how quickly the community learns different parts of the
+# ecosystem. Four items added in a single break: packaging and stdenv have no
+# acquisition curve today, debugging is a capability distinct from the
+# error-message comprehension item, and noneOfThese separates the 173
+# respondents (5.1%) who ticked nothing from those who skipped.
+#
+# The order is frozen from 2026. The existing twelve keep their 2025
+# positions; the packaging pair goes before contributing because packaging
+# feeds contribution, debugging sits beside error messages, and the escape is
+# last. Adding items in successive years would break the series repeatedly and
+# destroy the cohort comparison this question exists for.
+[[groups.questions]]
+id = "traits"
+type = "multiple"
+choices = [
+  "iRelyOnExamples",
+  "iWriteOwnExpressions",
+  "iUseModuleSystem",
+  "iWriteOwnModules",
+  "iUnderstandModuleDepth",
+  "iHaveUsedOverlays",
+  "iUnderstandOverlays",
+  "iWrittenDerivation",
+  "iUnderstandStdenv",
+  "iComfortableContributing",
+  "iTeachOthers",
+  "iMakeArchitecturalChoices",
+  "iReadNixSource",
+  "iCanDebugBuilds",
+  "iUnderstandErrorMessages",
+  "noneOfThese",
+]
+
+# Carried verbatim. Ten options with escapes already present; feeds crosstabs.
+[[groups.questions]]
+id = "involvement"
+type = "multiple"
+choices = [
+  "iDontUseNix",
+  "iDontUseNixos",
+  "iUseNixos",
+  "iInstallSoftware",
+  "iDevelopSoftware",
+  "iManageMachines",
+  "iContributePackages",
+  "iMaintainPackages",
+  "iHaveMergeAccess",
+  "iDevelopTools",
+]
