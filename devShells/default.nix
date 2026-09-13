@@ -7,7 +7,9 @@ mapAttrs (system: pkgs: {
   default = pkgs.mkShell {
     packages = [
       (pkgs.python3.withPackages (ps: [
+        ps.babel
         ps.polars
+        ps.pycountry
         ps.pytest
       ]))
       pkgs.nodejs_22
