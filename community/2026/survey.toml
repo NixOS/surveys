@@ -11,7 +11,7 @@ language = "en"
 # Grows one entry per completed translation. load_survey requires every listed
 # language to cover every string AND refuses a survey.<lang>.toml whose
 # language is not listed, so a file and its entry here are one change.
-languages = ["en", "fr"]
+languages = ["en", "fr", "es-informal"]
 
 [survey.privacy]
 anonymized = true
