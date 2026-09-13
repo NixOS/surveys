@@ -37,6 +37,7 @@ stdenv.mkDerivation {
 
   checkPhase = ''
     pytest 2026/test_survey_2026.py
+    python3 2026/check_translations.py 2026/survey.toml
   '';
 
   installPhase = ''
