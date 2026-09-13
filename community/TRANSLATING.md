@@ -19,7 +19,7 @@ its buttons and another way in its questions, inside a single page.
 |---|---|---|
 | `fr` | **tu** | LimeSurvey ships only `fr`, with no informal variant, so this decision lives entirely in our text. |
 | `es-informal` | **tú** | Not `usted`, and not voseo. |
-| `de-informal` | **du** | Lower case `du`, as in modern usage. |
+| `de-informal` | **du** | Lower case `du`, as in modern usage. Avoid sentence-initial `Sie` even when it means "it" or "she": it is indistinguishable from formal address at a glance, and `check_translations.py` flags it. Reword. |
 | `zh-Hans` | **你** | Not 您. Chinese has no T-V distinction in the European sense; this is the nearest equivalent choice. |
 
 ## Terminology: five terms that must stay distinct
