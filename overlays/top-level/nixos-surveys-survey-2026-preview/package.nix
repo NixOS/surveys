@@ -27,12 +27,16 @@
 # The first run needs about half a minute while LimeSurvey installs its
 # database; the import service waits for it.
 #
-# Verified in NixOS tests: the survey imports and activates, and a request
-# from a second machine reaches nginx with a `Host: localhost` header. That
-# second part needs a two-node test. Curling the guest's own address from
-# inside the guest routes over `lo`, which the firewall exempts, so it
-# succeeds whether or not port 80 is open and proves nothing about the path
-# the host actually uses.
+# Verified in a two-node NixOS test: the survey imports and activates, a
+# request from a second machine reaches nginx with a `Host: localhost` header,
+# the landing page lists the survey, and /index.php/2026 renders. A negative
+# control with port 80 closed confirms the request is refused, so the firewall
+# rule above is doing the work.
+#
+# The second machine is not optional. A request a machine makes to its own
+# address routes over `lo`, which the firewall exempts, so it succeeds whether
+# or not port 80 is open. Two earlier checks were written that way and proved
+# nothing.
 let
   machine = nixos (
     { pkgs, ... }:

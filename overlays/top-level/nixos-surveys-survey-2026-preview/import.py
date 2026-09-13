@@ -47,6 +47,13 @@ def main(base_url: str, tsv_path: str, browse_url: str | None = None) -> None:
         # activate_survey creates the response table; without it the survey
         # renders but cannot be submitted, which is the half a reviewer needs.
         rpc(url, "activate_survey", key, sid)
+        # An imported survey defaults to listpublic = N, so the landing page
+        # at / runs SurveysController::actionPublicList and finds nothing:
+        # findAllPublic filters on listpublic in (Y, I). The survey is
+        # reachable at its own URL either way, but a reviewer who was told to
+        # open the root sees an empty list and reasonably concludes the import
+        # failed.
+        rpc(url, "set_survey_properties", key, sid, {"listpublic": "Y"})
         print(f"survey {sid} imported and activated")
         print(f"take it at {(browse_url or base_url).rstrip('/')}/index.php/{sid}")
     finally:
