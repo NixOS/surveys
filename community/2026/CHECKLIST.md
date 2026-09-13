@@ -9,12 +9,11 @@ Carried from 2025 and updated for how this year actually ran. See
 - [x] Design the survey questions
   - 47 questions down to 40, in eight groups, five languages.
   - [ ] ~~Ask community teams what information they need~~
-    **Not done this year, deliberately.** An October 1 launch left no room
-    for team outreach, and that is recorded as out of scope rather than
-    skipped by accident. The 2025 round added `industry` and `domain` six
-    weeks before fielding without full Steering Committee consultation, and
-    both turned out to be the two worst questions in the survey; that is the
-    argument for doing this properly in 2027 rather than quickly in 2026.
+    Not done this year. An October 1 launch left no room, so team outreach
+    was declared out of scope rather than skipped by accident. For 2027:
+    the 2025 round added `industry` and `domain` six weeks before fielding
+    without full Steering Committee consultation, and both ended up with the
+    two highest "Other" rates in the survey.
   - [x] Refine objectives
     - The gender questions were reconsidered against published guidance
       (NASEM, Stats NZ, Pew, ABS) and kept, with `dontKnow` added to
@@ -27,7 +26,7 @@ Carried from 2025 and updated for how this year actually ran. See
 
 Translations are generated in-repo; the community supplies review. A language
 ships complete and reviewed, or it does not ship. Dropping one means removing
-its entry from `[survey] languages` **and** `git rm`-ing its
+its entry from `[survey] languages` and `git rm`-ing its
 `survey.<lang>.toml`; the loader refuses a file whose language is not listed.
 
 | Language | Translated | Reviewer | Review due | Shipped |
@@ -52,12 +51,12 @@ its entry from `[survey] languages` **and** `git rm`-ing its
   this design.
 
 `save_timings = false` disables response latency, which is the usual fallback
-signal when pretesting is thin. This is the only comprehension check there is.
+signal when pretesting is thin, so this is the only comprehension check the
+design has.
 
 ## For the infrastructure team
 
-None of these is fixable by question design. All four come from the 2025
-free-text feedback.
+From the 2025 free-text feedback. None is fixable by question design.
 
 - [ ] Session timeout loses completed responses (16 reports). Two refused to
   redo the survey; two redid it carelessly, which is measurement error
@@ -74,11 +73,11 @@ free-text feedback.
 ## Launch
 
 - [ ] Import `result/survey.txt` and review in the admin UI before activating.
-  - [ ] The five privacy settings. **These cannot be changed after
-    activation.**
+  - [ ] The five privacy settings. These cannot be changed after
+    activation.
   - [ ] Eight groups, one page each, in order.
-  - [ ] `country` renders as a dropdown and sorts alphabetically **in each
-    language**, not just English. If the French list puts `Égypte`,
+  - [ ] `country` renders as a dropdown and sorts alphabetically in each
+    language, not just English. If the French list puts `Égypte`,
     `États-Unis` and the `Îles` entries after Zimbabwe instead of
     interleaving them, PHP has no `intl` extension and the Chinese list
     is sorted by codepoint.

@@ -69,17 +69,16 @@ Write the survey as TOML in the year's directory (see `community/2026/`):
   descriptions, prompts, help, and one line per choice key. Every language
   listed in `survey.toml` needs one of these files.
 
-A language's text file and its entry in `[survey] languages` are **one
-change**. Loading requires every listed language to cover every string, with
-no fallback to English, and it also refuses a `survey.<lang>.toml` whose
-language is not listed. Dropping a language means deleting its file as well as
-removing the code. See `community/TRANSLATING.md` for the register and
+A language's text file and its entry in `[survey] languages` are one change.
+Loading requires every listed language to cover every string, with no fallback
+to English, and it refuses a `survey.<lang>.toml` whose language is not
+listed. Dropping a language means deleting its file as well as removing the
+code. See `community/TRANSLATING.md` for the register and
 terminology rules a translation has to follow.
 
 Give every question a TOML comment recording the decision it supports. No year
-before 2026 did this, which is why the 2026 redesign had to reconstruct 2025's
-intent from response counts and could not tell which questions had served
-their purpose.
+before 2026 did this, so the 2026 redesign had to infer intent from response
+counts.
 
 Question ids become LimeSurvey question codes, so they must start with a
 letter, contain only letters and digits, and be at most 20 characters.

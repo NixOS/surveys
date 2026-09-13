@@ -3,24 +3,24 @@
 Rules for `community/<year>/survey.<lang>.toml`. They are binding on whoever
 writes a translation and are what a native-speaker reviewer checks against.
 
-Year-specific facts — which languages shipped, who reviewed each, deadlines —
-belong in that year's `CHECKLIST.md`, so this file stays reusable.
+Year-specific facts (which languages shipped, who reviewed each, deadlines)
+belong in that year's `CHECKLIST.md`.
 
 2026 ships English, French, Spanish, German and Simplified Chinese.
 
 ## Register: informal, in every language
 
-LimeSurvey's locale controls its own chrome — buttons, navigation, validation
-messages — and not our question text, which comes from the TOML regardless. So
-if the translation is formal, the survey addresses the respondent one way in
-its buttons and another way in its questions, inside a single page.
+LimeSurvey's locale controls its own interface strings (buttons, navigation,
+validation messages) and not our question text, which comes from the TOML. A
+formal translation therefore addresses the respondent one way in the buttons
+and another way in the questions, on the same page.
 
 | Language | Second person | Note |
 |---|---|---|
-| `fr` | **tu** | LimeSurvey ships only `fr`, with no informal variant, so this decision lives entirely in our text. |
-| `es-informal` | **tú** | Not `usted`, and not voseo. |
-| `de-informal` | **du** | Lower case `du`, as in modern usage. Avoid sentence-initial `Sie` even when it means "it" or "she": it is indistinguishable from formal address at a glance, and `check_translations.py` flags it. Reword. |
-| `zh-Hans` | **你** | Not 您. Chinese has no T-V distinction in the European sense; this is the nearest equivalent choice. |
+| `fr` | tu | LimeSurvey ships only `fr`, with no informal variant, so this decision lives entirely in our text. |
+| `es-informal` | tú | Not `usted`, and not voseo. |
+| `de-informal` | du | Lower case `du`, as in modern usage. Avoid sentence-initial `Sie` even when it means "it" or "she": it is indistinguishable from formal address at a glance, and `check_translations.py` flags it. Reword. |
+| `zh-Hans` | 你 | Not 您. Chinese has no T-V distinction in the European sense; this is the nearest equivalent choice. |
 
 ## Terminology: five terms that must stay distinct
 
@@ -37,11 +37,10 @@ data. It shows up as a wrong answer that looks fine.
 | NixOS | The Linux distribution |
 | the Nix ecosystem | All of the above plus the surrounding projects |
 
-**The rule that matters most:** wherever the English says "the Nix package
-manager" rather than bare "Nix", the translation carries the same expansion.
-Five prompts were reworded in 2026 specifically to add it, at the cost of
-breaking five tracked series. Collapsing them back to bare "Nix" undoes that
-and wastes the break.
+Wherever the English says "the Nix package manager" rather than bare "Nix",
+the translation carries the same expansion. Five prompts were reworded in 2026
+to add it, which broke five tracked series. Collapsing them back to bare "Nix"
+undoes that.
 
 | English | fr | es | de | zh-Hans |
 |---|---|---|---|---|
@@ -80,40 +79,37 @@ survey. Decisions:
 
 Spanish has a live problem here: adjectives agree in gender, so "No binario"
 carries a masculine ending on a question about not being in that binary. "No
-binarie" exists and is not universally accepted. **"No binario" ships**, as
-the most widely understood form, and this is the first thing to put in front
-of the Spanish reviewer.
+binarie" exists and is not universally accepted. "No binario" ships, as the
+more widely understood form. Put this in front of the Spanish reviewer first.
 
 ## What must not be touched
 
-- **Choice keys** — everything left of the `=` — stay byte-identical. They
-  link a string across language files, and a changed key is a build failure at
-  best and a silently mislinked option at worst.
-- **The `<p>` tags in `intro`.** It is emitted through `html_text`, so the
-  tags reach LimeSurvey and are the only paragraph breaks the welcome page
-  has.
-- **The generated country names.** All 249 come from CLDR via
-  `generate_countries.py`; do not edit them. `preferNotToSay` on that question
-  is ours and does need translating.
-- **`stableUpgrade`'s labels keep their full stops** in every language. The
-  English ones are matched literally by the analysis pipeline. The translated
-  ones are not, but a set of options where some end in a full stop and others
-  do not is simply wrong, and the next person to touch this will not know
-  which rule applied where.
+- Choice keys, everything left of the `=`, stay byte-identical. They link a
+  string across language files. A changed key is a build failure, or a
+  silently mislinked option.
+- The `<p>` tags in `intro`. It is emitted through `html_text`, so the tags
+  reach LimeSurvey and are the only paragraph breaks on the welcome page.
+- The generated country names. All 249 come from CLDR via
+  `generate_countries.py`. `preferNotToSay` on that question is not generated
+  and does need translating.
+- `stableUpgrade`'s labels keep their full stops in every language. The
+  English ones are matched literally by the analysis pipeline; the translated
+  ones are not, but a set where some options end in a full stop and others do
+  not is inconsistent for no reason.
 
 ## Ordered sets stay parallel
 
-`stableUpgrade`'s five severity options are a ladder, and so are
-`skillLevel`'s four. A ladder whose rungs are phrased differently stops
-reading as one. Translate each set as a set.
+`stableUpgrade`'s five severity options and `skillLevel`'s four are ordered
+scales. Keep the grammatical construction the same across each set, so the
+ordering is visible in the wording. Translate each set together.
 
 ## Mechanics
 
 A language's `survey.<lang>.toml` and its entry in `[survey] languages` are
-**one change**. `load_survey` requires every listed language to cover every
-string, and it also refuses a file whose language is not listed, so neither
-half can exist without the other. Dropping a language means `git rm`-ing its
-file as well as removing the code.
+one change. `load_survey` requires every listed language to cover every
+string, and it refuses a file whose language is not listed, so neither half
+can exist without the other. Dropping a language means `git rm`-ing its file
+as well as removing the code.
 
 Volume for 2026: roughly 780 strings per language, of which about 250 are
 generated country names and about 530 need real translation.
@@ -125,10 +121,10 @@ changed paragraph count in the intro. It runs in the build.
 ## Review
 
 A native speaker who did not write the translation reads it against the
-English before it ships, and a language with no completed review is dropped
-rather than shipped unreviewed. The nearest comparable project, the Rust
-survey, apologised publicly for translation problems; their failure was
-review, not translation.
+English before it ships. A language with no completed review is dropped. The
+Rust survey, which is comparable in scale and also volunteer-run, apologised
+publicly for translation problems that came from insufficient review rather
+than from bad translation.
 
-Tell the reviewer how the translation was produced. It changes what they
-should look for: fluent and subtly wrong, rather than obviously broken.
+Tell the reviewer how the translation was produced, so they know to check for
+plausible-sounding errors rather than obvious ones.
