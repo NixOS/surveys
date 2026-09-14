@@ -141,12 +141,19 @@ def test_transgender_has_the_four_options_stats_nz_specifies(survey):
     ]
 
 
-def test_years_programming_has_no_gap_at_fifty(survey):
-    """2025 offered '45 to 49 years' then 'More than 50 years', so exactly 50
-    years had no valid answer."""
-    q = questions(survey)["yearsProgramming"]
-    assert "50 or more years" in q.choices
-    assert "More than 50 years" not in q.choices
+def test_year_bands_are_contiguous(survey):
+    """Both banded duration questions cover every value with no gap. 2025 used
+    1-4, 5-9 and 1-2, 3-4, which leave 4.5 and 2.5 years in no bucket at all,
+    and yearsProgramming additionally ran 45-49 into "More than 50", so exactly
+    50 had no answer. A respondent should never have to round."""
+    for qid in ("yearsProgramming", "yearsUsingNix"):
+        q = questions(survey)[qid]
+        assert not any(c[0].isdigit() and " to " in c and "under" not in c for c in q.choices), (
+            qid,
+            q.choices,
+        )
+        assert any("or more" in c for c in q.choices), qid
+    assert "More than 50 years" not in questions(survey)["yearsProgramming"].choices
 
 
 def test_industry_and_domain_offer_refusal(survey):

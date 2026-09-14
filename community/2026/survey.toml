@@ -68,26 +68,27 @@ id = "transgender"
 type = "single"
 choices = ["yes", "no", "dontKnow", "preferNotToSay"]
 
-# 2025 offered "45 to 49 years" then "More than 50 years", so a respondent
-# with exactly 50 years had no valid answer. The last band is relabelled and
-# its key renamed to match; keys never reach LimeSurvey.
+# Contiguous bands, same treatment as yearsUsingNix. 2025 used 1-4, 5-9,
+# 10-14 and so on, which has no bucket for 4.5 years, and it also ran
+# "45 to 49 years" straight into "More than 50 years", leaving exactly 50 with
+# no answer at all. Both gaps close here.
 [[groups.questions]]
 id = "yearsProgramming"
 type = "single"
 choices = [
   "iHaveNeverProgrammed",
   "lessThan1Year",
-  "v1To4Years",
-  "v5To9Years",
-  "v10To14Years",
-  "v15To19Years",
-  "v20To24Years",
-  "v25To29Years",
-  "v30To34Years",
-  "v35To39Years",
-  "v40To44Years",
-  "v45To49Years",
-  "v50OrMoreYears",
+  "v1ToUnder5",
+  "v5ToUnder10",
+  "v10ToUnder15",
+  "v15ToUnder20",
+  "v20ToUnder25",
+  "v25ToUnder30",
+  "v30ToUnder35",
+  "v35ToUnder40",
+  "v40ToUnder45",
+  "v45ToUnder50",
+  "v50OrMore",
   "preferNotToSay",
 ]
 
