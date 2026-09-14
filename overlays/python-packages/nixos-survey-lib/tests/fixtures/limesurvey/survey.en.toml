@@ -1,5 +1,6 @@
-# English text for the emitter golden fixture. "Docs & manuals" exercises
-# HTML escaping in the output.
+# English text for the emitter golden fixture. "Docs & manuals" pins that
+# ampersands reach LimeSurvey unescaped: it encodes them itself on render, so
+# escaping here would show the respondent "Docs &amp; manuals".
 [survey]
 title = "Tiny LimeSurvey Fixture"
 intro = "<p>Welcome to the fixture survey.</p>"

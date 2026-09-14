@@ -2,6 +2,7 @@
 		S		sid		424242											
 		S		language		en											
 		S		additional_languages		de											
+		S		template		fruity_twentythree											
 		S		format		G											
 		S		anonymized		Y											
 		S		ipaddr		N											
@@ -29,7 +30,7 @@
 		Q	R	priorities	1	Rank your priorities.		en		N		N				2	
 		A	0	A1		Performance		en									
 		A	0	A2		Security		en									
-		A	0	A3		Docs &amp; manuals		en									
+		A	0	A3		Docs & manuals		en									
 		Q	S	nixVersion	1	Which version of Nix do you use?		en		N		N					
 		Q	T	feedback	1	Anything else?		en		N		N					
 		G	1	Über dich		Zwei Fragen zu dir.		de									
@@ -47,6 +48,6 @@
 		Q	R	priorities	1	Ordne deine Prioritäten.		de		N		N					
 		A	0	A1		Leistung		de									
 		A	0	A2		Sicherheit		de									
-		A	0	A3		Doku &amp; Handbücher		de									
+		A	0	A3		Doku & Handbücher		de									
 		Q	S	nixVersion	1	Welche Nix-Version nutzt du?		de		N		N					
 		Q	T	feedback	1	Sonst noch etwas?		de		N		N					

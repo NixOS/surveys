@@ -15,7 +15,6 @@ Read against LimeSurvey 6.15.14: application/helpers/admin/import_helper.php
 from __future__ import annotations
 
 import csv
-import html
 import io
 import re
 
@@ -57,9 +56,17 @@ _MANDATORY = {"off": "N", "soft": "S", "on": "Y"}
 
 
 def plain(text: str) -> str:
-    """Plain text cell: one-line, HTML-significant characters escaped.
-    Quotes are left alone; the csv layer handles them."""
-    return html.escape(_WS.sub(" ", text).strip(), quote=False)
+    """Plain text cell: one line, passed through unescaped.
+
+    LimeSurvey encodes these values itself when it renders them, so escaping
+    here is applied twice: "Antigua & Barbuda" reaches the browser as
+    "Antigua &amp;amp; Barbuda" and the respondent reads "Antigua &amp;
+    Barbuda". The 2025 survey has shipped "Latin America &amp; the Caribbean"
+    in its country question for this reason.
+
+    Quotes are left alone; the csv layer handles them.
+    """
+    return _WS.sub(" ", text).strip()
 
 
 def html_text(text: str) -> str:
@@ -110,6 +117,11 @@ def _settings_rows(survey: Survey) -> list[list[str]]:
     additional = _language_order(survey)[1:]
     if additional:
         rows.append(_row(cls="S", name="additional_languages", text=" ".join(additional)))
+    if survey.template is not None:
+        # The theme. Pinning it here means the survey looks the same whatever
+        # the server's default is, which is the difference between a readable
+        # instrument and one nobody can fix without admin access.
+        rows.append(_row(cls="S", name="template", text=survey.template))
     rows += [
         _row(cls="S", name="format", text="G"),  # one group per page
         _row(cls="S", name="anonymized", text=_yn(p.anonymized)),

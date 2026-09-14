@@ -5,6 +5,7 @@
 id = 424242
 language = "en"
 languages = ["en", "de"]
+template = "fruity_twentythree"
 
 [survey.privacy]
 anonymized = true

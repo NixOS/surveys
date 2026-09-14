@@ -436,7 +436,7 @@ choices.other = "其他"
 choices.dontRemember = "记不清了"
 
 [questions.yearsUsingNix]
-prompt = "你使用 Nix 包管理器多少年了（任何参与程度都算）？请四舍五入到整年。"
+prompt = "你使用 Nix 包管理器满多少年了（任何参与程度都算）？"
 choices.iDontUseNix = "我不使用 Nix"
 choices.lessThan1Year = "不到 1 年"
 choices.v1To2Years = "1 到 2 年"

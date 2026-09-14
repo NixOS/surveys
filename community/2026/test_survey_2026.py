@@ -57,6 +57,8 @@ def test_survey_level_settings(survey):
     assert survey.privacy.save_referrer is False
     assert survey.privacy.date_stamp is False
     assert survey.privacy.save_timings is False
+    # Pinned, not inherited: the server's default may be an older theme.
+    assert survey.template == "fruity_twentythree"
 
 
 def test_ids_are_unique_and_within_limesurveys_limit(survey):
@@ -270,7 +272,10 @@ def test_terminology_prompts_name_the_package_manager(survey):
     qs = questions(survey)
     for qid in ("yearsUsingNix", "skillLevel"):
         assert "Nix package manager" in qs[qid].prompt, qid
-    assert "Round to the nearest whole year" in qs["yearsUsingNix"].prompt
+    # Full years, not rounded: the bands leave no bucket for 2.5 years, and
+    # truncation needs no arithmetic from the respondent.
+    assert "full years" in qs["yearsUsingNix"].prompt
+    assert "Round to the nearest" not in qs["yearsUsingNix"].prompt
 
 
 def test_usage_group(survey):

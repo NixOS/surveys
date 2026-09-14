@@ -167,7 +167,7 @@ def check_2026(url: str, key: str, tsv_path: str) -> None:
         "get_survey_properties",
         key,
         sid,
-        ["anonymized", "ipaddr", "refurl", "datestamp", "savetimings", "format"],
+        ["anonymized", "ipaddr", "refurl", "datestamp", "savetimings", "format", "template"],
     )
     assert props == {
         "anonymized": "Y",
@@ -176,7 +176,17 @@ def check_2026(url: str, key: str, tsv_path: str) -> None:
         "datestamp": "N",
         "savetimings": "N",
         "format": "G",
+        "template": "fruity_twentythree",
     }, props
+
+    # Ampersands reach LimeSurvey unescaped. It encodes on render, so escaping
+    # in the converter reached the respondent as "Antigua &amp; Barbuda".
+    country = by_code["country"]
+    options = rpc(url, "get_question_properties", key, int(country["qid"]), ["answeroptions"])
+    names = {o["answer"] for o in options["answeroptions"].values()}
+    assert "Antigua & Barbuda" in names, [n for n in names if "Antigua" in n]
+    assert not any("&amp;" in n for n in names), [n for n in names if "&amp;" in n]
+
     print("2026 assertions passed")
 
 

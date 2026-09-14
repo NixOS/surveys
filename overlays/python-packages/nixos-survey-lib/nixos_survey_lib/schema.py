@@ -31,6 +31,10 @@ ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]{0,19}$")
 CHOICE_KEY_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]*$")
 # LimeSurvey language codes: "en", "pt-BR", "zh-Hant-TW", "es-AR-informal".
 LANGUAGE_RE = re.compile(r"^[a-z]{2,3}(-[A-Za-z]+)*$")
+# Survey theme directory name, as LimeSurvey stores it in surveys.template.
+# Not checked against a list: which themes exist is a property of the server,
+# not of this file.
+TEMPLATE_RE = re.compile(r"^[A-Za-z0-9_-]{1,100}$")
 # Words LimeSurvey refuses as question codes.
 RESERVED_IDS = frozenset(
     w.lower()
@@ -38,7 +42,7 @@ RESERVED_IDS = frozenset(
 )
 PRIVACY_KEYS = ("anonymized", "save_ip_address", "save_referrer", "date_stamp", "save_timings")
 
-_SURVEY_KEYS = ("id", "language", "languages", "privacy")
+_SURVEY_KEYS = ("id", "language", "languages", "template", "privacy")
 _GROUP_KEYS = ("id", "questions")
 _QUESTION_KEYS = (
     "id",
@@ -100,6 +104,7 @@ class Structure:
     id: int
     language: str
     languages: list[str]
+    template: str | None
     privacy: Privacy
     groups: list[StructureGroup]
 
@@ -191,6 +196,8 @@ class Survey:
     intro: str
     end: str | None
     texts: dict[str, LanguageTexts]
+    # Last and defaulted, so callers that predate it keep working.
+    template: str | None = None
 
     @property
     def questions(self) -> list[Question]:
@@ -375,6 +382,7 @@ def load_survey(path: Path) -> Survey:
         id=structure.id,
         language=structure.language,
         languages=list(structure.languages),
+        template=structure.template,
         privacy=structure.privacy,
         groups=groups,
         title=ref.title,
@@ -511,6 +519,12 @@ def load_structure(path: Path) -> Structure:
     if language not in languages:
         raise SurveyError(f"{where}: language '{language}' is not listed in languages")
 
+    template: str | None = None
+    if "template" in survey:
+        template = _as_str(survey["template"], f"{where}: template")
+        if not TEMPLATE_RE.match(template):
+            raise SurveyError(f"{where}: template must match {TEMPLATE_RE.pattern}")
+
     pwhere = f"{name}: [survey.privacy]"
     privacy_tbl = _as_table(_require(survey, "privacy", where), pwhere)
     _check_keys(privacy_tbl, PRIVACY_KEYS, pwhere)
@@ -524,7 +538,14 @@ def load_structure(path: Path) -> Structure:
     groups = [_parse_group(g, name) for g in raw_groups]
     _check_unique([g.id for g in groups], name, "group id")
     _check_unique([q.id for g in groups for q in g.questions], name, "question id")
-    return Structure(id=sid, language=language, languages=languages, privacy=privacy, groups=groups)
+    return Structure(
+        id=sid,
+        language=language,
+        languages=languages,
+        template=template,
+        privacy=privacy,
+        groups=groups,
+    )
 
 
 def _parse_group(raw: Any, name: str) -> StructureGroup:

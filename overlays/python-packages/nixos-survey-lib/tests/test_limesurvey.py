@@ -128,10 +128,10 @@ def test_mandatory_letters(fixture_survey):
     assert rows["age"]["mandatory"] == "Y"
 
 
-def test_plain_collapses_whitespace_and_escapes():
-    """Plain-text cells are single-line with & < > escaped; quotes are left
-    alone because the csv layer handles them."""
-    assert plain("  Nix  &\tNixOS\r\n <tools> ") == "Nix &amp; NixOS &lt;tools&gt;"
+def test_plain_collapses_whitespace_without_escaping():
+    """Plain-text cells are single-line and unescaped. LimeSurvey encodes them
+    on render, so escaping here would reach the respondent as &amp;amp;."""
+    assert plain("  Nix  &\tNixOS\r\n <tools> ") == "Nix & NixOS <tools>"
     assert plain('say "hi"') == 'say "hi"'
 
 
@@ -149,6 +149,7 @@ def test_sid_and_settings_rows(fixture_survey):
         "sid": "424242",
         "language": "en",
         "additional_languages": "de",
+        "template": "fruity_twentythree",
         "format": "G",
         "anonymized": "Y",
         "ipaddr": "N",
@@ -204,7 +205,7 @@ def test_choice_rows(fixture_survey):
     assert sq == [("", "SQ001", "GNU/Linux"), ("", "SQ002", "macOS"), ("", "SQ003", "Windows")]
     a = [(r["type/scale"], r["name"], r["text"]) for r in en if r["class"] == "A"]
     assert a[:2] == [("0", "A1", "Europe"), ("0", "A2", "Asia")]
-    assert a[-1] == ("0", "A3", "Docs &amp; manuals")
+    assert a[-1] == ("0", "A3", "Docs & manuals")
 
 
 def test_q_row_cells_left_empty_for_importer_defaults(fixture_survey):

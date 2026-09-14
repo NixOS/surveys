@@ -436,7 +436,7 @@ choices.other = "Other"
 choices.dontRemember = "I don\u2019t remember"
 
 [questions.yearsUsingNix]
-prompt = "How many years have you been using the Nix package manager (at any level of involvement)? Round to the nearest whole year."
+prompt = "How many full years have you been using the Nix package manager (at any level of involvement)?"
 choices.iDontUseNix = "I don't use Nix"
 choices.lessThan1Year = "Less than 1 year"
 choices.v1To2Years = "1 to 2 years"

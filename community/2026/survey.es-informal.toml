@@ -436,7 +436,7 @@ choices.other = "Otro"
 choices.dontRemember = "No lo recuerdo"
 
 [questions.yearsUsingNix]
-prompt = "¿Cuántos años llevas usando el gestor de paquetes Nix (a cualquier nivel de implicación)? Redondea al año más cercano."
+prompt = "¿Cuántos años completos llevas usando el gestor de paquetes Nix (a cualquier nivel de implicación)?"
 choices.iDontUseNix = "No uso Nix"
 choices.lessThan1Year = "Menos de 1 año"
 choices.v1To2Years = "1 a 2 años"

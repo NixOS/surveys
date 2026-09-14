@@ -12,6 +12,12 @@ language = "en"
 # language to cover every string AND refuses a survey.<lang>.toml whose
 # language is not listed, so a file and its entry here are one change.
 languages = ["en", "fr", "es-informal", "de-informal", "zh-Hans"]
+# Pin the theme rather than inherit the server's default. 14 respondents
+# complained about contrast, dark mode and font fallbacks in 2025; this is the
+# one part of that a survey file can fix. fruity_twentythree is LimeSurvey 6's
+# current default and is noticeably more readable than what an older instance
+# may be set to.
+template = "fruity_twentythree"
 
 [survey.privacy]
 anonymized = true
@@ -518,10 +524,19 @@ choices = [
   "dontRemember",
 ]
 
-# Bands and labels unchanged so the series survives; only the prompt changes,
-# to name the Nix package manager (S2) and to say how to round. The research
-# prefers an open numeric answer, which the schema cannot express and which
-# produced 216 unparseable answers on nixVersion.
+# Bands and labels unchanged, so the series survives; only the prompt changes.
+# It names the Nix package manager (S2) and asks for FULL years.
+#
+# The bands are 1-2, 3-4, 5-6 and so on, which leaves no bucket for anyone at
+# 2.5 years. An earlier draft patched that with "round to the nearest whole
+# year", which puts the arithmetic on the respondent and gets done
+# inconsistently. Counting full years is a truncation rather than a rounding,
+# needs no arithmetic, and matches what people already say: somebody at 2.5
+# years says "two years". That also makes it the reading 2025's answers most
+# likely already had, so the series gets more consistent rather than less.
+#
+# The research prefers an open numeric answer, which the schema cannot express
+# and which produced 216 unparseable answers on nixVersion.
 [[groups.questions]]
 id = "yearsUsingNix"
 type = "single"
