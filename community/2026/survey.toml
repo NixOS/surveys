@@ -18,6 +18,13 @@ languages = ["en", "fr", "es-informal", "de-informal", "zh-Hans"]
 # current default and is noticeably more readable than what an older instance
 # may be set to.
 template = "fruity_twentythree"
+# Back button. LimeSurvey defaults this off, so a respondent who misreads a
+# question on page 2 cannot return from page 3 to fix it, across eight pages
+# and 40 questions. The usual argument against is that later questions can
+# prompt revision of earlier ones; the one pairing this instrument cares about
+# is skillLevel and traits, and those share a page, so intra-page revision is
+# already possible and nothing changes there.
+allow_previous = true
 
 [survey.privacy]
 anonymized = true

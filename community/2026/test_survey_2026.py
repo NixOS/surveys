@@ -59,6 +59,8 @@ def test_survey_level_settings(survey):
     assert survey.privacy.save_timings is False
     # Pinned, not inherited: the server's default may be an older theme.
     assert survey.template == "fruity_twentythree"
+    # Off by default in LimeSurvey; eight pages is too many to navigate blind.
+    assert survey.allow_previous is True
 
 
 def test_ids_are_unique_and_within_limesurveys_limit(survey):

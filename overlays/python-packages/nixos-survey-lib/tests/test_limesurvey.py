@@ -150,6 +150,7 @@ def test_sid_and_settings_rows(fixture_survey):
         "language": "en",
         "additional_languages": "de",
         "template": "fruity_twentythree",
+        "allowprev": "Y",
         "format": "G",
         "anonymized": "Y",
         "ipaddr": "N",

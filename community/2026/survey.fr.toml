@@ -3,7 +3,7 @@
 
 [survey]
 title = "Enquête communautaire Nix 2026"
-intro = "<p>Bienvenue dans l'enquête communautaire Nix de cette année. Elle prend 10 à 15 minutes.</p><p>Tes réponses aident les équipes Nix et la NixOS Foundation à décider sur quoi travailler : quelles plateformes prendre en charge, où la documentation ne répond pas aux besoins, et ce qui empêche les gens d'utiliser Nix davantage. Les résultats sont publiés sous forme agrégée sur survey.nixos.org, avec ceux des années précédentes.</p><p>Cette enquête est anonyme. Nous ne demandons ni ton nom ni ton adresse e-mail, nous n'enregistrons pas ton adresse IP et nous ne conservons aucun horodatage. Les questions te concernant, comme l'âge, le pays et le travail, servent à savoir si nous touchons toute la communauté ou seulement une partie. Toutes les questions peuvent être passées.</p>"
+intro = "<p>Bienvenue dans l'enquête communautaire Nix de cette année. Elle prend 10 à 15 minutes.</p><p>Tes réponses aident les équipes Nix et la NixOS Foundation à décider sur quoi travailler : quelles plateformes prendre en charge, où la documentation ne répond pas aux besoins, et ce qui empêche les gens d'utiliser Nix davantage. Les résultats sont publiés sous forme agrégée sur nixos.org/surveys, avec ceux des années précédentes.</p><p>Cette enquête est anonyme. Nous ne demandons ni ton nom ni ton adresse e-mail, nous n'enregistrons pas ton adresse IP et nous ne conservons aucun horodatage. Les questions te concernant, comme l'âge, le pays et le travail, servent à savoir si nous touchons toute la communauté ou seulement une partie. Toutes les questions peuvent être passées.</p>"
 
 [groups.aboutYou]
 title = "À propos de toi"

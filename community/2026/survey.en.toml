@@ -3,7 +3,7 @@
 
 [survey]
 title = "Nix Community Survey 2026"
-intro = "<p>Welcome to this year's Nix Community Survey. It takes 10 to 15 minutes.</p><p>Your answers help the Nix teams and the NixOS Foundation decide what to work on: which platforms to support, where the documentation is failing people, and what stops people from using Nix more than they do. Results are published as aggregates at survey.nixos.org, alongside previous years.</p><p>The survey is anonymous. We do not ask for your name or email address, we do not record your IP address, and we do not store timestamps. The questions about you, such as age, country and work, are here so we can tell whether we are hearing from the whole community or only part of it. Every question can be skipped.</p>"
+intro = "<p>Welcome to this year's Nix Community Survey. It takes 10 to 15 minutes.</p><p>Your answers help the Nix teams and the NixOS Foundation decide what to work on: which platforms to support, where the documentation is failing people, and what stops people from using Nix more than they do. Results are published as aggregates at nixos.org/surveys, alongside previous years.</p><p>The survey is anonymous. We do not ask for your name or email address, we do not record your IP address, and we do not store timestamps. The questions about you, such as age, country and work, are here so we can tell whether we are hearing from the whole community or only part of it. Every question can be skipped.</p>"
 
 [groups.aboutYou]
 title = "About you"

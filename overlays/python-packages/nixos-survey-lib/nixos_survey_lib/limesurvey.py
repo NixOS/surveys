@@ -122,6 +122,10 @@ def _settings_rows(survey: Survey) -> list[list[str]]:
         # the server's default is, which is the difference between a readable
         # instrument and one nobody can fix without admin access.
         rows.append(_row(cls="S", name="template", text=survey.template))
+    if survey.allow_previous:
+        # LimeSurvey defaults this off, so a respondent who misreads a question
+        # on page 2 cannot go back and fix it from page 3.
+        rows.append(_row(cls="S", name="allowprev", text="Y"))
     rows += [
         _row(cls="S", name="format", text="G"),  # one group per page
         _row(cls="S", name="anonymized", text=_yn(p.anonymized)),

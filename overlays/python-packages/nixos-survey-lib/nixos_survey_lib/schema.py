@@ -42,7 +42,7 @@ RESERVED_IDS = frozenset(
 )
 PRIVACY_KEYS = ("anonymized", "save_ip_address", "save_referrer", "date_stamp", "save_timings")
 
-_SURVEY_KEYS = ("id", "language", "languages", "template", "privacy")
+_SURVEY_KEYS = ("id", "language", "languages", "template", "allow_previous", "privacy")
 _GROUP_KEYS = ("id", "questions")
 _QUESTION_KEYS = (
     "id",
@@ -105,6 +105,7 @@ class Structure:
     language: str
     languages: list[str]
     template: str | None
+    allow_previous: bool
     privacy: Privacy
     groups: list[StructureGroup]
 
@@ -196,8 +197,9 @@ class Survey:
     intro: str
     end: str | None
     texts: dict[str, LanguageTexts]
-    # Last and defaulted, so callers that predate it keep working.
+    # Last and defaulted, so callers that predate them keep working.
     template: str | None = None
+    allow_previous: bool = False
 
     @property
     def questions(self) -> list[Question]:
@@ -383,6 +385,7 @@ def load_survey(path: Path) -> Survey:
         language=structure.language,
         languages=list(structure.languages),
         template=structure.template,
+        allow_previous=structure.allow_previous,
         privacy=structure.privacy,
         groups=groups,
         title=ref.title,
@@ -525,6 +528,10 @@ def load_structure(path: Path) -> Structure:
         if not TEMPLATE_RE.match(template):
             raise SurveyError(f"{where}: template must match {TEMPLATE_RE.pattern}")
 
+    allow_previous = False
+    if "allow_previous" in survey:
+        allow_previous = _as_bool(survey["allow_previous"], f"{where}: allow_previous")
+
     pwhere = f"{name}: [survey.privacy]"
     privacy_tbl = _as_table(_require(survey, "privacy", where), pwhere)
     _check_keys(privacy_tbl, PRIVACY_KEYS, pwhere)
@@ -543,6 +550,7 @@ def load_structure(path: Path) -> Structure:
         language=language,
         languages=languages,
         template=template,
+        allow_previous=allow_previous,
         privacy=privacy,
         groups=groups,
     )

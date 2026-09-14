@@ -167,7 +167,17 @@ def check_2026(url: str, key: str, tsv_path: str) -> None:
         "get_survey_properties",
         key,
         sid,
-        ["anonymized", "ipaddr", "refurl", "datestamp", "savetimings", "format", "template"],
+        [
+            "anonymized",
+            "ipaddr",
+            "refurl",
+            "datestamp",
+            "savetimings",
+            "format",
+            "template",
+            "allowprev",
+            "showprogress",
+        ],
     )
     assert props == {
         "anonymized": "Y",
@@ -177,6 +187,11 @@ def check_2026(url: str, key: str, tsv_path: str) -> None:
         "savetimings": "N",
         "format": "G",
         "template": "fruity_twentythree",
+        "allowprev": "Y",
+        # Not set by the survey file; LimeSurvey defaults it on. Asserted so
+        # that a server-side change to the default is caught here rather than
+        # by a respondent.
+        "showprogress": "Y",
     }, props
 
     # Ampersands reach LimeSurvey unescaped. It encodes on render, so escaping

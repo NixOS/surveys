@@ -145,6 +145,7 @@ def main():
         S("language", "en"),
         S("additional_languages", "de"),
         S("template", "fruity_twentythree"),
+        S("allowprev", "Y"),
         S("format", "G"),
         S("anonymized", "Y"),
         S("ipaddr", "N"),
