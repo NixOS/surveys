@@ -8,16 +8,22 @@ belong in that year's `CHECKLIST.md`.
 
 2026 ships English, French, Spanish, German and Simplified Chinese.
 
-## Register: informal, in every language
+## Register: informal in es, de, zh; formal in fr
 
 LimeSurvey's locale controls its own interface strings (buttons, navigation,
 validation messages) and not our question text, which comes from the TOML. A
-formal translation therefore addresses the respondent one way in the buttons
+mismatched translation therefore addresses the respondent one way in the buttons
 and another way in the questions, on the same page.
+
+While informal address (*du*, *tú*, *你*) is the natural peer-to-peer standard in
+German, Spanish, and Chinese developer spaces, French demographic and institutional
+surveys strictly expect *vouvoiement* (*vous*); *tutoiement* (*tu*) feels intrusive
+and overly familiar on identity and background questions. Using *vous* also aligns
+directly with LimeSurvey's built-in `fr` locale, which only ships formal chrome.
 
 | Language | Second person | Note |
 |---|---|---|
-| `fr` | tu | LimeSurvey ships only `fr`, with no informal variant, so this decision lives entirely in our text. |
+| `fr` | vous | Formal register (vouvoiement). Matches standard survey conventions and LimeSurvey's `fr` chrome. |
 | `es-informal` | tú | Not `usted`, and not voseo. |
 | `de-informal` | du | Lower case `du`, as in modern usage. Avoid sentence-initial `Sie` even when it means "it" or "she": it is indistinguishable from formal address at a glance, and `check_translations.py` flags it. Reword. |
 | `zh-Hans` | 你 | Not 您. Chinese has no T-V distinction in the European sense; this is the nearest equivalent choice. |
@@ -74,7 +80,7 @@ survey. Decisions:
 | English | fr | es | de | zh-Hans |
 |---|---|---|---|---|
 | Non-binary/non-conforming | Non-binaire / non conforme | No binario / no conforme | Nicht-binär / nicht konform | 非二元性别／性别不一致 |
-| Do you identify as transgender? | T'identifies-tu comme transgenre ? | ¿Te identificas como transgénero? | Identifizierst du dich als transgender? | 你认同自己是跨性别者吗？ |
+| Do you identify as transgender? | Vous identifiez-vous comme transgenre ? | ¿Te identificas como transgénero? | Identifizierst du dich als transgender? | 你认同自己是跨性别者吗？ |
 | Prefer not to say | Je préfère ne pas répondre | Prefiero no decirlo | Keine Angabe | 不想回答 |
 
 Spanish has a live problem here: adjectives agree in gender, so "No binario"

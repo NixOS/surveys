@@ -18,14 +18,17 @@ from pathlib import Path
 
 from nixos_survey_lib.schema import load_survey
 
-# Formality slips. The questions address the respondent informally and so does
-# LimeSurvey's own chrome, from the locale; a formal pronoun here makes the two
-# disagree inside one page. See community/TRANSLATING.md.
+# Formality slips. The questions address the respondent informally in es, de,
+# and zh, matching their informal LimeSurvey locales. fr uses formal address
+# ("vous"), matching LimeSurvey's standard fr chrome and French survey
+# convention; informal pronouns there are errors. See community/TRANSLATING.md.
 FORMAL = {
-    "fr": ["vous", "votre", "vos"],
     "es-informal": ["usted", "ustedes"],
     "de-informal": ["Sie", "Ihnen", "Ihre", "Ihrem", "Ihren"],
     "zh-Hans": ["您"],
+}
+INFORMAL = {
+    "fr": ["tu", "ton", "ta", "tes", "toi"],
 }
 
 # Names that must survive translation. Compared case-insensitively: German
@@ -90,6 +93,10 @@ def main(path: str) -> int:
             for word in FORMAL.get(language, []):
                 if contains(value, word):
                     print(f"{language}: formal register {word!r} in {where}: {value}")
+                    failures += 1
+            for word in INFORMAL.get(language, []):
+                if contains(value, word):
+                    print(f"{language}: informal register {word!r} in {where}: {value}")
                     failures += 1
             source = english.get(where)
             if source is None:
