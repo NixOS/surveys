@@ -436,15 +436,15 @@ choices.other = "Otro"
 choices.dontRemember = "No lo recuerdo"
 
 [questions.yearsUsingNix]
-prompt = "¿Cuántos años completos llevas usando el gestor de paquetes Nix (a cualquier nivel de implicación)?"
+prompt = "¿Cuánto tiempo llevas usando el gestor de paquetes Nix (a cualquier nivel de implicación)?"
 choices.iDontUseNix = "No uso Nix"
 choices.lessThan1Year = "Menos de 1 año"
-choices.v1To2Years = "1 a 2 años"
-choices.v3To4Years = "3 a 4 años"
-choices.v5To6Years = "5 a 6 años"
-choices.v7To8Years = "7 a 8 años"
-choices.v9To10Years = "9 a 10 años"
-choices.v11OrMoreYears = "11 años o más"
+choices.v1ToUnder3 = "De 1 a menos de 3 años"
+choices.v3ToUnder5 = "De 3 a menos de 5 años"
+choices.v5ToUnder7 = "De 5 a menos de 7 años"
+choices.v7ToUnder9 = "De 7 a menos de 9 años"
+choices.v9ToUnder11 = "De 9 a menos de 11 años"
+choices.v11OrMore = "11 años o más"
 choices.preferNotToSay = "Prefiero no decirlo"
 
 [questions.skillLevel]

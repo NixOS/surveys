@@ -524,16 +524,16 @@ choices = [
   "dontRemember",
 ]
 
-# Bands and labels unchanged, so the series survives; only the prompt changes.
-# It names the Nix package manager (S2) and asks for FULL years.
+# Bands are contiguous, so every duration has exactly one bucket and the
+# respondent does no arithmetic.
 #
-# The bands are 1-2, 3-4, 5-6 and so on, which leaves no bucket for anyone at
-# 2.5 years. An earlier draft patched that with "round to the nearest whole
-# year", which puts the arithmetic on the respondent and gets done
-# inconsistently. Counting full years is a truncation rather than a rounding,
-# needs no arithmetic, and matches what people already say: somebody at 2.5
-# years says "two years". That also makes it the reading 2025's answers most
-# likely already had, so the series gets more consistent rather than less.
+# 2025 used 1-2, 3-4, 5-6 and so on, which has no bucket at all for 2.5 years.
+# Two drafts tried to patch that in the prompt, first "round to the nearest
+# whole year" and then "how many full years", and both left the respondent
+# converting a duration into a band. This closes the gap instead. Boundaries
+# move by half a year against 2025, which is a real comparability cost and is
+# accepted: 2026 breaks this question's series along with several others, and
+# the point of breaking once is to arrive somewhere worth freezing.
 #
 # The research prefers an open numeric answer, which the schema cannot express
 # and which produced 216 unparseable answers on nixVersion.
@@ -543,12 +543,12 @@ type = "single"
 choices = [
   "iDontUseNix",
   "lessThan1Year",
-  "v1To2Years",
-  "v3To4Years",
-  "v5To6Years",
-  "v7To8Years",
-  "v9To10Years",
-  "v11OrMoreYears",
+  "v1ToUnder3",
+  "v3ToUnder5",
+  "v5ToUnder7",
+  "v7ToUnder9",
+  "v9ToUnder11",
+  "v11OrMore",
   "preferNotToSay",
 ]
 

@@ -436,15 +436,15 @@ choices.other = "Sonstiges"
 choices.dontRemember = "Ich erinnere mich nicht"
 
 [questions.yearsUsingNix]
-prompt = "Wie viele volle Jahre nutzt du den Paketmanager Nix schon (auf welchem Niveau auch immer)?"
+prompt = "Wie lange nutzt du den Paketmanager Nix schon (auf welchem Niveau auch immer)?"
 choices.iDontUseNix = "Ich nutze Nix nicht"
 choices.lessThan1Year = "Weniger als 1 Jahr"
-choices.v1To2Years = "1 bis 2 Jahre"
-choices.v3To4Years = "3 bis 4 Jahre"
-choices.v5To6Years = "5 bis 6 Jahre"
-choices.v7To8Years = "7 bis 8 Jahre"
-choices.v9To10Years = "9 bis 10 Jahre"
-choices.v11OrMoreYears = "11 Jahre oder mehr"
+choices.v1ToUnder3 = "1 bis unter 3 Jahre"
+choices.v3ToUnder5 = "3 bis unter 5 Jahre"
+choices.v5ToUnder7 = "5 bis unter 7 Jahre"
+choices.v7ToUnder9 = "7 bis unter 9 Jahre"
+choices.v9ToUnder11 = "9 bis unter 11 Jahre"
+choices.v11OrMore = "11 Jahre oder mehr"
 choices.preferNotToSay = "Keine Angabe"
 
 [questions.skillLevel]

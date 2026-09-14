@@ -272,10 +272,21 @@ def test_terminology_prompts_name_the_package_manager(survey):
     qs = questions(survey)
     for qid in ("yearsUsingNix", "skillLevel"):
         assert "Nix package manager" in qs[qid].prompt, qid
-    # Full years, not rounded: the bands leave no bucket for 2.5 years, and
-    # truncation needs no arithmetic from the respondent.
-    assert "full years" in qs["yearsUsingNix"].prompt
-    assert "Round to the nearest" not in qs["yearsUsingNix"].prompt
+    # No rounding instruction of any kind: the bands are contiguous, so every
+    # duration falls in exactly one and the respondent does no arithmetic.
+    years = qs["yearsUsingNix"]
+    assert "Round" not in years.prompt and "full years" not in years.prompt
+    assert years.choice_keys == [
+        "iDontUseNix",
+        "lessThan1Year",
+        "v1ToUnder3",
+        "v3ToUnder5",
+        "v5ToUnder7",
+        "v7ToUnder9",
+        "v9ToUnder11",
+        "v11OrMore",
+        "preferNotToSay",
+    ]
 
 
 def test_usage_group(survey):

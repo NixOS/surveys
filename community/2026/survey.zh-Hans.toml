@@ -436,15 +436,15 @@ choices.other = "其他"
 choices.dontRemember = "记不清了"
 
 [questions.yearsUsingNix]
-prompt = "你使用 Nix 包管理器满多少年了（任何参与程度都算）？"
+prompt = "你使用 Nix 包管理器多长时间了（任何参与程度都算）？"
 choices.iDontUseNix = "我不使用 Nix"
 choices.lessThan1Year = "不到 1 年"
-choices.v1To2Years = "1 到 2 年"
-choices.v3To4Years = "3 到 4 年"
-choices.v5To6Years = "5 到 6 年"
-choices.v7To8Years = "7 到 8 年"
-choices.v9To10Years = "9 到 10 年"
-choices.v11OrMoreYears = "11 年及以上"
+choices.v1ToUnder3 = "1 年至不满 3 年"
+choices.v3ToUnder5 = "3 年至不满 5 年"
+choices.v5ToUnder7 = "5 年至不满 7 年"
+choices.v7ToUnder9 = "7 年至不满 9 年"
+choices.v9ToUnder11 = "9 年至不满 11 年"
+choices.v11OrMore = "11 年及以上"
 choices.preferNotToSay = "不想回答"
 
 [questions.skillLevel]
