@@ -158,6 +158,24 @@ def test_load_structure_survey_table_errors(tmp_path, replace, by, match):
         load_structure(_structure_with(tmp_path, replace, by))
 
 
+def test_alphasort_defaults_off_and_is_accepted_on_single(tmp_path):
+    """LimeSurvey sorts a list question's answers in the language being
+    displayed when this is set, which is the only way one shared option order
+    can be alphabetical in more than one language. Off by default, so every
+    other question keeps the order the structure file lists."""
+    s = load_structure(_write(tmp_path, VALID_STRUCTURE))
+    assert s.groups[0].questions[0].alphasort is False
+
+    s = load_structure(
+        _structure_with(
+            tmp_path,
+            'id = "country"\ntype = "single"',
+            'id = "country"\ntype = "single"\nalphasort = true',
+        )
+    )
+    assert s.groups[0].questions[0].alphasort is True
+
+
 def test_load_structure_language_code_with_two_hyphens_is_valid(tmp_path):
     """LimeSurvey ships codes such as zh-Hant-TW, so a second hyphenated
     segment must pass the language-code pattern."""
@@ -271,6 +289,18 @@ def test_load_structure_group_without_questions(tmp_path):
             'id = "country"\ntype = "single"\nmax_answers = 1',
             "max_answers",
             id="max-answers-on-single",
+        ),
+        pytest.param(
+            'id = "os"\ntype = "multiple"',
+            'id = "os"\ntype = "multiple"\nalphasort = true',
+            "alphasort",
+            id="alphasort-on-multiple",
+        ),
+        pytest.param(
+            'id = "country"\ntype = "single"',
+            'id = "country"\ntype = "single"\nalphasort = "yes"',
+            "alphasort",
+            id="alphasort-not-a-bool",
         ),
         pytest.param(
             'id = "country"\ntype = "single"',

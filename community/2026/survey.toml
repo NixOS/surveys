@@ -1,0 +1,1215 @@
+# Nix Community Survey 2026: structure. Human text lives in survey.<lang>.toml.
+#
+# Every question carries a comment recording the decision it supports. No
+# previous year did this, which is why the 2026 redesign had to reconstruct
+# 2025's intent from response counts. See
+# docs/superpowers/specs/2026-09-13-community-survey-2026-design.md.
+
+[survey]
+id = 2026
+language = "en"
+# Grows one entry per completed translation. load_survey requires every listed
+# language to cover every string AND refuses a survey.<lang>.toml whose
+# language is not listed, so a file and its entry here are one change.
+languages = ["en", "fr", "es-informal", "de-informal", "zh-Hans"]
+# Pin the theme rather than inherit the server's default. 14 respondents
+# complained about contrast, dark mode and font fallbacks in 2025; this is the
+# one part of that a survey file can fix. fruity_twentythree is LimeSurvey 6's
+# current default and is noticeably more readable than what an older instance
+# may be set to.
+template = "fruity_twentythree"
+# Back button. LimeSurvey defaults this off, so a respondent who misreads a
+# question on page 2 cannot return from page 3 to fix it, across eight pages
+# and 40 questions. The usual argument against is that later questions can
+# prompt revision of earlier ones; the one pairing this instrument cares about
+# is skillLevel and traits, and those share a page, so intra-page revision is
+# already possible and nothing changes there.
+allow_previous = true
+
+[survey.privacy]
+anonymized = true
+save_ip_address = false
+save_referrer = false
+date_stamp = false
+save_timings = false
+
+[[groups]]
+id = "aboutYou"
+
+# Opens the survey: eight radio buttons. `country` held this slot in 2025 and
+# would have opened the instrument with a 250-option dropdown, on the page
+# where breakoff concentrates. Otherwise carried verbatim from 2025.
+[[groups.questions]]
+id = "age"
+type = "single"
+choices = [
+  "under18",
+  "age18to24",
+  "age25to34",
+  "age35to44",
+  "age45to54",
+  "age55to64",
+  "age65plus",
+  "preferNotToSay",
+]
+
+# Unchanged from 2025. The most-complained-about question in the survey (21
+# objections), kept because the population share makes NASEM's critique of
+# single-item gender measures bite harder here than in a general population.
+[[groups.questions]]
+id = "genderIdentity"
+type = "single"
+choices = [
+  "man",
+  "woman",
+  "nonBinaryNonConforming",
+  "identifyAnotherWay",
+  "preferNotToSay",
+]
+
+# Gains `dontKnow`, reaching the minimum Stats NZ specifies for this
+# construction: yes, no, don't know, prefer not to say. Placed after `no` so
+# the ordered pair stays ordered and the escapes stay last.
+[[groups.questions]]
+id = "transgender"
+type = "single"
+choices = ["yes", "no", "dontKnow", "preferNotToSay"]
+
+# Contiguous bands, same treatment as yearsUsingNix. 2025 used 1-4, 5-9,
+# 10-14 and so on, which has no bucket for 4.5 years, and it also ran
+# "45 to 49 years" straight into "More than 50 years", leaving exactly 50 with
+# no answer at all. Both gaps close here.
+[[groups.questions]]
+id = "yearsProgramming"
+type = "single"
+choices = [
+  "iHaveNeverProgrammed",
+  "lessThan1Year",
+  "v1ToUnder5",
+  "v5ToUnder10",
+  "v10ToUnder15",
+  "v15ToUnder20",
+  "v20ToUnder25",
+  "v25ToUnder30",
+  "v30ToUnder35",
+  "v35ToUnder40",
+  "v40ToUnder45",
+  "v45ToUnder50",
+  "v50OrMore",
+  "preferNotToSay",
+]
+
+# 2024 asked 15 sub-regions, 2025 collapsed to 8 continents with no recorded
+# reason, and "Europe" at 60% of respondents is useless for any decision.
+# Full ISO 3166-1 list; region is derived at analysis time so the continental
+# series survives. The one dropdown in the survey: respondents are matching an
+# answer they already know rather than scanning to discover it. alphasort so
+# LimeSurvey collates the list in whichever language it is showing.
+# Keys and labels come from generate_countries.py.
+[[groups.questions]]
+id = "country"
+type = "single"
+display = "dropdown"
+alphasort = true
+choices = [
+  "AF",
+  "AL",
+  "DZ",
+  "AS",
+  "AD",
+  "AO",
+  "AI",
+  "AQ",
+  "AG",
+  "AR",
+  "AM",
+  "AW",
+  "AU",
+  "AT",
+  "AZ",
+  "BS",
+  "BH",
+  "BD",
+  "BB",
+  "BY",
+  "BE",
+  "BZ",
+  "BJ",
+  "BM",
+  "BT",
+  "BO",
+  "BQ",
+  "BA",
+  "BW",
+  "BV",
+  "BR",
+  "IO",
+  "BN",
+  "BG",
+  "BF",
+  "BI",
+  "CV",
+  "KH",
+  "CM",
+  "CA",
+  "KY",
+  "CF",
+  "TD",
+  "CL",
+  "CN",
+  "CX",
+  "CC",
+  "CO",
+  "KM",
+  "CG",
+  "CD",
+  "CK",
+  "CR",
+  "HR",
+  "CU",
+  "CW",
+  "CY",
+  "CZ",
+  "CI",
+  "DK",
+  "DJ",
+  "DM",
+  "DO",
+  "EC",
+  "EG",
+  "SV",
+  "GQ",
+  "ER",
+  "EE",
+  "SZ",
+  "ET",
+  "FK",
+  "FO",
+  "FJ",
+  "FI",
+  "FR",
+  "GF",
+  "PF",
+  "TF",
+  "GA",
+  "GM",
+  "GE",
+  "DE",
+  "GH",
+  "GI",
+  "GR",
+  "GL",
+  "GD",
+  "GP",
+  "GU",
+  "GT",
+  "GG",
+  "GN",
+  "GW",
+  "GY",
+  "HT",
+  "HM",
+  "VA",
+  "HN",
+  "HK",
+  "HU",
+  "IS",
+  "IN",
+  "ID",
+  "IR",
+  "IQ",
+  "IE",
+  "IM",
+  "IL",
+  "IT",
+  "JM",
+  "JP",
+  "JE",
+  "JO",
+  "KZ",
+  "KE",
+  "KI",
+  "KP",
+  "KR",
+  "KW",
+  "KG",
+  "LA",
+  "LV",
+  "LB",
+  "LS",
+  "LR",
+  "LY",
+  "LI",
+  "LT",
+  "LU",
+  "MO",
+  "MG",
+  "MW",
+  "MY",
+  "MV",
+  "ML",
+  "MT",
+  "MH",
+  "MQ",
+  "MR",
+  "MU",
+  "YT",
+  "MX",
+  "FM",
+  "MD",
+  "MC",
+  "MN",
+  "ME",
+  "MS",
+  "MA",
+  "MZ",
+  "MM",
+  "NA",
+  "NR",
+  "NP",
+  "NL",
+  "NC",
+  "NZ",
+  "NI",
+  "NE",
+  "NG",
+  "NU",
+  "NF",
+  "MK",
+  "MP",
+  "NO",
+  "OM",
+  "PK",
+  "PW",
+  "PS",
+  "PA",
+  "PG",
+  "PY",
+  "PE",
+  "PH",
+  "PN",
+  "PL",
+  "PT",
+  "PR",
+  "QA",
+  "RO",
+  "RU",
+  "RW",
+  "RE",
+  "BL",
+  "SH",
+  "KN",
+  "LC",
+  "MF",
+  "PM",
+  "VC",
+  "WS",
+  "SM",
+  "ST",
+  "SA",
+  "SN",
+  "RS",
+  "SC",
+  "SL",
+  "SG",
+  "SX",
+  "SK",
+  "SI",
+  "SB",
+  "SO",
+  "ZA",
+  "GS",
+  "SS",
+  "ES",
+  "LK",
+  "SD",
+  "SR",
+  "SJ",
+  "SE",
+  "CH",
+  "SY",
+  "TW",
+  "TJ",
+  "TZ",
+  "TH",
+  "TL",
+  "TG",
+  "TK",
+  "TO",
+  "TT",
+  "TN",
+  "TM",
+  "TC",
+  "TV",
+  "TR",
+  "UG",
+  "UA",
+  "AE",
+  "GB",
+  "US",
+  "UM",
+  "UY",
+  "UZ",
+  "VU",
+  "VE",
+  "VN",
+  "VG",
+  "VI",
+  "WF",
+  "EH",
+  "YE",
+  "ZM",
+  "ZW",
+  "AX",
+  "preferNotToSay",
+]
+
+# New for 2026, adopted near-verbatim from Stack Overflow's Employment item.
+# SO gates `industry` behind it and never showed that question to 31.6% of
+# their sample; we cannot branch, so this recovers the same information at
+# analysis time and gives the 24.0% who are students somewhere to be counted.
+[[groups.questions]]
+id = "employment"
+type = "single"
+choices = [
+  "employed",
+  "selfEmployed",
+  "notEmployed",
+  "student",
+  "retired",
+  "preferNotToSay",
+]
+
+# Additions only; the existing 34 keep their 2025 positions and labels.
+# `architect` took 6.1% of Stack Overflow's 2025 answers and is absent only
+# because we copied their 2024 list; it goes in the alphabetical run. The
+# three non-employment states go before the escapes, per the escapes-last
+# principle.
+[[groups.questions]]
+id = "role"
+type = "single"
+choices = [
+  "academicResearcher",
+  "architect",
+  "backEndDeveloper",
+  "blockchainDeveloper",
+  "cloudInfraEngineer",
+  "dataBusinessAnalyst",
+  "dataEngineer",
+  "dataScientistOrMl",
+  "databaseAdministrator",
+  "devAiSpecialist",
+  "devopsSpecialist",
+  "developerExperience",
+  "developerAdvocate",
+  "educator",
+  "embeddedAppsDeveloper",
+  "enterpriseDesktopDev",
+  "frontEndDeveloper",
+  "fullStackDeveloper",
+  "gameDeveloper",
+  "hardwareEngineer",
+  "manager",
+  "marketingSalesPro",
+  "mobileDeveloper",
+  "productManager",
+  "qaTestEngineer",
+  "researchDevelopmentRole",
+  "scientist",
+  "securityProfessional",
+  "seniorExecutive",
+  "sreEngineer",
+  "student",
+  "systemNetworkAdmin",
+  "uxUiDesigner",
+  "selfEmployedOrFounder",
+  "retired",
+  "notEmployed",
+  "other",
+  "preferNotToSay",
+]
+
+# Rebuilt. The 2025 list's 27 options contained no software or technology
+# sector, the option that takes roughly half of Stack Overflow's answers, so
+# 21.0% chose Other and the non-Other answers are contaminated too. Built on
+# SO's current 22-option backbone, plus four sectors this community
+# over-indexes on, a non-employment escape (we cannot gate this behind
+# `employment` the way SO does), and prefer-not-to-say.
+[[groups.questions]]
+id = "industry"
+type = "single"
+choices = [
+  "softwareDevelopment",
+  "itServices",
+  "scientificResearch",
+  "lifeSciences",
+  "engineeringServices",
+  "education",
+  "government",
+  "healthcare",
+  "manufacturing",
+  "bankingFinance",
+  "fintech",
+  "insurance",
+  "energy",
+  "utilitiesTelecom",
+  "transportSupplyChain",
+  "retailConsumer",
+  "mediaAdvertising",
+  "broadcastPublishing",
+  "hospitalityTravel",
+  "miningConstruction",
+  "agriculture",
+  "nonProfit",
+  "aerospaceDefence",
+  "semiconductors",
+  "games",
+  "cloudHosting",
+  "other",
+  "notEmployed",
+  "preferNotToSay",
+]
+
+# Collapsed to one axis: what the software does. The 2025 list mixed four
+# incompatible axes (what it does, how it is licensed, how it is delivered,
+# who it serves), so its rank order was uninterpretable, not just its 15.7%
+# Other rate. Five domains added: desktop, build tooling, databases, data and
+# ML, scientific computing.
+[[groups.questions]]
+id = "domain"
+type = "single"
+choices = [
+  "webDevelopment",
+  "mobileDevelopment",
+  "desktopSoftware",
+  "gameDevelopment",
+  "embeddedSystemsOrIot",
+  "systemOsDevelopment",
+  "progLangsTooling",
+  "buildTooling",
+  "databases",
+  "dataAndMl",
+  "scientificComputing",
+  "cloudInfrastructure",
+  "itOpsDevops",
+  "infosec",
+  "telecomNetworking",
+  "blockchainCryptoWeb3",
+  "endUserTooling",
+  "other",
+  "preferNotToSay",
+]
+
+[[groups]]
+id = "experience"
+
+# Carried verbatim. Half of the discovery-flow sankey; no defect found.
+[[groups.questions]]
+id = "firstHeardWhich"
+type = "single"
+choices = ["nix", "nixos", "dontRemember"]
+
+# Carried verbatim. 15 channels and "Other" at 2.6%, so the list is
+# comprehensive.
+[[groups.questions]]
+id = "firstHeardHow"
+type = "single"
+choices = [
+  "atWork",
+  "atSchoolOrUniversity",
+  "friendOrColleague",
+  "blogOrWebsite",
+  "onPodcast",
+  "onYoutube",
+  "onReddit",
+  "onHackerNews",
+  "onTwitterX",
+  "onLinkedin",
+  "otherSocialMedia",
+  "academicOrConference",
+  "webSearch",
+  "other",
+  "dontRemember",
+]
+
+# Bands are contiguous, so every duration has exactly one bucket and the
+# respondent does no arithmetic.
+#
+# 2025 used 1-2, 3-4, 5-6 and so on, which has no bucket at all for 2.5 years.
+# Two drafts tried to patch that in the prompt, first "round to the nearest
+# whole year" and then "how many full years", and both left the respondent
+# converting a duration into a band. This closes the gap instead. Boundaries
+# move by half a year against 2025, which is a real comparability cost and is
+# accepted: 2026 breaks this question's series along with several others, and
+# the point of breaking once is to arrive somewhere worth freezing.
+#
+# The research prefers an open numeric answer, which the schema cannot express
+# and which produced 216 unparseable answers on nixVersion.
+[[groups.questions]]
+id = "yearsUsingNix"
+type = "single"
+choices = [
+  "iDontUseNix",
+  "lessThan1Year",
+  "v1ToUnder3",
+  "v3ToUnder5",
+  "v5ToUnder7",
+  "v7ToUnder9",
+  "v9ToUnder11",
+  "v11OrMore",
+  "preferNotToSay",
+]
+
+# Behaviourally anchored. The 2025 scale did not discriminate: 84.5% were
+# Beginner or Intermediate while 1,555 people separately reported they can
+# write their own NixOS modules. "Advanced" had no referent, so respondents
+# anchored against an imagined expert. Same keys, same length, new labels.
+[[groups.questions]]
+id = "skillLevel"
+type = "single"
+choices = [
+  "neverUsedNix",
+  "beginner",
+  "intermediate",
+  "advanced",
+  "preferNotToSay",
+]
+
+# Measures technical ability behaviourally, to complement skillLevel, so the
+# project can see how quickly the community learns different parts of the
+# ecosystem. Four items added in a single break: packaging and stdenv have no
+# acquisition curve today, debugging is a capability distinct from the
+# error-message comprehension item, and noneOfThese separates the 173
+# respondents (5.1%) who ticked nothing from those who skipped.
+#
+# The order is frozen from 2026. The existing twelve keep their 2025
+# positions; the packaging pair goes before contributing because packaging
+# feeds contribution, debugging sits beside error messages, and the escape is
+# last. Adding items in successive years would break the series repeatedly and
+# destroy the cohort comparison this question exists for.
+[[groups.questions]]
+id = "traits"
+type = "multiple"
+choices = [
+  "iRelyOnExamples",
+  "iWriteOwnExpressions",
+  "iUseModuleSystem",
+  "iWriteOwnModules",
+  "iUnderstandModuleDepth",
+  "iHaveUsedOverlays",
+  "iUnderstandOverlays",
+  "iWrittenDerivation",
+  "iUnderstandStdenv",
+  "iComfortableContributing",
+  "iTeachOthers",
+  "iMakeArchitecturalChoices",
+  "iReadNixSource",
+  "iCanDebugBuilds",
+  "iUnderstandErrorMessages",
+  "noneOfThese",
+]
+
+# Carried verbatim. Ten options with escapes already present; feeds crosstabs.
+[[groups.questions]]
+id = "involvement"
+type = "multiple"
+choices = [
+  "iDontUseNix",
+  "iDontUseNixos",
+  "iUseNixos",
+  "iInstallSoftware",
+  "iDevelopSoftware",
+  "iManageMachines",
+  "iContributePackages",
+  "iMaintainPackages",
+  "iHaveMergeAccess",
+  "iDevelopTools",
+]
+
+[[groups]]
+id = "usage"
+
+# Carried verbatim. "Other" is 109 (3.2%), mid-pack; no defect found.
+[[groups.questions]]
+id = "operatingSystems"
+type = "multiple"
+choices = [
+  "gnuLinux",
+  "macos",
+  "windows",
+  "bsd",
+  "ios",
+  "android",
+  "chromeos",
+  "other",
+  "preferNotToSay",
+]
+
+# Carried verbatim. Has its own I-don't-use-Nix escape; "Other" 0.9%.
+[[groups.questions]]
+id = "nixOnOs"
+type = "multiple"
+choices = [
+  "dontUseNix",
+  "nixos",
+  "otherLinuxDistro",
+  "macos",
+  "windowsViaWsl",
+  "bsd",
+  "android",
+  "other",
+]
+
+# Carried verbatim. The only source of CPU architecture data; "Other" 2.1%.
+[[groups.questions]]
+id = "targetTriple"
+type = "multiple"
+choices = [
+  "x8664LinuxGnu",
+  "aarch64LinuxGnu",
+  "aarch64AppleDarwin",
+  "x8664AppleDarwin",
+  "i686LinuxGnu",
+  "x8664LinuxMusl",
+  "aarch64LinuxMusl",
+  "riscv64LinuxGnu",
+  "other",
+]
+
+# Seven fixes, all to the option list; the type and prompt are unchanged.
+# 2025 drew 7.5% "Other" (256 people) and the research found what was in it:
+# 503 Lix users with no Lix installer option, 254 Android users with no
+# nix-on-droid, a factually wrong Homebrew example (there is no nix formula),
+# 1,222 responses (36.0%) on an "official script" option that no longer names
+# one thing now that NixOS/nix-installer is also official, and no home for
+# container or CI installs. Stays `multiple`: "on any of your systems" is
+# plural on purpose, and the new options exist for people who also installed
+# Nix another way somewhere else.
+[[groups.questions]]
+id = "installMethod"
+type = "multiple"
+choices = [
+  "preinstalledWithNixos",
+  "officialInstallScript",
+  "nixInstallerRust",
+  "determinateInstaller",
+  "lixInstaller",
+  "otherPackageManager",
+  "nixOnDroid",
+  "containerOrCi",
+  "builtFromSource",
+  "other",
+  "iDontUseNix",
+]
+
+# Prompt reworded to name what it is asking about; the 2025 wording carried no
+# meaning outside the question that preceded it, and that context is gone.
+# `fix` is a from-scratch evaluator in Zig, alpha as of September 2026. Tvix
+# and Snix stay separate: Snix is a fork of Tvix announced 2025-03-16, not a
+# rename. An extra option in a select-all costs almost nothing; removing one
+# is a series break.
+[[groups.questions]]
+id = "nixImplementations"
+type = "multiple"
+choices = ["nix", "lix", "determinateNix", "snix", "tvix", "fix", "none"]
+
+# Was a free-text SemVer box: 1,204 skips (35.4%, third highest in the survey)
+# and 216 answers where the regex found nothing. Now single choice, radio
+# rather than dropdown so all 19 are visible without clicking. Each bucket
+# names its implementation, so a bare version number is never ambiguous. Each
+# family gets a forward bucket because the survey runs October to December and
+# new releases will land mid-flight.
+[[groups.questions]]
+id = "nixVersion"
+type = "single"
+choices = [
+  "nix235plus",
+  "nix234",
+  "nix231",
+  "nix228",
+  "nix224older",
+  "nixOther",
+  "lix295plus",
+  "lix294",
+  "lix293",
+  "lix292older",
+  "determinate323plus",
+  "determinate322",
+  "determinate321",
+  "determinate320older",
+  "snix",
+  "tvix",
+  "fix",
+  "other",
+  "dontKnow",
+]
+
+# Carried verbatim. Has its escape; "Other" 1.5%.
+[[groups.questions]]
+id = "infrastructure"
+type = "multiple"
+choices = [
+  "dontUseNix",
+  "personalComputer",
+  "workstationDevMachine",
+  "homeServer",
+  "ciEnvironment",
+  "productionServer",
+  "embeddedIotDevice",
+  "mobileDevice",
+  "hpcCluster",
+  "other",
+]
+
+# Rolled forward one release.
+[[groups.questions]]
+id = "nixosReleases"
+type = "multiple"
+choices = [
+  "unstable",
+  "v2605",
+  "v2511",
+  "v2505",
+  "v2411OrOlder",
+  "iDontKnow",
+  "iDontUseNixos",
+]
+
+# Gains iDontUseNixos. The 2025 question offered no valid answer to a
+# respondent who does not use NixOS, while nixosReleases in the same group
+# did. Stays `multiple`: combining nixos-generate-config with nixos-hardware
+# is the common case.
+[[groups.questions]]
+id = "hardwareConfig"
+type = "multiple"
+choices = [
+  "nixosGenerateConfig",
+  "nixosHardwareRepository",
+  "nixosFacter",
+  "manualConfiguration",
+  "other",
+  "iDontUseNixos",
+]
+
+# "NixOS configurations" removed: a category error in a list of programming
+# languages, and a third measurement of something nixOnOs (90.0%) and
+# involvement (87.1%) already cover. It was also the least reliable of the
+# three, being one item in a 54-item checkbox, and it sat in position 2 of 54,
+# the primacy slot. The 51 language entries are kept in full, including the 14
+# that drew 17 or fewer responses: trimming them would be trimming on a
+# position artefact. Stem reworded to name the Nix package manager and to say
+# "languages" rather than "software ecosystems".
+[[groups.questions]]
+id = "softwareEcosystems"
+type = "multiple"
+choices = [
+  "iDontUseNix",
+  "other",
+  "apl",
+  "ada",
+  "apex",
+  "assembly",
+  "bashShell",
+  "c",
+  "cSharp",
+  "cpp",
+  "clojure",
+  "cobol",
+  "crystal",
+  "dart",
+  "delphi",
+  "elixir",
+  "erlang",
+  "f",
+  "flow",
+  "fortran",
+  "gdscript",
+  "go",
+  "groovy",
+  "htmlCss",
+  "haskell",
+  "java",
+  "javascript",
+  "julia",
+  "kotlin",
+  "lisp",
+  "lua",
+  "matlab",
+  "nim",
+  "ocaml",
+  "objectiveC",
+  "php",
+  "perl",
+  "powershell",
+  "prolog",
+  "python",
+  "r",
+  "raku",
+  "ruby",
+  "rust",
+  "sas",
+  "sql",
+  "scala",
+  "solidity",
+  "swift",
+  "typescript",
+  "vba",
+  "visualBasicNet",
+  "zig",
+]
+
+# Carried verbatim. The best-constructed escapes in the survey, correctly
+# distinguishing "I don't use any experimental features" from "I'm not sure".
+[[groups.questions]]
+id = "experimentalFeatures"
+type = "multiple"
+choices = [
+  "flakes",
+  "nixCommand",
+  "blake3Hashing",
+  "caDerivations",
+  "pipeOperators",
+  "dynamicDerivations",
+  "gitHashing",
+  "recursiveNix",
+  "impureDerivations",
+  "fetchClosure",
+  "fetchTree",
+  "mountedSshStore",
+  "localOverlayStore",
+  "autoUidAllocation",
+  "cgroups",
+  "impureEnvVars",
+  "forceTrustSettings",
+  "noUrlLiterals",
+  "parseTomlTimestamps",
+  "readOnlyLocalStore",
+  "derivationBuilders",
+  "verifyGitCommits",
+  "notUsed",
+  "notSure",
+]
+
+# Restructured. Three defects in 2025: the stem was conditional, so it
+# screened nobody; five options formed a severity ladder and two did not,
+# violating the rule that every option in an ordered set is a point on the
+# same continuum; and there was no "I don't run NixOS stable" option, so
+# unstable-only users landed in "I have not upgraded" (434) or skipped (602),
+# conflating two states that mean opposite things to a release manager.
+#
+# The five severity labels and the two existing escapes keep their 2025
+# wording CHARACTER FOR CHARACTER, trailing full stops included.
+# aggregate.sankey_funnel matches all seven literally; rewording any of them
+# makes that lookup return zero, drops the link below the suppression floor,
+# and renders the funnel chart blank with no error raised.
+#
+# This question hardcodes a release number and must be re-authored every year.
+[[groups.questions]]
+id = "stableUpgrade"
+type = "single"
+choices = [
+  "severeCouldNotUpgrade",
+  "severeFiguredOut",
+  "iHadModerateIssues",
+  "iHadMinorIssues",
+  "iHadNoIssues",
+  "iHaveNotUpgraded",
+  "iDidNotKnow",
+  "iDontRunStable",
+  "iDontUseNixos",
+]
+
+[[groups]]
+id = "adoption"
+
+# The single headline adoption measure, and the one question whose meaning
+# turns entirely on what "Nix" refers to, so the prompt now names the package
+# manager. Choices unchanged. In 2025 this led into personalHoldsBack, which
+# is cut; it now leads into the two barriers questions in the same group.
+[[groups.questions]]
+id = "regularToolset"
+type = "single"
+choices = ["yes", "no"]
+
+# New. Restores the topic six free-text questions covered in 2025, none of
+# which was ever analysed. Two questions rather than one because classifying
+# all 2,642 answers found the personal and workplace stems measure different
+# constructs: documentation is 3.7% of workplace answers and 30.4% of
+# personal-use answers, an eightfold gap, so merging them returns a blend
+# determined by the stem wording and comparable to neither.
+#
+# Options come from the classification, not from priors. Four that looked
+# obvious failed against the data and are absent: error messages ranked 22nd
+# of 23 themes; "editor and tooling support" was far narrower than the
+# integration complaints people actually made; a single "does not support a
+# platform I need" caught only 111 of 290 platform answers because 184
+# describe an environment committed to another platform, a different claim;
+# and awareness was wrongly folded into "hard to convince".
+#
+# Order is thematic and then frozen. Ordering by observed frequency would be
+# self-reinforcing in later years.
+[[groups.questions]]
+id = "barriersPersonal"
+type = "multiple"
+choices = [
+  "learningCurve",
+  "nixLanguage",
+  "documentation",
+  "installSetup",
+  "packagingOwn",
+  "missingPackages",
+  "foreignBinaries",
+  "platformSupport",
+  "buildCost",
+  "keepingUp",
+  "noTime",
+  "existingWorks",
+  "other",
+  "nothingHoldsMeBack",
+  "iDontUseNix",
+]
+
+# The workplace half. Not capped: the point is to see everything that applies.
+[[groups.questions]]
+id = "barriersWork"
+type = "multiple"
+choices = [
+  "nobodyKnowsNix",
+  "hardToConvince",
+  "itPolicy",
+  "platformLockIn",
+  "teamLearningCurve",
+  "existingToolsWork",
+  "noCommercialSupport",
+  "hiring",
+  "governanceConcerns",
+  "other",
+  "nothingStopsUs",
+  "notRelevant",
+]
+
+[[groups]]
+id = "findingHelp"
+
+# Capped at 5. Asked for thirty ranked items with no cap in 2025; burden is
+# N(N-1)/2, so thirty items implies 435 pairwise comparisons. All 30 choices
+# are kept: the problem was the absence of a cap, not the length of the list.
+# Stem gains "Nix" so it names the ecosystem it is asking about.
+[[groups.questions]]
+id = "objectsInteractWith"
+type = "ranking"
+max_answers = 5
+choices = [
+  "packageSearch",
+  "nixosOptionSearch",
+  "nixosConfigExamples",
+  "packageExamples",
+  "packageParameters",
+  "developmentEnvironments",
+  "nixDev",
+  "tutorials",
+  "howToGuides",
+  "manuals",
+  "answersToQuestions",
+  "troubleshootingTips",
+  "functionDocumentation",
+  "nixLanguageFunctions",
+  "commandLineInterface",
+  "nixStandaloneInstaller",
+  "nixosInstaller",
+  "securityNotifications",
+  "sourceCodePackage",
+  "sourceCodeModule",
+  "sourceCodeNixItself",
+  "discourseConversations",
+  "pressInformation",
+  "reviewsAndTestimonials",
+  "communityUpdates",
+  "loreJokesMemes",
+  "releaseNotes",
+  "additionalTools",
+  "jobPostings",
+  "paidSupportOffers",
+]
+
+# Capped at 5. The 2025 prompt already said "rank your top 5" and enforced
+# nothing; four respondents reported exactly that. All 17 kept, because which
+# resources matter changes year over year.
+[[groups.questions]]
+id = "helpResources"
+type = "ranking"
+max_answers = 5
+choices = [
+  "nixDev",
+  "referenceManuals",
+  "nixosWiki",
+  "unofficialWiki",
+  "discourseForum",
+  "matrixChannels",
+  "githubIssues",
+  "sourceCode",
+  "mastodon",
+  "twitterX",
+  "stackOverflow",
+  "discordUnofficial",
+  "redditNixOfficial",
+  "redditNixosUnofficial",
+  "blogPostsOrTutorials",
+  "llms",
+  "other",
+]
+
+# Gains iDontLookForHelp. Highest skip rate of any closed question at 9.3%,
+# and the question presupposes an activity. The vague-quantifier scale is
+# left unchanged: Schaeffer establishes such scales are unsafe for absolute
+# levels, but Al Baghal found them to have higher predictive validity than
+# open numeric answers, and DeCastellarnau concluded no clear conclusion can
+# be drawn about replacing them. The two rankings above get no escape: a
+# non-qualification item a respondent must rank is incoherent, leaving it
+# unranked is already the escape, and this question does the screening.
+[[groups.questions]]
+id = "helpSuccessFrequency"
+type = "single"
+choices = [
+  "always",
+  "often",
+  "sometimes",
+  "rarely",
+  "never",
+  "iDontLookForHelp",
+]
+
+[[groups]]
+id = "contributing"
+
+# Replaces contribExperience, which conflated three constructs in one
+# select-all: a respondent who tried, got stuck, then succeeded with help
+# ticked three options meaning different things, so the percentages could not
+# be read as a funnel. This gives the denominator.
+[[groups.questions]]
+id = "contribStatus"
+type = "single"
+choices = [
+  "contributedMerged",
+  "contributedNotMerged",
+  "triedNotCompleted",
+  "notTried",
+  "dontPlanTo",
+]
+
+[[groups.questions]]
+id = "contribBarriers"
+type = "multiple"
+choices = [
+  "dontKnowHowToStart",
+  "dontKnowHowToJoin",
+  "gotStuck",
+  "unhelpfulFeedback",
+  "feedbackTooSlow",
+  "employerDisallows",
+  "alreadyHandled",
+  "noneOfThese",
+]
+
+# neededHelpDidNotGetIt captures a group 2025 could not see: the only outcomes
+# offered were "on my own" and "with help". Accepted cost: with no branching,
+# roughly 2,000 respondents who never contributed will select
+# haveNotContributed.
+[[groups.questions]]
+id = "contribSupport"
+type = "single"
+choices = [
+  "managedAlone",
+  "neededHelpGotIt",
+  "neededHelpDidNotGetIt",
+  "haveNotContributed",
+]
+
+# Capped at 3; the 2025 prompt said "about 3" and enforced nothing.
+# nixReferenceManual becomes documentation: documentation is the largest theme
+# in the 773 write-ins at 27.6%, double the next, yet only 1.2% named the
+# reference manual and 39.4% of documentation writers never ticked the
+# existing option. otherNextQuestion becomes other, since the question it
+# pointed at is cut; kept because 255 people chose it and it measures whether
+# the list is incomplete. diskUsage is new: only 2.5% of write-ins, but with a
+# displacement signature, those writers ticked Performance at 63% against a
+# 37% base rate and Other at 58% against 29%.
+#
+# flakes is left exactly as it is. It bundles three incompatible demands (42
+# write-ins want flakes stabilised, 30 redesigned first, 10 dropped), so its
+# 1,708 votes are not interpretable. Recorded and deferred rather than fixed.
+[[groups.questions]]
+id = "improvements"
+type = "multiple"
+max_answers = 3
+choices = [
+  "performance",
+  "languageUsability",
+  "flakes",
+  "nonExperimentalFeatures",
+  "security",
+  "errorMessages",
+  "documentation",
+  "provenanceSboms",
+  "windowsSupport",
+  "freebsdSupport",
+  "nixAsLibrary",
+  "other",
+  "diskUsage",
+]
+
+[[groups]]
+id = "foundation"
+
+# Gains iAlreadyDonate. Third most-complained-about question in 2025 (18
+# objections), and the specific problem is that existing donors had no valid
+# answer, so current donors and never-donors were averaged together. A
+# does-not-apply escape would not have captured that.
+[[groups.questions]]
+id = "donationIncentives"
+type = "multiple"
+choices = [
+  "betterInsight",
+  "donorPerks",
+  "taxDeductible",
+  "earmarkingOptions",
+  "officialSupport",
+  "ltsRelease",
+  "iAlreadyDonate",
+]
+
+# Capped at 5, all 14 choices kept.
+[[groups.questions]]
+id = "foundationPriorities"
+type = "ranking"
+max_answers = 5
+choices = [
+  "governance",
+  "communityHealth",
+  "marketing",
+  "documentation",
+  "nixosReleases",
+  "nixImplementations",
+  "nixpkgsMaintenance",
+  "communityEvents",
+  "nixpkgsArchDx",
+  "improvedNixNixosSupport",
+  "security",
+  "officialInfrastructure",
+  "deploymentSystems",
+  "ciSystems",
+]
+
+[[groups]]
+id = "finally"
+
+# The survey's only free-text question, retained after an earlier draft cut it
+# on misread evidence. 20 respondents asked for MORE free text; the 15 who
+# complained about textareas were objecting to the workplace block, closed
+# yes/no questions wrongly rendered as textareas, and there is zero overlap
+# between the two groups. More decisively, the per-question complaint tally
+# this question produced reshaped four decisions in the 2026 design, and that
+# information is not obtainable any other way.
+[[groups.questions]]
+id = "surveyFeedback"
+type = "text"

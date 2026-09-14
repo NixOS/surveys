@@ -22,3 +22,7 @@ lib/site/src/content/results/results-*.json
 # the raw PII CSV. Re-include it past the global `result*` / local `result-*`
 # ignores above.
 !overlays/top-level/nixos-surveys-community-2025-data/results-2025.json
+
+# Scratch disk images written by the preview VM into the working directory.
+# nix run .#nixos-surveys-survey-2026-preview creates one on each boot.
+*.qcow2

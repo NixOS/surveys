@@ -1,52 +1,54 @@
-﻿id	related_id	class	type/scale	name	relevance	text	help	language	validation	mandatory	encrypted	other	default	same_default	same_script	max_answers
-		S		sid		424242										
-		S		language		en										
-		S		additional_languages		de										
-		S		format		G										
-		S		anonymized		Y										
-		S		ipaddr		N										
-		S		refurl		N										
-		S		datestamp		N										
-		S		savetimings		N										
-		SL		surveyls_title		Tiny LimeSurvey Fixture		en								
-		SL		surveyls_welcometext		<p>Welcome to the fixture survey.</p>		en								
-		SL		surveyls_endtext		<p>Thanks for taking part.</p>		en								
-		SL		surveyls_title		Kleine LimeSurvey-Vorlage		de								
-		SL		surveyls_welcometext		<p>Willkommen zur Testumfrage.</p>		de								
-		SL		surveyls_endtext		<p>Danke fürs Mitmachen.</p>		de								
-		G	1	About you		Two questions about you.		en								
-		Q	L	country	1	Where do you live?		en		N		N				
-		A	0	A1		Europe		en								
-		A	0	A2		Asia		en								
-		Q	!	age	1	How old are you?		en		Y		N				
-		A	0	A1		Under 30		en								
-		A	0	A2		30 or older		en								
-		G	2	Usage				en								
-		Q	M	os	1	Which operating systems do you use?	Pick all that apply.	en		S		Y				
-		SQ		SQ001		GNU/Linux		en								
-		SQ		SQ002		macOS		en								
-		SQ		SQ003		Windows		en								
-		Q	R	priorities	1	Rank your priorities.		en		N		N				2
-		A	0	A1		Performance		en								
-		A	0	A2		Security		en								
-		A	0	A3		Docs &amp; manuals		en								
-		Q	S	nixVersion	1	Which version of Nix do you use?		en		N		N				
-		Q	T	feedback	1	Anything else?		en		N		N				
-		G	1	Über dich		Zwei Fragen zu dir.		de								
-		Q	L	country	1	Wo lebst du?		de		N		N				
-		A	0	A1		Europa		de								
-		A	0	A2		Asien		de								
-		Q	!	age	1	Wie alt bist du?		de		Y		N				
-		A	0	A1		Unter 30		de								
-		A	0	A2		30 oder älter		de								
-		G	2	Nutzung				de								
-		Q	M	os	1	Welche Betriebssysteme nutzt du?	Mehrfachauswahl möglich.	de		S		Y				
-		SQ		SQ001		GNU/Linux		de								
-		SQ		SQ002		macOS		de								
-		SQ		SQ003		Windows		de								
-		Q	R	priorities	1	Ordne deine Prioritäten.		de		N		N				
-		A	0	A1		Leistung		de								
-		A	0	A2		Sicherheit		de								
-		A	0	A3		Doku &amp; Handbücher		de								
-		Q	S	nixVersion	1	Welche Nix-Version nutzt du?		de		N		N				
-		Q	T	feedback	1	Sonst noch etwas?		de		N		N				
+﻿id	related_id	class	type/scale	name	relevance	text	help	language	validation	mandatory	encrypted	other	default	same_default	same_script	max_answers	answer_order
+		S		sid		424242											
+		S		language		en											
+		S		additional_languages		de											
+		S		template		fruity_twentythree											
+		S		allowprev		Y											
+		S		format		G											
+		S		anonymized		Y											
+		S		ipaddr		N											
+		S		refurl		N											
+		S		datestamp		N											
+		S		savetimings		N											
+		SL		surveyls_title		Tiny LimeSurvey Fixture		en									
+		SL		surveyls_welcometext		<p>Welcome to the fixture survey.</p>		en									
+		SL		surveyls_endtext		<p>Thanks for taking part.</p>		en									
+		SL		surveyls_title		Kleine LimeSurvey-Vorlage		de									
+		SL		surveyls_welcometext		<p>Willkommen zur Testumfrage.</p>		de									
+		SL		surveyls_endtext		<p>Danke fürs Mitmachen.</p>		de									
+		G	1	About you		Two questions about you.		en									
+		Q	L	country	1	Where do you live?		en		N		N					alphabetical
+		A	0	A1		Europe		en									
+		A	0	A2		Asia		en									
+		Q	!	age	1	How old are you?		en		Y		N					
+		A	0	A1		Under 30		en									
+		A	0	A2		30 or older		en									
+		G	2	Usage				en									
+		Q	M	os	1	Which operating systems do you use?	Pick all that apply.	en		S		Y					
+		SQ		SQ001		GNU/Linux		en									
+		SQ		SQ002		macOS		en									
+		SQ		SQ003		Windows		en									
+		Q	R	priorities	1	Rank your priorities.		en		N		N				2	
+		A	0	A1		Performance		en									
+		A	0	A2		Security		en									
+		A	0	A3		Docs & manuals		en									
+		Q	S	nixVersion	1	Which version of Nix do you use?		en		N		N					
+		Q	T	feedback	1	Anything else?		en		N		N					
+		G	1	Über dich		Zwei Fragen zu dir.		de									
+		Q	L	country	1	Wo lebst du?		de		N		N					
+		A	0	A1		Europa		de									
+		A	0	A2		Asien		de									
+		Q	!	age	1	Wie alt bist du?		de		Y		N					
+		A	0	A1		Unter 30		de									
+		A	0	A2		30 oder älter		de									
+		G	2	Nutzung				de									
+		Q	M	os	1	Welche Betriebssysteme nutzt du?	Mehrfachauswahl möglich.	de		S		Y					
+		SQ		SQ001		GNU/Linux		de									
+		SQ		SQ002		macOS		de									
+		SQ		SQ003		Windows		de									
+		Q	R	priorities	1	Ordne deine Prioritäten.		de		N		N					
+		A	0	A1		Leistung		de									
+		A	0	A2		Sicherheit		de									
+		A	0	A3		Doku & Handbücher		de									
+		Q	S	nixVersion	1	Welche Nix-Version nutzt du?		de		N		N					
+		Q	T	feedback	1	Sonst noch etwas?		de		N		N					

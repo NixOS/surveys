@@ -60,7 +60,7 @@ Write questions and their choices in this repository, one file per year.
 
 You may make a RFC (Request for Comment) when needed, from selected people or a broad audience, as you see fit.
 
-Write the survey as TOML in the year's directory (see `community/2025/`):
+Write the survey as TOML in the year's directory (see `community/2026/`):
 
 - `survey.toml` holds the structure: survey id, languages, privacy flags,
   groups, and questions with their type, flags, and choice keys. No text.
@@ -68,6 +68,17 @@ Write the survey as TOML in the year's directory (see `community/2025/`):
   title, intro, the optional end text, group titles and their optional
   descriptions, prompts, help, and one line per choice key. Every language
   listed in `survey.toml` needs one of these files.
+
+A language's text file and its entry in `[survey] languages` are one change.
+Loading requires every listed language to cover every string, with no fallback
+to English, and it refuses a `survey.<lang>.toml` whose language is not
+listed. Dropping a language means deleting its file as well as removing the
+code. See `community/TRANSLATING.md` for the register and
+terminology rules a translation has to follow.
+
+Give every question a TOML comment recording the decision it supports. No year
+before 2026 did this, so the 2026 redesign had to infer intent from response
+counts.
 
 Question ids become LimeSurvey question codes, so they must start with a
 letter, contain only letters and digits, and be at most 20 characters.
@@ -85,8 +96,11 @@ instructions in `help`, or accept the flat text.
 Build the LimeSurvey import file and upload it:
 
 ```
-nix build .#nixos-surveys-community-2025-limesurvey
+nix build .#nixos-surveys-community-2026-limesurvey
 ```
+
+The build also runs that year's checks, so a structural mistake fails here
+rather than after the survey is live.
 
 Then in LimeSurvey go to Surveys > Create > Import, choose `result/survey.txt`,
 and import. Review the new survey in the admin UI before activating it; the
