@@ -1,15 +1,15 @@
-# Enquête communautaire Nix 2026 : français. Registre informel (tutoiement).
+# Enquête communautaire Nix 2026 : français. Registre formel (vouvoiement).
 # Voir community/TRANSLATING.md.
 
 [survey]
 title = "Enquête communautaire Nix 2026"
-intro = "<p>Bienvenue dans l'enquête communautaire Nix de cette année. Elle prend 10 à 15 minutes.</p><p>Tes réponses aident les équipes Nix et la NixOS Foundation à décider sur quoi travailler : quelles plateformes prendre en charge, où la documentation ne répond pas aux besoins, et ce qui empêche les gens d'utiliser Nix davantage. Les résultats sont publiés sous forme agrégée sur nixos.org/surveys, avec ceux des années précédentes.</p><p>Cette enquête est anonyme. Nous ne demandons ni ton nom ni ton adresse e-mail, nous n'enregistrons pas ton adresse IP et nous ne conservons aucun horodatage. Les questions te concernant, comme l'âge, le pays et le travail, servent à savoir si nous touchons toute la communauté ou seulement une partie. Toutes les questions peuvent être passées.</p>"
+intro = "<p>Bienvenue dans l'enquête communautaire Nix de cette année. Comptez 10 à 15 minutes.</p><p>Vos réponses aident les équipes Nix et la NixOS Foundation à décider sur quoi travailler : quelles plateformes prendre en charge, où la documentation ne répond pas aux besoins, et ce qui empêche les gens d'utiliser Nix davantage. Les résultats sont publiés sous forme agrégée sur nixos.org/surveys, avec ceux des années précédentes.</p><p>Cette enquête est anonyme. Nous ne demandons ni votre nom ni votre adresse e-mail, nous n'enregistrons pas votre adresse IP et nous ne conservons aucun horodatage. Les questions vous concernant, comme l'âge, le pays et le travail, servent à savoir si nous touchons toute la communauté ou seulement une partie. Toutes les questions sont facultatives.</p>"
 
 [groups.aboutYou]
-title = "À propos de toi"
+title = "À propos de vous"
 
 [questions.age]
-prompt = "Quel âge as-tu ?"
+prompt = "Quel âge avez-vous ?"
 choices.under18 = "Moins de 18 ans"
 choices.age18to24 = "18-24"
 choices.age25to34 = "25-34"
@@ -20,7 +20,7 @@ choices.age65plus = "65 ans ou plus"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.genderIdentity]
-prompt = "Quelle est ton identité de genre ?"
+prompt = "Quelle est votre identité de genre ?"
 choices.man = "Homme"
 choices.woman = "Femme"
 choices.nonBinaryNonConforming = "Non-binaire / non conforme"
@@ -28,16 +28,16 @@ choices.identifyAnotherWay = "Je m'identifie autrement"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.transgender]
-prompt = "T'identifies-tu comme transgenre ?"
+prompt = "Vous identifiez-vous comme transgenre ?"
 choices.yes = "Oui"
 choices.no = "Non"
 choices.dontKnow = "Je ne sais pas"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.yearsProgramming]
-prompt = "Combien d'années d'expérience en programmation as-tu (y compris le temps passé à apprendre ou à étudier) ?"
+prompt = "Combien d'années d'expérience en programmation avez-vous (y compris le temps passé à apprendre ou à étudier) ?"
 choices.iHaveNeverProgrammed = "Je n'ai jamais programmé"
-choices.lessThan1Year = "Moins de 1 an"
+choices.lessThan1Year = "Moins d'un an"
 choices.v1ToUnder5 = "De 1 à moins de 5 ans"
 choices.v5ToUnder10 = "De 5 à moins de 10 ans"
 choices.v10ToUnder15 = "De 10 à moins de 15 ans"
@@ -52,7 +52,7 @@ choices.v50OrMore = "50 ans ou plus"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.country]
-prompt = "Où habites-tu ?"
+prompt = "Où habitez-vous ?"
 choices.AF = "Afghanistan"
 choices.AL = "Albanie"
 choices.DZ = "Algérie"
@@ -305,7 +305,7 @@ choices.AX = "Îles Åland"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.employment]
-prompt = "Laquelle de ces propositions décrit le mieux ta situation professionnelle actuelle ?"
+prompt = "Laquelle de ces propositions décrit le mieux votre situation professionnelle actuelle ?"
 choices.employed = "Salarié·e"
 choices.selfEmployed = "Indépendant·e, freelance ou à mon compte"
 choices.notEmployed = "Sans emploi"
@@ -314,7 +314,7 @@ choices.retired = "Retraité·e"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.role]
-prompt = "Laquelle de ces propositions décrit le mieux ton rôle ou ta profession principale ?"
+prompt = "Laquelle de ces propositions décrit le mieux votre rôle ou votre profession principale ?"
 choices.academicResearcher = "Chercheur·se académique"
 choices.architect = "Architecte logiciel ou solutions"
 choices.backEndDeveloper = "Développeur·se back-end"
@@ -355,7 +355,7 @@ choices.other = "Autre"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.industry]
-prompt = "Qu'est-ce qui décrit le mieux ton secteur économique ?"
+prompt = "Qu'est-ce qui décrit le mieux votre secteur d'activité ?"
 choices.softwareDevelopment = "Développement logiciel"
 choices.itServices = "Services informatiques, conseil, intégration de systèmes ou infogérance"
 choices.scientificResearch = "Recherche scientifique"
@@ -387,7 +387,7 @@ choices.notEmployed = "Sans objet, je n'ai pas d'emploi"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.domain]
-prompt = "Qu'est-ce qui décrit le mieux ton domaine logiciel ?"
+prompt = "Qu'est-ce qui décrit le mieux votre domaine logiciel ?"
 choices.webDevelopment = "Développement web"
 choices.mobileDevelopment = "Développement mobile"
 choices.desktopSoftware = "Applications de bureau"
@@ -409,16 +409,16 @@ choices.other = "Autre"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [groups.experience]
-title = "Ton expérience avec Nix"
+title = "Votre expérience avec Nix"
 
 [questions.firstHeardWhich]
-prompt = "As-tu entendu parler de Nix ou de NixOS en premier ? Si tu as découvert les deux en même temps, indique lequel t'a d'abord donné envie de t'intéresser à l'écosystème Nix."
+prompt = "Avez-vous entendu parler de Nix ou de NixOS en premier ? Si vous avez découvert les deux en même temps, indiquez lequel a d'abord suscité votre intérêt pour l'écosystème Nix."
 choices.nix = "Nix"
 choices.nixos = "NixOS"
 choices.dontRemember = "Je ne m'en souviens pas"
 
 [questions.firstHeardHow]
-prompt = "Comment as-tu entendu parler de Nix ou de NixOS pour la première fois ?"
+prompt = "Comment avez-vous entendu parler de Nix ou de NixOS pour la première fois ?"
 choices.atWork = "Au travail"
 choices.atSchoolOrUniversity = "À l'école ou à l'université"
 choices.friendOrColleague = "Par un·e ami·e ou un·e collègue"
@@ -436,7 +436,7 @@ choices.other = "Autre"
 choices.dontRemember = "Je ne m'en souviens pas"
 
 [questions.yearsUsingNix]
-prompt = "Depuis combien de temps utilises-tu le gestionnaire de paquets Nix (à n'importe quel niveau d'implication) ?"
+prompt = "Depuis combien de temps utilisez-vous le gestionnaire de paquets Nix (à n'importe quel niveau d'implication) ?"
 choices.iDontUseNix = "Je n'utilise pas Nix"
 choices.lessThan1Year = "Moins d'un an"
 choices.v1ToUnder3 = "De 1 à moins de 3 ans"
@@ -448,7 +448,7 @@ choices.v11OrMore = "11 ans ou plus"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.skillLevel]
-prompt = "Comment décrirais-tu ton niveau avec le gestionnaire de paquets Nix ?"
+prompt = "Comment décririez-vous votre niveau avec le gestionnaire de paquets Nix ?"
 choices.neverUsedNix = "Je n'ai jamais utilisé Nix"
 choices.beginner = "Débutant·e — je m'appuie sur des exemples et des tutoriels pour écrire du Nix"
 choices.intermediate = "Intermédiaire — je sais écrire mes propres expressions et modules"
@@ -456,7 +456,7 @@ choices.advanced = "Avancé·e — je fais des choix d'architecture et je contri
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.traits]
-prompt = "Lesquelles de ces propositions décrivent ton expérience avec Nix ?"
+prompt = "Lesquelles de ces propositions décrivent votre expérience avec Nix ?"
 choices.iRelyOnExamples = "Je m'appuie généralement sur des articles de blog, des tutoriels vidéo ou des exemples pour écrire des expressions."
 choices.iWriteOwnExpressions = "Je sais généralement écrire mes propres expressions Nix sans aide."
 choices.iUseModuleSystem = "J'utilise le système de modules pour créer ma propre configuration NixOS."
@@ -475,7 +475,7 @@ choices.iUnderstandErrorMessages = "Je comprends parfaitement tous les messages 
 choices.noneOfThese = "Aucune de ces propositions ne me correspond."
 
 [questions.involvement]
-prompt = "Lesquelles de ces propositions décrivent le mieux ton implication dans l'écosystème Nix ?"
+prompt = "Lesquelles de ces propositions décrivent le mieux votre implication dans l'écosystème Nix ?"
 choices.iDontUseNix = "Je n'utilise pas Nix"
 choices.iDontUseNixos = "Je n'utilise pas NixOS"
 choices.iUseNixos = "J'utilise NixOS"
@@ -488,10 +488,10 @@ choices.iHaveMergeAccess = "J'ai les droits de merge sur Nixpkgs"
 choices.iDevelopTools = "Je développe des outils ou de l'infrastructure qui utilisent ou s'intègrent avec Nix, Nixpkgs ou NixOS"
 
 [groups.usage]
-title = "Comment tu utilises Nix"
+title = "Votre utilisation de Nix"
 
 [questions.operatingSystems]
-prompt = "Quels systèmes d'exploitation utilises-tu régulièrement sur tes appareils (par ex. pour le développement, le travail ou un usage personnel) ?"
+prompt = "Quels systèmes d'exploitation utilisez-vous régulièrement sur vos appareils (par ex. pour le développement, le travail ou un usage personnel) ?"
 choices.gnuLinux = "GNU/Linux"
 choices.macos = "macOS"
 choices.windows = "Windows"
@@ -503,7 +503,7 @@ choices.other = "Autre"
 choices.preferNotToSay = "Je préfère ne pas répondre"
 
 [questions.nixOnOs]
-prompt = "Sur quels systèmes d'exploitation utilises-tu Nix actuellement ?"
+prompt = "Sur quels systèmes d'exploitation utilisez-vous Nix actuellement ?"
 choices.dontUseNix = "Je n'utilise pas Nix"
 choices.nixos = "NixOS"
 choices.otherLinuxDistro = "Une autre distribution GNU/Linux"
@@ -514,7 +514,7 @@ choices.android = "Android"
 choices.other = "Autre"
 
 [questions.targetTriple]
-prompt = "Quel triplet cible décrit le mieux ton système ? Lance \"uname -a\" si tu n'es pas sûr·e."
+prompt = "Quel triplet cible décrit le mieux votre système ? Lancez \"uname -a\" si vous n'êtes pas sûr·e."
 choices.x8664LinuxGnu = "x86_64-linux-gnu"
 choices.aarch64LinuxGnu = "aarch64-linux-gnu"
 choices.aarch64AppleDarwin = "aarch64-apple-darwin - Apple Silicon"
@@ -526,7 +526,7 @@ choices.riscv64LinuxGnu = "riscv64-linux-gnu"
 choices.other = "Autre"
 
 [questions.installMethod]
-prompt = "Comment as-tu installé Nix sur tes systèmes ?"
+prompt = "Comment avez-vous installé Nix sur vos systèmes ?"
 choices.preinstalledWithNixos = "Nix était préinstallé avec NixOS"
 choices.officialInstallScript = "Le script shell d'installation officiel de nixos.org"
 choices.nixInstallerRust = "NixOS/nix-installer, l'installateur en Rust"
@@ -540,7 +540,7 @@ choices.other = "Autre"
 choices.iDontUseNix = "Je n'utilise pas Nix"
 
 [questions.nixImplementations]
-prompt = "Quelles implémentations de Nix utilises-tu ?"
+prompt = "Quelles implémentations de Nix utilisez-vous ?"
 choices.nix = "Nix"
 choices.lix = "Lix"
 choices.determinateNix = "Determinate Nix"
@@ -550,7 +550,7 @@ choices.fix = "fix"
 choices.none = "Aucune"
 
 [questions.nixVersion]
-prompt = "Quelle version utilises-tu le plus souvent ? Si tu utilises plusieurs implémentations, choisis celle que tu utilises le plus."
+prompt = "Quelle version utilisez-vous le plus souvent ? Si vous utilisez plusieurs implémentations, choisissez celle que vous utilisez le plus."
 choices.nix235plus = "Nix 2.35.x ou plus récent"
 choices.nix234 = "Nix 2.34.x (NixOS 26.05 ou unstable)"
 choices.nix231 = "Nix 2.31.x (NixOS 25.11)"
@@ -572,7 +572,7 @@ choices.other = "Autre"
 choices.dontKnow = "Je ne sais pas"
 
 [questions.infrastructure]
-prompt = "Sur quels types de systèmes ou d'infrastructures utilises-tu Nix ?"
+prompt = "Sur quels types de systèmes ou d'infrastructures utilisez-vous Nix ?"
 choices.dontUseNix = "Je n'utilise pas Nix"
 choices.personalComputer = "Ordinateur personnel (portable ou fixe)"
 choices.workstationDevMachine = "Station de travail ou machine de développement"
@@ -585,7 +585,7 @@ choices.hpcCluster = "Calcul haute performance ou cluster académique"
 choices.other = "Autre"
 
 [questions.nixosReleases]
-prompt = "Quelles versions de NixOS utilises-tu actuellement sur tes systèmes ?"
+prompt = "Quelles versions de NixOS utilisez-vous actuellement sur vos systèmes ?"
 choices.unstable = "unstable"
 choices.v2605 = "26.05"
 choices.v2511 = "25.11"
@@ -595,7 +595,7 @@ choices.iDontKnow = "Je ne sais pas"
 choices.iDontUseNixos = "Je n'utilise pas NixOS"
 
 [questions.hardwareConfig]
-prompt = "Comment configures-tu le matériel sur NixOS ?"
+prompt = "Comment configurez-vous le matériel sur NixOS ?"
 choices.nixosGenerateConfig = "nixos-generate-config"
 choices.nixosHardwareRepository = "dépôt nixos-hardware"
 choices.nixosFacter = "nixos-facter"
@@ -604,7 +604,7 @@ choices.other = "Autre"
 choices.iDontUseNixos = "Je n'utilise pas NixOS"
 
 [questions.softwareEcosystems]
-prompt = "Quels langages de programmation utilises-tu avec le gestionnaire de paquets Nix ?"
+prompt = "Quels langages de programmation utilisez-vous avec le gestionnaire de paquets Nix ?"
 choices.iDontUseNix = "Je n'utilise pas Nix"
 choices.apl = "APL"
 choices.ada = "Ada"
@@ -660,7 +660,7 @@ choices.zig = "Zig"
 choices.other = "Autre"
 
 [questions.experimentalFeatures]
-prompt = "Quelles fonctionnalités expérimentales de Nix utilises-tu ?"
+prompt = "Quelles fonctionnalités expérimentales de Nix utilisez-vous ?"
 choices.flakes = "Flakes (`flakes`)"
 choices.nixCommand = "Nouvelle interface en ligne de commande `nix` (`nix-command`)"
 choices.blake3Hashing = "Hachage BLAKE3 (`blake3-hashes`)"
@@ -687,7 +687,7 @@ choices.notUsed = "Je n'utilise aucune fonctionnalité expérimentale"
 choices.notSure = "Je ne suis pas sûr·e"
 
 [questions.stableUpgrade]
-prompt = "Comment s'est passée ta mise à niveau vers NixOS 26.05 ?"
+prompt = "Comment s'est passée votre mise à niveau vers NixOS 26.05 ?"
 choices.severeCouldNotUpgrade = "J'ai eu de gros problèmes et je n'ai pas pu faire la mise à niveau."
 choices.severeFiguredOut = "J'ai eu de gros problèmes mais j'ai fini par m'en sortir."
 choices.iHadModerateIssues = "J'ai eu des problèmes modérés."
@@ -702,19 +702,19 @@ choices.iDontUseNixos = "Je n'utilise pas NixOS."
 title = "Adoption"
 
 [questions.regularToolset]
-prompt = "Considères-tu le gestionnaire de paquets Nix comme faisant partie de tes outils habituels ?"
+prompt = "Considérez-vous le gestionnaire de paquets Nix comme faisant partie de vos outils habituels ?"
 choices.yes = "Oui"
 choices.no = "Non"
 
 [questions.barriersPersonal]
-prompt = "Qu'est-ce qui te empêche d'utiliser Nix plus que tu ne le fais aujourd'hui ?"
+prompt = "Qu'est-ce qui vous empêche d'utiliser Nix plus que vous ne le faites aujourd'hui ?"
 choices.learningCurve = "La courbe d'apprentissage est trop raide"
 choices.nixLanguage = "Le langage Nix est difficile à manipuler"
 choices.documentation = "La documentation est difficile à trouver ou incomplète"
 choices.installSetup = "L'installation ou la configuration est difficile"
 choices.packagingOwn = "Empaqueter mes propres logiciels avec Nix est difficile"
 choices.missingPackages = "Les paquets dont j'ai besoin manquent ou ne sont pas à jour"
-choices.foreignBinaries = "Exécuter des binaires étrangers ou des logiciels non-Nix est difficile"
+choices.foreignBinaries = "Exécuter des binaires externes ou des logiciels non-Nix est difficile"
 choices.platformSupport = "Cela ne fonctionne pas sur une plateforme ou un matériel que j'utilise"
 choices.buildCost = "Les temps de build, l'espace disque ou les performances du cache"
 choices.keepingUp = "Suivre les évolutions (flakes, la nouvelle CLI)"
@@ -725,11 +725,11 @@ choices.nothingHoldsMeBack = "Rien ne me freine"
 choices.iDontUseNix = "Je n'utilise pas Nix"
 
 [questions.barriersWork]
-prompt = "Qu'est-ce qui empêche ton entreprise ou ton équipe d'utiliser Nix davantage ?"
+prompt = "Qu'est-ce qui empêche votre entreprise ou votre équipe d'utiliser Nix davantage ?"
 choices.nobodyKnowsNix = "Personne n'y connaît Nix"
 choices.hardToConvince = "Il est difficile de convaincre les collègues ou la direction"
 choices.itPolicy = "La politique informatique ou les règles de conformité de l'entreprise"
-choices.platformLockIn = "Notre environnement est engagé sur une autre plateforme"
+choices.platformLockIn = "Verrouillage ou dépendance envers une autre plateforme"
 choices.teamLearningCurve = "La courbe d'apprentissage est trop raide pour l'équipe"
 choices.existingToolsWork = "Les outils existants fonctionnent déjà assez bien"
 choices.noCommercialSupport = "Pas de support commercial ni de version à support long terme"
@@ -743,7 +743,7 @@ choices.notRelevant = "Je ne travaille pas dans un contexte où cela s'applique"
 title = "Trouver de l'aide"
 
 [questions.objectsInteractWith]
-prompt = "Avec quels objets interagis-tu ou lesquels recherches-tu le plus souvent dans l'écosystème Nix ?"
+prompt = "Quels éléments ou ressources recherchez-vous ou consultez-vous le plus souvent dans l'écosystème Nix ?"
 choices.packageSearch = "Recherche de paquets (noms de paquets, noms de programmes)"
 choices.nixosOptionSearch = "Recherche d'options NixOS (noms d'options, documentation des options)"
 choices.nixosConfigExamples = "Exemples de configuration NixOS"
@@ -776,7 +776,7 @@ choices.jobPostings = "Offres d'emploi"
 choices.paidSupportOffers = "Offres de support payant"
 
 [questions.helpResources]
-prompt = "Quand tu cherches de l'aide sur Nix ou NixOS, vers quelles ressources te tournes-tu le plus souvent ? (Classe tes 5 préférées. Si tu commences généralement par une recherche web, choisis les ressources sur lesquelles tu cliques le plus.)"
+prompt = "Quand vous cherchez de l'aide sur Nix ou NixOS, vers quelles ressources vous tournez-vous le plus souvent ? (Classez vos 5 préférées. Si vous commencez généralement par une recherche web, choisissez les ressources sur lesquelles vous cliquez le plus.)"
 choices.nixDev = "nix.dev"
 choices.referenceManuals = "Manuels de référence (Nix/Nixpkgs/NixOS)"
 choices.nixosWiki = "Wiki NixOS (wiki.nixos.org — officiel)"
@@ -796,7 +796,7 @@ choices.llms = "LLM (grands modèles de langage)"
 choices.other = "Autre"
 
 [questions.helpSuccessFrequency]
-prompt = "Quand tu cherches de l'aide sur Nix ou NixOS, à quelle fréquence trouves-tu une réponse utile ou acceptable ?"
+prompt = "Quand vous cherchez de l'aide sur Nix ou NixOS, à quelle fréquence trouvez-vous une réponse utile ou acceptable ?"
 choices.always = "Toujours"
 choices.often = "Souvent"
 choices.sometimes = "Parfois"
@@ -808,15 +808,15 @@ choices.iDontLookForHelp = "Je ne cherche pas d'aide sur Nix ou NixOS"
 title = "Contribuer"
 
 [questions.contribStatus]
-prompt = "Laquelle de ces propositions décrit le mieux ton expérience de contribution à Nixpkgs ?"
+prompt = "Laquelle de ces propositions décrit le mieux votre expérience de contribution à Nixpkgs ?"
 choices.contributedMerged = "J'ai contribué et ma contribution a été intégrée"
-choices.contributedNotMerged = "J'ai ouvert une contribution qui n'a pas été intégrée"
+choices.contributedNotMerged = "J'ai soumis une contribution qui n'a pas été intégrée"
 choices.triedNotCompleted = "J'ai essayé de contribuer mais je n'ai pas terminé"
 choices.notTried = "Je n'ai jamais essayé de contribuer"
 choices.dontPlanTo = "Je n'ai pas l'intention de contribuer"
 
 [questions.contribBarriers]
-prompt = "Lesquelles de ces situations as-tu rencontrées en contribuant à Nixpkgs, ou en y songeant ?"
+prompt = "Lesquelles de ces situations avez-vous rencontrées en contribuant à Nixpkgs, ou en y songeant ?"
 choices.dontKnowHowToStart = "Je ne sais pas par où commencer"
 choices.dontKnowHowToJoin = "Je veux rejoindre un effort existant mais je ne sais pas comment"
 choices.gotStuck = "Je me suis retrouvé·e bloqué·e après avoir commencé"
@@ -827,14 +827,14 @@ choices.alreadyHandled = "Ce sur quoi je voulais travailler avait déjà été t
 choices.noneOfThese = "Aucune de ces situations"
 
 [questions.contribSupport]
-prompt = "Quand tu as contribué à Nixpkgs, comment cela s'est-il passé ?"
+prompt = "Quand vous avez contribué à Nixpkgs, comment cela s'est-il passé ?"
 choices.managedAlone = "Je m'en suis sorti·e tout·e seul·e"
 choices.neededHelpGotIt = "J'ai eu besoin de l'aide de la communauté et je l'ai obtenue"
 choices.neededHelpDidNotGetIt = "J'ai eu besoin de l'aide de la communauté et je ne l'ai pas obtenue"
 choices.haveNotContributed = "Je n'ai pas contribué"
 
 [questions.improvements]
-prompt = "Nix peut se permettre trois améliorations. Lesquelles choisis-tu ?"
+prompt = "Nix a les ressources pour trois améliorations. Lesquelles choisissez-vous ?"
 choices.performance = "Performances"
 choices.languageUsability = "Ergonomie du langage"
 choices.flakes = "Flakes"
@@ -845,7 +845,7 @@ choices.documentation = "Documentation"
 choices.provenanceSboms = "Provenance / SBOM"
 choices.windowsSupport = "Prise en charge de Windows"
 choices.freebsdSupport = "Prise en charge de FreeBSD"
-choices.nixAsLibrary = "Nix comme bibliothèque (API C++ instable, API C, bindings dans d'autres langages)"
+choices.nixAsLibrary = "Nix comme bibliothèque (API C++ instable, API C, bindings vers d'autres langages)"
 choices.other = "Autre"
 choices.diskUsage = "Espace disque et taille du store"
 
@@ -853,7 +853,7 @@ choices.diskUsage = "Espace disque et taille du store"
 title = "La NixOS Foundation"
 
 [questions.donationIncentives]
-prompt = "Qu'est-ce qui t'encouragerait à faire un don à la NixOS Foundation ?"
+prompt = "Qu'est-ce qui vous encouragerait à faire un don à la NixOS Foundation ?"
 choices.betterInsight = "Une meilleure visibilité (par ex. des rapports financiers et opérationnels plus réguliers et détaillés)"
 choices.donorPerks = "Des avantages pour les donateurs (par ex. mention sur le site, badges Discourse, goodies, accès exclusifs)"
 choices.taxDeductible = "La possibilité de déduire les dons des impôts"
@@ -883,4 +883,4 @@ choices.ciSystems = "Systèmes de CI (par ex. Hydra ou un remplaçant)"
 title = "Pour finir"
 
 [questions.surveyFeedback]
-prompt = "As-tu des retours sur la façon dont nous pourrions améliorer cette enquête l'an prochain ?"
+prompt = "Avez-vous des retours sur la façon dont nous pourrions améliorer cette enquête l'an prochain ?"

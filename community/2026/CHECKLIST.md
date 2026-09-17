@@ -31,7 +31,7 @@ its entry from `[survey] languages` and `git rm`-ing its
 
 | Language | Translated | Reviewer | Review due | Shipped |
 |---|---|---|---|---|
-| `fr` | | | | |
+| `fr` | [x] | @Malix-Labs | | |
 | `es-informal` | | | | |
 | `de-informal` | | | | |
 | `zh-Hans` | | | | |
