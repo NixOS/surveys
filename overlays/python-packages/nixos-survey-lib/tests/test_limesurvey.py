@@ -190,7 +190,9 @@ def test_group_relevance_on_reference_row_only(fixture_survey):
     applies its default."""
     rows = [r for r in _rows(to_tsv(fixture_survey)) if r["class"] == "G"]
     by_key = {(r["language"], r["name"]): r["relevance"] for r in rows}
-    assert by_key[("en", "Follow-up")] == '(country == "A1" or country == "A2")'
+    assert by_key[("en", "Follow-up")] == (
+        '((country == "A1" or country == "A2") or os_SQ001 == "Y")'
+    )
     assert by_key[("de", "Nachfrage")] == ""
     assert by_key[("en", "About you")] == ""
     assert by_key[("en", "Usage")] == ""
@@ -224,33 +226,95 @@ def test_q_row_cells_left_empty_for_importer_defaults(fixture_survey):
                 assert r["relevance"] == "1"
 
 
-def test_relevance_equation_forms(tmp_path, fixtures_dir):
-    """A condition compiles to a LimeSurvey relevance equation: a single
-    trigger compares its answer code A{i}; a multiple trigger tests its
-    subquestion code SQ{i:03d}; several keys are OR-ed in parentheses."""
-    src = fixtures_dir / "limesurvey"
-    structure = (
-        (src / "survey.toml")
-        .read_text(encoding="utf-8")
-        .replace('languages = ["en", "de"]', 'languages = ["en"]')
-        # gate feedback on the multiple question `os` (one key).
-        .replace(
-            'id = "feedback"\ntype = "text"',
-            'id = "feedback"\ntype = "text"\ncondition = { question = "os", includes = ["macos"] }',
-        )
-        # widen moveReason's gate to two keys of the single question `country`.
-        .replace(
-            'condition = { question = "country", includes = ["europe"] }',
-            'condition = { question = "country", includes = ["europe", "asia"] }',
-        )
-    )
-    en = (src / "survey.en.toml").read_text(encoding="utf-8")
+def test_relevance_equation_forms(tmp_path):
+    """A condition compiles to a relevance equation: a single trigger compares
+    its answer code A{i}; a multiple trigger tests its subquestion code
+    SQ{i:03d}; a clause's keys are OR-ed; clauses are joined with "and" (all)
+    or "or" (any)."""
+    structure = """
+[survey]
+id = 9001
+language = "en"
+languages = ["en"]
+[survey.privacy]
+anonymized = true
+save_ip_address = false
+save_referrer = false
+date_stamp = false
+save_timings = false
+
+[[groups]]
+id = "g"
+[[groups.questions]]
+id = "attended"
+type = "single"
+choices = ["yes", "no"]
+[[groups.questions]]
+id = "watched"
+type = "single"
+choices = ["yes", "no"]
+[[groups.questions]]
+id = "os"
+type = "multiple"
+choices = ["linux", "macos"]
+[[groups.questions]]
+id = "single"
+type = "text"
+condition.all = [{ question = "attended", includes = ["yes"] }]
+[[groups.questions]]
+id = "orAcross"
+type = "text"
+condition.any = [
+  { question = "attended", includes = ["yes"] },
+  { question = "watched", includes = ["yes"] },
+]
+[[groups.questions]]
+id = "andAcross"
+type = "text"
+condition.all = [
+  { question = "attended", includes = ["no"] },
+  { question = "watched", includes = ["no"] },
+]
+[[groups.questions]]
+id = "multi"
+type = "text"
+condition.all = [{ question = "os", includes = ["macos"] }]
+"""
+    text = """
+[survey]
+title = "T"
+intro = "I"
+[groups.g]
+title = "G"
+[questions.attended]
+prompt = "?"
+choices.yes = "Yes"
+choices.no = "No"
+[questions.watched]
+prompt = "?"
+choices.yes = "Yes"
+choices.no = "No"
+[questions.os]
+prompt = "?"
+choices.linux = "Linux"
+choices.macos = "macOS"
+[questions.single]
+prompt = "?"
+[questions.orAcross]
+prompt = "?"
+[questions.andAcross]
+prompt = "?"
+[questions.multi]
+prompt = "?"
+"""
     (tmp_path / "survey.toml").write_text(structure, encoding="utf-8")
-    (tmp_path / "survey.en.toml").write_text(en, encoding="utf-8")
+    (tmp_path / "survey.en.toml").write_text(text, encoding="utf-8")
     rows = _rows(to_tsv(load_survey(tmp_path / "survey.toml")))
     rel = {r["name"]: r["relevance"] for r in rows if r["class"] == "Q"}
-    assert rel["feedback"] == 'os_SQ002 == "Y"'
-    assert rel["moveReason"] == '(country == "A1" or country == "A2")'
+    assert rel["single"] == 'attended == "A1"'
+    assert rel["orAcross"] == '(attended == "A1" or watched == "A1")'
+    assert rel["andAcross"] == '(attended == "A2" and watched == "A2")'
+    assert rel["multi"] == 'os_SQ002 == "Y"'
 
 
 def test_single_language_survey_omits_additional_languages_and_endtext(tmp_path, fixtures_dir):

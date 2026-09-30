@@ -32,7 +32,7 @@
 		A	0	A3		Docs &amp; manuals		en								
 		Q	S	nixVersion	1	Which version of Nix do you use?		en		N		N				
 		Q	T	feedback	1	Anything else?		en		N		N				
-		G	3	Follow-up	"(country == ""A1"" or country == ""A2"")"			en								
+		G	3	Follow-up	"((country == ""A1"" or country == ""A2"") or os_SQ001 == ""Y"")"			en								
 		Q	L	moveReason	"country == ""A1"""	Why did you move?		en		N		N				
 		A	0	A1		For work		en								
 		A	0	A2		For study		en								

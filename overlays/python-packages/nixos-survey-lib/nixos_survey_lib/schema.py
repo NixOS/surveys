@@ -52,7 +52,8 @@ _QUESTION_KEYS = (
     "condition",
 )
 _CHOICE_TYPES = ("single", "multiple", "ranking")
-_CONDITION_KEYS = ("question", "includes")
+_CONDITION_KEYS = ("all", "any")
+_CLAUSE_KEYS = ("question", "includes")
 
 
 class SurveyError(ValueError):
@@ -71,16 +72,29 @@ class Privacy:
     save_timings: bool
 
 
+Combinator = Literal["all", "any"]
+
+
 @dataclass(frozen=True)
-class Condition:
-    """Show the owning group or question only when question `question` holds
-    any one of `choices` (its choice keys). The trigger may be a single or
-    multiple question; a single trigger means the chosen answer is one of the
-    keys, a multiple trigger means one of the keys is ticked. Conditions carry
-    no human text and live only in the structure file."""
+class Clause:
+    """One term of a condition: question `question` holds any one of `choices`
+    (its choice keys). A single trigger means the chosen answer is one of the
+    keys, a multiple trigger means one of the keys is ticked."""
 
     question: str
     choices: list[str]
+
+
+@dataclass(frozen=True)
+class Condition:
+    """Show the owning group or question only when its clauses hold, combined
+    with `combinator`: "all" is AND, "any" is OR. Written in TOML as
+    ``condition = { all = [ { question = "q", includes = ["k"] }, ... ] }`` or
+    the same with ``any``. Conditions carry no human text and live only in the
+    structure file."""
+
+    combinator: Combinator
+    clauses: list[Clause]
 
 
 @dataclass(frozen=True)
@@ -503,25 +517,42 @@ def _check_language_code(code: str, where: str) -> None:
 # --- structure file ----------------------------------------------------------
 
 
+def _parse_clause(raw: Any, where: str) -> Clause:
+    """Validate one clause table: `question` (an id) plus a non-empty
+    `includes` list of that question's choice keys. Only the shape is checked
+    here; that the referenced question and keys exist is checked once every
+    question is known (_check_conditions)."""
+    tbl = _as_table(raw, where)
+    _check_keys(tbl, _CLAUSE_KEYS, where)
+    qid = _as_str(_require(tbl, "question", where), f"{where}.question")
+    if not ID_RE.match(qid):
+        raise SurveyError(f"{where}.question '{qid}' must match {ID_RE.pattern}")
+    keys = _as_list_of_str(_require(tbl, "includes", where), f"{where}.includes")
+    if not keys:
+        raise SurveyError(f"{where}.includes must not be empty")
+    for key in keys:
+        if not CHOICE_KEY_RE.match(key):
+            raise SurveyError(f"{where}.includes key '{key}' must match {CHOICE_KEY_RE.pattern}")
+    _check_unique(keys, f"{where}.includes", "choice key")
+    return Clause(question=qid, choices=keys)
+
+
 def _parse_condition(raw: Any, where: str) -> Condition:
-    """Validate a `condition` inline table: `question` (an id) plus a
-    non-empty `includes` list of that question's choice keys. Only the shape
-    is checked here; that the referenced question and keys exist is checked
-    once every question is known (_check_conditions)."""
+    """Validate a `condition` inline table: exactly one of `all` (AND) or
+    `any` (OR), holding a non-empty list of clause tables. Referential checks
+    happen later in _check_conditions."""
     cwhere = f"{where}: condition"
     tbl = _as_table(raw, cwhere)
     _check_keys(tbl, _CONDITION_KEYS, cwhere)
-    qid = _as_str(_require(tbl, "question", cwhere), f"{cwhere}.question")
-    if not ID_RE.match(qid):
-        raise SurveyError(f"{cwhere}.question '{qid}' must match {ID_RE.pattern}")
-    keys = _as_list_of_str(_require(tbl, "includes", cwhere), f"{cwhere}.includes")
-    if not keys:
-        raise SurveyError(f"{cwhere}.includes must not be empty")
-    for key in keys:
-        if not CHOICE_KEY_RE.match(key):
-            raise SurveyError(f"{cwhere}.includes key '{key}' must match {CHOICE_KEY_RE.pattern}")
-    _check_unique(keys, f"{cwhere}.includes", "choice key")
-    return Condition(question=qid, choices=keys)
+    has_all, has_any = "all" in tbl, "any" in tbl
+    if has_all == has_any:
+        raise SurveyError(f"{cwhere}: needs exactly one of 'all' or 'any'")
+    combinator: Combinator = "all" if has_all else "any"
+    raw_clauses = tbl[combinator]
+    if not isinstance(raw_clauses, list) or not raw_clauses:
+        raise SurveyError(f"{cwhere}.{combinator}: must be a non-empty list of clauses")
+    clauses = [_parse_clause(c, f"{cwhere}.{combinator}[{i}]") for i, c in enumerate(raw_clauses)]
+    return Condition(combinator=combinator, clauses=clauses)
 
 
 def load_structure(path: Path) -> Structure:
@@ -574,25 +605,26 @@ def _check_conditions(groups: list[StructureGroup], name: str) -> None:
     are the author's concern and are not rejected here."""
 
     def check(c: Condition, seen: dict[str, StructureQuestion], where: str, owner: str) -> None:
-        if c.question == owner:
-            raise SurveyError(f"{where}: condition must not reference itself")
-        trigger = seen.get(c.question)
-        if trigger is None:
-            raise SurveyError(
-                f"{where}: condition.question '{c.question}' is not a question "
-                "defined before this one"
-            )
-        if trigger.choice_keys is None:
-            raise SurveyError(
-                f"{where}: condition.question '{c.question}' must be a single or "
-                f"multiple question, not {trigger.type}"
-            )
-        for key in c.choices:
-            if key not in trigger.choice_keys:
+        for clause in c.clauses:
+            if clause.question == owner:
+                raise SurveyError(f"{where}: condition must not reference itself")
+            trigger = seen.get(clause.question)
+            if trigger is None:
                 raise SurveyError(
-                    f"{where}: condition references choice '{key}' not defined on "
-                    f"question '{c.question}'"
+                    f"{where}: condition question '{clause.question}' is not a question "
+                    "defined before this one"
                 )
+            if trigger.choice_keys is None:
+                raise SurveyError(
+                    f"{where}: condition question '{clause.question}' must be a single or "
+                    f"multiple question, not {trigger.type}"
+                )
+            for key in clause.choices:
+                if key not in trigger.choice_keys:
+                    raise SurveyError(
+                        f"{where}: condition references choice '{key}' not defined on "
+                        f"question '{clause.question}'"
+                    )
 
     seen: dict[str, StructureQuestion] = {}
     for g in groups:

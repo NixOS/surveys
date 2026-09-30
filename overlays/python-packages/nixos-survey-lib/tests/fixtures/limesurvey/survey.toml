@@ -53,18 +53,27 @@ size = "short"
 id = "feedback"
 type = "text"
 
-# A group gated on an earlier question, containing a question with its own
-# (narrower) gate: exercises group relevance, question relevance, and their
-# combination in the emitter.
+# A group gated on earlier questions (any = OR across two triggers, one a
+# single and one a multiple question), containing a question with its own
+# narrower single-clause gate: exercises group relevance, question relevance,
+# the all/any combinators, and their combination in the emitter.
 [[groups]]
 id = "followup"
-condition = { question = "country", includes = ["europe", "asia"] }
+condition.any = [
+  { question = "country", includes = [
+    "europe",
+    "asia",
+  ] },
+  { question = "os", includes = [
+    "linux",
+  ] },
+]
 
 [[groups.questions]]
 id = "moveReason"
 type = "single"
 choices = ["work", "study"]
-condition = { question = "country", includes = ["europe"] }
+condition.all = [{ question = "country", includes = ["europe"] }]
 
 [[groups.questions]]
 id = "moveDetail"

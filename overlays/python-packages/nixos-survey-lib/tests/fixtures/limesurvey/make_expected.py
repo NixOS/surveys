@@ -61,7 +61,7 @@ def content(lang, t, ref):
     g1, g2, g3 = t["groups"]
     q = t["q"]
     ma = "2" if ref else ""
-    grel = '(country == "A1" or country == "A2")' if ref else ""
+    grel = '((country == "A1" or country == "A2") or os_SQ001 == "Y")' if ref else ""
     return [
         R("G", "1", g1[0], g1[1], lang=lang),
         R("Q", "L", "country", q["country"][0], lang=lang, rel="1", mand="N", other="N"),

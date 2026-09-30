@@ -19,7 +19,7 @@ import html
 import io
 import re
 
-from .schema import Condition, LanguageTexts, Question, Survey
+from .schema import Clause, Condition, LanguageTexts, Question, Survey
 
 BOM = "\ufeff"
 
@@ -84,22 +84,33 @@ def _yn(flag: bool) -> str:
 
 def relevance(condition: Condition | None, by_id: dict[str, Question]) -> str:
     """The LimeSurvey relevance equation for a condition, or "1" (always
-    shown) when there is none. A single trigger compares against its answer
-    code A{i}; a multiple trigger tests its subquestion code SQ{i:03d} for
-    "Y". Several keys are OR-ed and wrapped in parentheses. Choice codes are
-    positional, matching the A/SQ rows this module emits, so the index is the
-    trigger's 1-based choice-key position. The trigger is guaranteed to exist
-    and to be a single or multiple question by schema validation."""
+    shown) when there is none.
+
+    Each clause tests one trigger question: a single trigger compares against
+    its answer code A{i}; a multiple trigger tests its subquestion code
+    SQ{i:03d} for "Y". A clause's keys are OR-ed together. The clauses are then
+    joined with "and" ("all") or "or" ("any"). Choice codes are positional,
+    matching the A/SQ rows this module emits, so the index is the trigger's
+    1-based choice-key position. Triggers are guaranteed to exist and to be
+    single or multiple questions by schema validation."""
     if condition is None:
         return "1"
-    trigger = by_id[condition.question]
-    assert trigger.choice_keys is not None
-    index = {key: i for i, key in enumerate(trigger.choice_keys, start=1)}
-    if trigger.type == "multiple":
-        terms = [f'{condition.question}_SQ{index[k]:03d} == "Y"' for k in condition.choices]
-    else:
-        terms = [f'{condition.question} == "A{index[k]}"' for k in condition.choices]
-    return terms[0] if len(terms) == 1 else "(" + " or ".join(terms) + ")"
+
+    def clause_expr(clause: Clause) -> str:
+        trigger = by_id[clause.question]
+        assert trigger.choice_keys is not None
+        index = {key: i for i, key in enumerate(trigger.choice_keys, start=1)}
+        if trigger.type == "multiple":
+            terms = [f'{clause.question}_SQ{index[k]:03d} == "Y"' for k in clause.choices]
+        else:
+            terms = [f'{clause.question} == "A{index[k]}"' for k in clause.choices]
+        return terms[0] if len(terms) == 1 else "(" + " or ".join(terms) + ")"
+
+    joiner = " and " if condition.combinator == "all" else " or "
+    parts = [clause_expr(c) for c in condition.clauses]
+    if len(parts) == 1:
+        return parts[0]
+    return "(" + joiner.join(parts) + ")"
 
 
 def _row(**cells: str) -> list[str]:
