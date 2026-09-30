@@ -40,3 +40,14 @@ prompt = "Which version of Nix do you use?"
 
 [questions.feedback]
 prompt = "Anything else?"
+
+[groups.followup]
+title = "Follow-up"
+
+[questions.moveReason]
+prompt = "Why did you move?"
+choices.work = "For work"
+choices.study = "For study"
+
+[questions.moveDetail]
+prompt = "Tell us more."

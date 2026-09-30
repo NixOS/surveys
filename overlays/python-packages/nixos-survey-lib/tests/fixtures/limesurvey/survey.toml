@@ -52,3 +52,20 @@ size = "short"
 [[groups.questions]]
 id = "feedback"
 type = "text"
+
+# A group gated on an earlier question, containing a question with its own
+# (narrower) gate: exercises group relevance, question relevance, and their
+# combination in the emitter.
+[[groups]]
+id = "followup"
+condition = { question = "country", includes = ["europe", "asia"] }
+
+[[groups.questions]]
+id = "moveReason"
+type = "single"
+choices = ["work", "study"]
+condition = { question = "country", includes = ["europe"] }
+
+[[groups.questions]]
+id = "moveDetail"
+type = "text"

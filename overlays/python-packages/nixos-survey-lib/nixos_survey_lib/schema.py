@@ -39,9 +39,20 @@ RESERVED_IDS = frozenset(
 PRIVACY_KEYS = ("anonymized", "save_ip_address", "save_referrer", "date_stamp", "save_timings")
 
 _SURVEY_KEYS = ("id", "language", "languages", "privacy")
-_GROUP_KEYS = ("id", "questions")
-_QUESTION_KEYS = ("id", "type", "mandatory", "choices", "other", "display", "max_answers", "size")
+_GROUP_KEYS = ("id", "condition", "questions")
+_QUESTION_KEYS = (
+    "id",
+    "type",
+    "mandatory",
+    "choices",
+    "other",
+    "display",
+    "max_answers",
+    "size",
+    "condition",
+)
 _CHOICE_TYPES = ("single", "multiple", "ranking")
+_CONDITION_KEYS = ("question", "includes")
 
 
 class SurveyError(ValueError):
@@ -61,6 +72,18 @@ class Privacy:
 
 
 @dataclass(frozen=True)
+class Condition:
+    """Show the owning group or question only when question `question` holds
+    any one of `choices` (its choice keys). The trigger may be a single or
+    multiple question; a single trigger means the chosen answer is one of the
+    keys, a multiple trigger means one of the keys is ticked. Conditions carry
+    no human text and live only in the structure file."""
+
+    question: str
+    choices: list[str]
+
+
+@dataclass(frozen=True)
 class StructureQuestion:
     """A question as the structure file describes it: no text yet."""
 
@@ -72,6 +95,7 @@ class StructureQuestion:
     display: Display
     max_answers: int | None
     size: TextSize
+    condition: Condition | None
 
 
 @dataclass(frozen=True)
@@ -80,6 +104,7 @@ class StructureGroup:
 
     id: str
     questions: list[StructureQuestion]
+    condition: Condition | None
 
 
 @dataclass(frozen=True)
@@ -122,6 +147,7 @@ class Question:
     size: TextSize = "long"
     choice_keys: list[str] | None = None
     csv_columns: list[str] = field(default_factory=list)
+    condition: Condition | None = None
 
 
 @dataclass(frozen=True)
@@ -132,6 +158,7 @@ class Group:
     title: str
     description: str | None
     questions: list[Question]
+    condition: Condition | None = None
 
 
 @dataclass(frozen=True)
@@ -318,6 +345,7 @@ def _resolve_question(q: StructureQuestion, t: QuestionText) -> Question:
         max_answers=q.max_answers,
         size=q.size,
         choice_keys=q.choice_keys,
+        condition=q.condition,
     )
 
 
@@ -355,6 +383,7 @@ def load_survey(path: Path) -> Survey:
             title=ref.groups[g.id].title,
             description=ref.groups[g.id].description,
             questions=[_resolve_question(q, ref.questions[q.id]) for q in g.questions],
+            condition=g.condition,
         )
         for g in structure.groups
     ]
@@ -474,6 +503,27 @@ def _check_language_code(code: str, where: str) -> None:
 # --- structure file ----------------------------------------------------------
 
 
+def _parse_condition(raw: Any, where: str) -> Condition:
+    """Validate a `condition` inline table: `question` (an id) plus a
+    non-empty `includes` list of that question's choice keys. Only the shape
+    is checked here; that the referenced question and keys exist is checked
+    once every question is known (_check_conditions)."""
+    cwhere = f"{where}: condition"
+    tbl = _as_table(raw, cwhere)
+    _check_keys(tbl, _CONDITION_KEYS, cwhere)
+    qid = _as_str(_require(tbl, "question", cwhere), f"{cwhere}.question")
+    if not ID_RE.match(qid):
+        raise SurveyError(f"{cwhere}.question '{qid}' must match {ID_RE.pattern}")
+    keys = _as_list_of_str(_require(tbl, "includes", cwhere), f"{cwhere}.includes")
+    if not keys:
+        raise SurveyError(f"{cwhere}.includes must not be empty")
+    for key in keys:
+        if not CHOICE_KEY_RE.match(key):
+            raise SurveyError(f"{cwhere}.includes key '{key}' must match {CHOICE_KEY_RE.pattern}")
+    _check_unique(keys, f"{cwhere}.includes", "choice key")
+    return Condition(question=qid, choices=keys)
+
+
 def load_structure(path: Path) -> Structure:
     """Read and validate the structure file. Text files are not touched."""
     path = Path(path)
@@ -511,7 +561,47 @@ def load_structure(path: Path) -> Structure:
     groups = [_parse_group(g, name) for g in raw_groups]
     _check_unique([g.id for g in groups], name, "group id")
     _check_unique([q.id for g in groups for q in g.questions], name, "question id")
+    _check_conditions(groups, name)
     return Structure(id=sid, language=language, languages=languages, privacy=privacy, groups=groups)
+
+
+def _check_conditions(groups: list[StructureGroup], name: str) -> None:
+    """Validate every condition against the questions that precede it. A
+    question's trigger may be any earlier question (earlier group, or earlier
+    in the same group); a group's trigger must be a question in a strictly
+    earlier group. The trigger must be a single or multiple question and must
+    expose every referenced choice key. Impossible-but-satisfiable overlaps
+    are the author's concern and are not rejected here."""
+
+    def check(c: Condition, seen: dict[str, StructureQuestion], where: str, owner: str) -> None:
+        if c.question == owner:
+            raise SurveyError(f"{where}: condition must not reference itself")
+        trigger = seen.get(c.question)
+        if trigger is None:
+            raise SurveyError(
+                f"{where}: condition.question '{c.question}' is not a question "
+                "defined before this one"
+            )
+        if trigger.choice_keys is None:
+            raise SurveyError(
+                f"{where}: condition.question '{c.question}' must be a single or "
+                f"multiple question, not {trigger.type}"
+            )
+        for key in c.choices:
+            if key not in trigger.choice_keys:
+                raise SurveyError(
+                    f"{where}: condition references choice '{key}' not defined on "
+                    f"question '{c.question}'"
+                )
+
+    seen: dict[str, StructureQuestion] = {}
+    for g in groups:
+        if g.condition is not None:
+            check(g.condition, seen, f"{name}: group '{g.id}'", g.id)
+        for q in g.questions:
+            if q.condition is not None:
+                check(q.condition, seen, f"{name}: question '{q.id}'", q.id)
+            seen[q.id] = q
 
 
 def _parse_group(raw: Any, name: str) -> StructureGroup:
@@ -522,11 +612,14 @@ def _parse_group(raw: Any, name: str) -> StructureGroup:
     if not ID_RE.match(gid):
         raise SurveyError(f"{where}: group id must match {ID_RE.pattern}")
     _check_keys(tbl, _GROUP_KEYS, where)
+    condition = _parse_condition(tbl["condition"], where) if "condition" in tbl else None
     raw_questions = tbl.get("questions")
     if not isinstance(raw_questions, list) or not raw_questions:
         raise SurveyError(f"{where}: at least one [[groups.questions]] entry is required")
     return StructureGroup(
-        id=gid, questions=[_parse_question(q, name, where) for q in raw_questions]
+        id=gid,
+        questions=[_parse_question(q, name, where) for q in raw_questions],
+        condition=condition,
     )
 
 
@@ -594,6 +687,8 @@ def _parse_question(raw: Any, name: str, group_where: str) -> StructureQuestion:
             raise SurveyError(f"{where}: size is only allowed on text questions")
         size = _one_of(tbl["size"], SIZE_VALUES, f"{where}: size")
 
+    condition = _parse_condition(tbl["condition"], where) if "condition" in tbl else None
+
     return StructureQuestion(
         id=qid,
         type=qtype,
@@ -603,4 +698,5 @@ def _parse_question(raw: Any, name: str, group_where: str) -> StructureQuestion:
         display=display,
         max_answers=max_answers,
         size=size,
+        condition=condition,
     )

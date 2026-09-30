@@ -56,10 +56,12 @@ def SL(name, text, lang):
 
 def content(lang, t, ref):
     """The G/Q/SQ/A block for one language. ``ref`` marks the reference
-    language, which is the only one carrying the max_answers attribute."""
-    g1, g2 = t["groups"]
+    language, which is the only one carrying the max_answers attribute and
+    group relevance."""
+    g1, g2, g3 = t["groups"]
     q = t["q"]
     ma = "2" if ref else ""
+    grel = '(country == "A1" or country == "A2")' if ref else ""
     return [
         R("G", "1", g1[0], g1[1], lang=lang),
         R("Q", "L", "country", q["country"][0], lang=lang, rel="1", mand="N", other="N"),
@@ -89,6 +91,20 @@ def content(lang, t, ref):
         R("A", "0", "A3", q["priorities"][1][2], lang=lang),
         R("Q", "S", "nixVersion", q["nixVersion"][0], lang=lang, rel="1", mand="N", other="N"),
         R("Q", "T", "feedback", q["feedback"][0], lang=lang, rel="1", mand="N", other="N"),
+        R("G", "3", g3[0], g3[1], lang=lang, rel=grel),
+        R(
+            "Q",
+            "L",
+            "moveReason",
+            q["moveReason"][0],
+            lang=lang,
+            rel='country == "A1"',
+            mand="N",
+            other="N",
+        ),
+        R("A", "0", "A1", q["moveReason"][1][0], lang=lang),
+        R("A", "0", "A2", q["moveReason"][1][1], lang=lang),
+        R("Q", "T", "moveDetail", q["moveDetail"][0], lang=lang, rel="1", mand="N", other="N"),
     ]
 
 
@@ -96,7 +112,7 @@ EN = {
     "title": "Tiny LimeSurvey Fixture",
     "intro": "<p>Welcome to the fixture survey.</p>",
     "end": "<p>Thanks for taking part.</p>",
-    "groups": [("About you", "Two questions about you."), ("Usage", "")],
+    "groups": [("About you", "Two questions about you."), ("Usage", ""), ("Follow-up", "")],
     "q": {
         "country": ("Where do you live?", ["Europe", "Asia"]),
         "age": ("How old are you?", ["Under 30", "30 or older"]),
@@ -108,13 +124,15 @@ EN = {
         "priorities": ("Rank your priorities.", ["Performance", "Security", "Docs &amp; manuals"]),
         "nixVersion": ("Which version of Nix do you use?",),
         "feedback": ("Anything else?",),
+        "moveReason": ("Why did you move?", ["For work", "For study"]),
+        "moveDetail": ("Tell us more.",),
     },
 }
 DE = {
     "title": "Kleine LimeSurvey-Vorlage",
     "intro": "<p>Willkommen zur Testumfrage.</p>",
     "end": "<p>Danke fürs Mitmachen.</p>",
-    "groups": [("Über dich", "Zwei Fragen zu dir."), ("Nutzung", "")],
+    "groups": [("Über dich", "Zwei Fragen zu dir."), ("Nutzung", ""), ("Nachfrage", "")],
     "q": {
         "country": ("Wo lebst du?", ["Europa", "Asien"]),
         "age": ("Wie alt bist du?", ["Unter 30", "30 oder älter"]),
@@ -129,6 +147,8 @@ DE = {
         ),
         "nixVersion": ("Welche Nix-Version nutzt du?",),
         "feedback": ("Sonst noch etwas?",),
+        "moveReason": ("Warum bist du umgezogen?", ["Wegen der Arbeit", "Wegen des Studiums"]),
+        "moveDetail": ("Erzähl uns mehr.",),
     },
 }
 

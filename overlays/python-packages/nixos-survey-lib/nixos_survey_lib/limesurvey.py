@@ -19,7 +19,7 @@ import html
 import io
 import re
 
-from .schema import LanguageTexts, Question, Survey
+from .schema import Condition, LanguageTexts, Question, Survey
 
 BOM = "\ufeff"
 
@@ -82,6 +82,26 @@ def _yn(flag: bool) -> str:
     return "Y" if flag else "N"
 
 
+def relevance(condition: Condition | None, by_id: dict[str, Question]) -> str:
+    """The LimeSurvey relevance equation for a condition, or "1" (always
+    shown) when there is none. A single trigger compares against its answer
+    code A{i}; a multiple trigger tests its subquestion code SQ{i:03d} for
+    "Y". Several keys are OR-ed and wrapped in parentheses. Choice codes are
+    positional, matching the A/SQ rows this module emits, so the index is the
+    trigger's 1-based choice-key position. The trigger is guaranteed to exist
+    and to be a single or multiple question by schema validation."""
+    if condition is None:
+        return "1"
+    trigger = by_id[condition.question]
+    assert trigger.choice_keys is not None
+    index = {key: i for i, key in enumerate(trigger.choice_keys, start=1)}
+    if trigger.type == "multiple":
+        terms = [f'{condition.question}_SQ{index[k]:03d} == "Y"' for k in condition.choices]
+    else:
+        terms = [f'{condition.question} == "A{index[k]}"' for k in condition.choices]
+    return terms[0] if len(terms) == 1 else "(" + " or ".join(terms) + ")"
+
+
 def _row(**cells: str) -> list[str]:
     """Build one row; keyword names are column names with `/` written as `_`
     and `class` as `cls`. Columns not named stay empty, which makes the
@@ -137,9 +157,12 @@ def _content_rows(survey: Survey, t: LanguageTexts, *, is_reference: bool) -> li
     """The G/Q/SQ/A block for one language.
 
     Group number and choice codes are positional so the importer can line
-    up translations. Attributes (max_answers) go on the reference-language
-    row only; the importer would otherwise store them once per language.
+    up translations. Attributes (max_answers) and group relevance go on the
+    reference-language row only; the importer would otherwise store them once
+    per language. Question relevance is a standard column present on every
+    language's Q row.
     """
+    by_id = {q.id: q for q in survey.questions}
     rows: list[list[str]] = []
     for number, group in enumerate(survey.groups, start=1):
         gt = t.groups[group.id]
@@ -148,6 +171,9 @@ def _content_rows(survey: Survey, t: LanguageTexts, *, is_reference: bool) -> li
                 cls="G",
                 type_scale=str(number),
                 name=plain(gt.title),
+                relevance=relevance(group.condition, by_id)
+                if is_reference and group.condition is not None
+                else "",
                 text=plain(gt.description) if gt.description is not None else "",
                 language=t.language,
             )
@@ -159,7 +185,7 @@ def _content_rows(survey: Survey, t: LanguageTexts, *, is_reference: bool) -> li
                     cls="Q",
                     type_scale=type_letter(q),
                     name=q.id,
-                    relevance="1",
+                    relevance=relevance(q.condition, by_id),
                     text=plain(qt.prompt),
                     help=plain(qt.help) if qt.help is not None else "",
                     language=t.language,
