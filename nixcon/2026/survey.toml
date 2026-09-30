@@ -15,13 +15,14 @@ id = "meta"
 
 [[groups.questions]]
 id = "attended"
-type = "single"
-choices = ["inPerson", "livestream", "notThisTime"]
+type = "multiple"
+choices = ["inPerson", "livestream"]
 
 [[groups.questions]]
 id = "enjoyment"
 type = "single"
 choices = ["v1", "v2", "v3", "v4", "v5"]
+condition = { question = "attended", includes = ["livestream", "inPerson"] }
 
 [[groups.questions]]
 id = "whyNotAttend"
@@ -38,6 +39,7 @@ choices = [
   "couldNotGetVisa",
   "healthIssues",
 ]
+condition = { question = "attended", includes = ["livestream"] }
 
 [[groups.questions]]
 id = "previousNixcons"
@@ -58,21 +60,26 @@ id = "moreSupport"
 type = "multiple"
 other = true
 choices = ["freeTicket", "helpAccommodation", "stipend"]
+condition = { question = "attended", includes = ["livestream"] }
 
 [[groups.questions]]
 id = "wentGreat"
 type = "text"
+condition = { question = "attended", includes = ["livestream", "inPerson"] }
 
 [[groups.questions]]
 id = "notGreat"
 type = "text"
+condition = { question = "attended", includes = ["livestream", "inPerson"] }
 
 [[groups.questions]]
 id = "makeBetter"
 type = "text"
+condition = { question = "attended", includes = ["livestream", "inPerson"] }
 
 [[groups]]
 id = "livestream"
+condition = { question = "attended", includes = ["livestream"] }
 
 [[groups.questions]]
 id = "streams"
@@ -104,6 +111,7 @@ type = "text"
 
 [[groups]]
 id = "schedule"
+condition = { question = "attended", includes = ["inPerson", "livestream"] }
 
 [[groups.questions]]
 id = "simultaneousTalks"
@@ -147,6 +155,7 @@ choices = ["tooFew", "justEnough", "tooMany"]
 id = "workshopNumber"
 type = "single"
 choices = ["tooFew", "justEnough", "tooMany"]
+condition = { question = "attended", includes = ["inPerson"] }
 
 [[groups.questions]]
 id = "skillLevel"
@@ -155,6 +164,7 @@ choices = ["tooAdvanced", "justRight", "tooBeginner"]
 
 [[groups]]
 id = "social"
+condition = { question = "attended", includes = ["inPerson"] }
 
 [[groups.questions]]
 id = "outsideProgram"
@@ -196,6 +206,7 @@ choices = ["tooCorporate", "goodTime", "moreCorporate"]
 
 [[groups]]
 id = "venue"
+condition = { question = "attended", includes = ["inPerson"] }
 
 [[groups.questions]]
 id = "venueThoughts"
