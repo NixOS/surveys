@@ -1,0 +1,244 @@
+[survey]
+id = 2026
+language = "en"
+languages = ["en"]
+
+[survey.privacy]
+anonymized = true
+save_ip_address = false
+save_referrer = false
+date_stamp = false
+save_timings = false
+
+[[groups]]
+id = "meta"
+
+[[groups.questions]]
+id = "attended"
+type = "single"
+choices = ["inPerson", "livestream", "notThisTime"]
+
+[[groups.questions]]
+id = "enjoyment"
+type = "single"
+choices = ["v1", "v2", "v3", "v4", "v5"]
+
+[[groups.questions]]
+id = "whyNotAttend"
+type = "multiple"
+other = true
+choices = [
+  "ticketTooExpensive",
+  "accommodationTooExpensive",
+  "travelTooExpensive",
+  "environmentalImpact",
+  "noApprovalAtWork",
+  "familyResponsibilities",
+  "schedulingConflicts",
+  "couldNotGetVisa",
+  "healthIssues",
+]
+
+[[groups.questions]]
+id = "previousNixcons"
+type = "multiple"
+choices = [
+  "y2015Berlin",
+  "y2017Unterfohring",
+  "y2018London",
+  "y2019Brno",
+  "y2020Online",
+  "y2022Paris",
+  "y2023Darmstadt",
+  "y2024Berlin",
+]
+
+[[groups.questions]]
+id = "moreSupport"
+type = "multiple"
+other = true
+choices = ["freeTicket", "helpAccommodation", "stipend"]
+
+[[groups.questions]]
+id = "wentGreat"
+type = "text"
+
+[[groups.questions]]
+id = "notGreat"
+type = "text"
+
+[[groups.questions]]
+id = "makeBetter"
+type = "text"
+
+[[groups]]
+id = "livestream"
+
+[[groups.questions]]
+id = "streams"
+type = "multiple"
+other = true
+choices = ["ownWebsite", "mediaCcc", "youtube", "viewingParty"]
+
+[[groups.questions]]
+id = "videoQuality"
+type = "single"
+choices = ["v1", "v2", "v3", "v4", "v5"]
+
+[[groups.questions]]
+id = "videoImprove"
+type = "text"
+
+[[groups.questions]]
+id = "audioQuality"
+type = "single"
+choices = ["v1", "v2", "v3", "v4", "v5"]
+
+[[groups.questions]]
+id = "audioImprove"
+type = "text"
+
+[[groups.questions]]
+id = "breakStreamTime"
+type = "text"
+
+[[groups]]
+id = "schedule"
+
+[[groups.questions]]
+id = "simultaneousTalks"
+type = "single"
+choices = ["great", "notGreat", "noOpinion"]
+
+[[groups.questions]]
+id = "favouriteTalks"
+type = "text"
+
+[[groups.questions]]
+id = "dislikedTalks"
+type = "text"
+
+[[groups.questions]]
+id = "breaksBetween"
+type = "single"
+choices = ["tooShort", "justRight", "tooLong"]
+
+[[groups.questions]]
+id = "startTimes"
+type = "single"
+choices = ["tooEarly", "justRight", "tooLate"]
+
+[[groups.questions]]
+id = "endTimes"
+type = "single"
+choices = ["tooEarly", "justRight", "tooLate"]
+
+[[groups.questions]]
+id = "talkLength"
+type = "single"
+choices = ["tooShort", "justRight", "tooLong"]
+
+[[groups.questions]]
+id = "talkNumber"
+type = "single"
+choices = ["tooFew", "justEnough", "tooMany"]
+
+[[groups.questions]]
+id = "workshopNumber"
+type = "single"
+choices = ["tooFew", "justEnough", "tooMany"]
+
+[[groups.questions]]
+id = "skillLevel"
+type = "single"
+choices = ["tooAdvanced", "justRight", "tooBeginner"]
+
+[[groups]]
+id = "social"
+
+[[groups.questions]]
+id = "outsideProgram"
+type = "text"
+
+[[groups.questions]]
+id = "negativeInteractions"
+type = "text"
+
+[[groups.questions]]
+id = "cameraPolicy"
+type = "text"
+
+[[groups.questions]]
+id = "communication"
+type = "text"
+
+[[groups.questions]]
+id = "wristBands"
+type = "multiple"
+other = true
+choices = [
+  "orange",
+  "blue",
+  "red",
+  "purple",
+  "green",
+  "yellow",
+  "didNotUnderstand",
+  "didNotWear",
+  "woreButNoOne",
+  "thereWereBands",
+]
+
+[[groups.questions]]
+id = "sponsorships"
+type = "single"
+choices = ["tooCorporate", "goodTime", "moreCorporate"]
+
+[[groups]]
+id = "venue"
+
+[[groups.questions]]
+id = "venueThoughts"
+type = "text"
+
+[[groups.questions]]
+id = "ticketPrice"
+type = "text"
+
+[[groups.questions]]
+id = "payMoreForOthers"
+type = "single"
+choices = ["yes", "no"]
+
+[[groups.questions]]
+id = "moreSponsorsHelp"
+type = "single"
+choices = ["yes", "no"]
+
+[[groups.questions]]
+id = "locationTradition"
+type = "single"
+choices = ["likeNewLocations", "preferSameVenue"]
+
+[[groups]]
+id = "other"
+
+[[groups.questions]]
+id = "preferredDays"
+type = "single"
+other = true
+choices = ["satSun", "friSun", "satMon", "friMon"]
+
+[[groups.questions]]
+id = "hackingTime"
+type = "single"
+choices = ["noneNeeded", "wholeDay", "someEachDay"]
+
+[[groups.questions]]
+id = "anythingElse"
+type = "text"
+
+[[groups.questions]]
+id = "bee"
+type = "single"
+choices = ["yesHoney", "bzz", "noThanks"]
