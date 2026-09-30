@@ -15,14 +15,26 @@ id = "meta"
 
 [[groups.questions]]
 id = "attended"
-type = "multiple"
-choices = ["inPerson", "livestream"]
+type = "single"
+choices = ["yes", "no"]
+
+[[groups.questions]]
+id = "watchedLivestream"
+type = "single"
+choices = ["yes", "no"]
 
 [[groups.questions]]
 id = "enjoyment"
 type = "single"
 choices = ["v1", "v2", "v3", "v4", "v5"]
-condition = { question = "attended", includes = ["livestream", "inPerson"] }
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
 
 [[groups.questions]]
 id = "whyNotAttend"
@@ -39,7 +51,7 @@ choices = [
   "couldNotGetVisa",
   "healthIssues",
 ]
-condition = { question = "attended", includes = ["livestream"] }
+condition.all = [{ question = "attended", includes = ["no"] }]
 
 [[groups.questions]]
 id = "previousNixcons"
@@ -53,6 +65,7 @@ choices = [
   "y2022Paris",
   "y2023Darmstadt",
   "y2024Berlin",
+  "y2025Switzerland",
 ]
 
 [[groups.questions]]
@@ -60,32 +73,47 @@ id = "moreSupport"
 type = "multiple"
 other = true
 choices = ["freeTicket", "helpAccommodation", "stipend"]
-condition = { question = "attended", includes = ["livestream"] }
+condition.all = [{ question = "attended", includes = ["no"] }]
 
 [[groups.questions]]
 id = "wentGreat"
 type = "text"
-condition = { question = "attended", includes = ["livestream", "inPerson"] }
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
 
 [[groups.questions]]
 id = "notGreat"
 type = "text"
-condition = { question = "attended", includes = ["livestream", "inPerson"] }
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
 
 [[groups.questions]]
 id = "makeBetter"
 type = "text"
-condition = { question = "attended", includes = ["livestream", "inPerson"] }
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
 
 [[groups]]
 id = "livestream"
-condition = { question = "attended", includes = ["livestream"] }
-
-[[groups.questions]]
-id = "streams"
-type = "multiple"
-other = true
-choices = ["ownWebsite", "mediaCcc", "youtube", "viewingParty"]
+condition.all = [{ question = "watchedLivestream", includes = ["yes"] }]
 
 [[groups.questions]]
 id = "videoQuality"
@@ -106,40 +134,36 @@ id = "audioImprove"
 type = "text"
 
 [[groups.questions]]
-id = "breakStreamTime"
+id = "livestreamMisc"
 type = "text"
 
 [[groups]]
 id = "schedule"
-condition = { question = "attended", includes = ["inPerson", "livestream"] }
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
 
 [[groups.questions]]
-id = "simultaneousTalks"
-type = "single"
-choices = ["great", "notGreat", "noOpinion"]
-
-[[groups.questions]]
-id = "favouriteTalks"
+id = "hackDays"
 type = "text"
 
 [[groups.questions]]
-id = "dislikedTalks"
+id = "contentSelection"
+type = "text"
+
+[[groups.questions]]
+id = "contentQuality"
 type = "text"
 
 [[groups.questions]]
 id = "breaksBetween"
 type = "single"
 choices = ["tooShort", "justRight", "tooLong"]
-
-[[groups.questions]]
-id = "startTimes"
-type = "single"
-choices = ["tooEarly", "justRight", "tooLate"]
-
-[[groups.questions]]
-id = "endTimes"
-type = "single"
-choices = ["tooEarly", "justRight", "tooLate"]
 
 [[groups.questions]]
 id = "talkLength"
@@ -152,19 +176,17 @@ type = "single"
 choices = ["tooFew", "justEnough", "tooMany"]
 
 [[groups.questions]]
-id = "workshopNumber"
-type = "single"
-choices = ["tooFew", "justEnough", "tooMany"]
-condition = { question = "attended", includes = ["inPerson"] }
-
-[[groups.questions]]
 id = "skillLevel"
 type = "single"
 choices = ["tooAdvanced", "justRight", "tooBeginner"]
 
+[[groups.questions]]
+id = "whatElseSchedule"
+type = "text"
+
 [[groups]]
 id = "social"
-condition = { question = "attended", includes = ["inPerson"] }
+condition.all = [{ question = "attended", includes = ["yes"] }]
 
 [[groups.questions]]
 id = "outsideProgram"
@@ -183,30 +205,43 @@ id = "communication"
 type = "text"
 
 [[groups.questions]]
-id = "wristBands"
-type = "multiple"
-other = true
-choices = [
-  "orange",
-  "blue",
-  "red",
-  "purple",
-  "green",
-  "yellow",
-  "didNotUnderstand",
-  "didNotWear",
-  "woreButNoOne",
-  "thereWereBands",
-]
-
-[[groups.questions]]
 id = "sponsorships"
 type = "single"
 choices = ["tooCorporate", "goodTime", "moreCorporate"]
 
 [[groups]]
 id = "venue"
-condition = { question = "attended", includes = ["inPerson"] }
+condition.all = [{ question = "attended", includes = ["yes"] }]
+
+[[groups.questions]]
+id = "ctfJoined"
+type = "single"
+choices = ["yes", "no", "didNotKnow"]
+
+[[groups.questions]]
+id = "ctfThoughts"
+type = "text"
+condition.all = [{ question = "ctfJoined", includes = ["yes"] }]
+
+[[groups.questions]]
+id = "ctfMissed"
+type = "text"
+condition.all = [{ question = "ctfJoined", includes = ["no", "didNotKnow"] }]
+
+[[groups.questions]]
+id = "partnerTrackJoined"
+type = "single"
+choices = ["yes", "no", "didNotKnow"]
+
+[[groups.questions]]
+id = "partnerTrackThoughts"
+type = "text"
+condition.all = [{ question = "partnerTrackJoined", includes = ["yes"] }]
+
+[[groups.questions]]
+id = "partnerTrackMissed"
+type = "text"
+condition.all = [{ question = "partnerTrackJoined", includes = ["no", "didNotKnow"] }]
 
 [[groups.questions]]
 id = "venueThoughts"
@@ -217,39 +252,12 @@ id = "ticketPrice"
 type = "text"
 
 [[groups.questions]]
-id = "payMoreForOthers"
-type = "single"
-choices = ["yes", "no"]
-
-[[groups.questions]]
-id = "moreSponsorsHelp"
-type = "single"
-choices = ["yes", "no"]
-
-[[groups.questions]]
-id = "locationTradition"
-type = "single"
-choices = ["likeNewLocations", "preferSameVenue"]
+id = "merchFeedback"
+type = "text"
 
 [[groups]]
 id = "other"
 
 [[groups.questions]]
-id = "preferredDays"
-type = "single"
-other = true
-choices = ["satSun", "friSun", "satMon", "friMon"]
-
-[[groups.questions]]
-id = "hackingTime"
-type = "single"
-choices = ["noneNeeded", "wholeDay", "someEachDay"]
-
-[[groups.questions]]
 id = "anythingElse"
 type = "text"
-
-[[groups.questions]]
-id = "bee"
-type = "single"
-choices = ["yesHoney", "bzz", "noThanks"]

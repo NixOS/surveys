@@ -25,12 +25,17 @@ description = "For those who joined in-person."
 title = "Other"
 
 [questions.attended]
-prompt = "Did you attend NixCon 2026?"
-choices.inPerson = "Yes, in person"
-choices.livestream = "Yes, via livestream"
+prompt = "Did you attend NixCon 2026 in person?"
+choices.yes = "Yes"
+choices.no = "No"
+
+[questions.watchedLivestream]
+prompt = "Did you watch the NixCon 2026 livestreams?"
+choices.yes = "Yes"
+choices.no = "No"
 
 [questions.enjoyment]
-prompt = "How did you enjoy NixCon 2026 on a scale from 1 (bad) to 5 (good)?"
+prompt = "How did you like NixCon 2026 on a scale from 1 (bad) to 5 (good)?"
 help = "If you joined remotely or in-person."
 choices.v1 = "1 (bad)"
 choices.v2 = "2"
@@ -39,7 +44,7 @@ choices.v4 = "4"
 choices.v5 = "5 (good)"
 
 [questions.whyNotAttend]
-prompt = "If you wanted to come to this NixCon but could not make it, why not?"
+prompt = "If you wanted to come to this NixCon in person but could not make it, why not?"
 help = "If you joined remotely or not at all. Select all that apply."
 choices.ticketTooExpensive = "Ticket too expensive"
 choices.accommodationTooExpensive = "Accommodation too expensive"
@@ -52,7 +57,7 @@ choices.couldNotGetVisa = "Could not get a visa"
 choices.healthIssues = "Health issues"
 
 [questions.previousNixcons]
-prompt = "Which previous NixCons did you attend in person?"
+prompt = "Which previous NixCons did you attend?"
 help = "Select all that apply."
 choices.y2015Berlin = "2015: Berlin (Germany)"
 choices.y2017Unterfohring = "2017: Unterföhring (Germany)"
@@ -62,6 +67,7 @@ choices.y2020Online = "2020: (online)"
 choices.y2022Paris = "2022: Paris (France)"
 choices.y2023Darmstadt = "2023: Darmstadt (Germany)"
 choices.y2024Berlin = "2024: Berlin (Germany)"
+choices.y2025Switzerland = "2025: Rapperswil (Switzerland)"
 
 [questions.moreSupport]
 prompt = "In what way would you have appreciated more support?"
@@ -71,20 +77,13 @@ choices.helpAccommodation = "Help with finding accommodation"
 choices.stipend = "Stipend (covered travel and accommodation costs)"
 
 [questions.wentGreat]
-prompt = "What do you think went great and should be done in future conferences too?"
+prompt = "What do you think went great? What should we continue doing in future conferences?"
 
 [questions.notGreat]
-prompt = "What do you think did not go great and should be avoided for future conferences?"
+prompt = "What did not go so well? What should we be avoid in future conferences?"
 
 [questions.makeBetter]
 prompt = "What else can we do to make future NixCons better?"
-
-[questions.streams]
-prompt = "Which streams did you tune in?"
-choices.ownWebsite = "Our own website (2026.nixcon.org)"
-choices.mediaCcc = "media.ccc.de (via streaming.media.ccc.de)"
-choices.youtube = "YouTube (via youtube.com or any player app)"
-choices.viewingParty = "Viewing party"
 
 [questions.videoQuality]
 prompt = "How was the video quality? (1-5)"
@@ -108,39 +107,24 @@ choices.v5 = "5"
 [questions.audioImprove]
 prompt = "How could the audio quality be better?"
 
-[questions.breakStreamTime]
-prompt = "How can we fill the stream time during the breaks better?"
+[questions.livestreamMisc]
+prompt = "Anything else you'd like to say about the livestreams?"
 
-[questions.simultaneousTalks]
-prompt = "What did you think of having multiple simultaneous talks/workshops in different rooms?"
-choices.great = "Great, it allowed me to select what I cared about more"
-choices.notGreat = "Not great, some of the content I wanted to see overlapped"
-choices.noOpinion = "No opinion, I didn't go see many talks"
+[questions.hackDays]
+prompt = "Were you happy with the overall program arrangement this year?"
+help = "Did you like the Friday and Monday hack days? Would you have preferred a weekend hack day?"
 
-[questions.favouriteTalks]
-prompt = "Which talks in the schedule did you like the most or stood out?"
-help = "See https://talks.nixcon.org/nixcon-2026/schedule/"
+[questions.contentSelection]
+prompt = "Were you happy with the overall selection of the talks and workshops?"
 
-[questions.dislikedTalks]
-prompt = "Which talks did you not enjoy, and how could they be improved?"
+[questions.contentQuality]
+prompt = "Were you happy with the overall quality of the talks and workshops?"
 
 [questions.breaksBetween]
-prompt = "What did you think of the 10 minute breaks between talks?"
+prompt = "What did you think of the breaks between talks?"
 choices.tooShort = "Too short"
 choices.justRight = "Just right"
 choices.tooLong = "Too long"
-
-[questions.startTimes]
-prompt = "What did you think of the program starting times (10:00 Friday, 11:00 Saturday)?"
-choices.tooEarly = "Started too early"
-choices.justRight = "Just right"
-choices.tooLate = "Started too late"
-
-[questions.endTimes]
-prompt = "What did you think of the program ending times (18:00 both Friday and Saturday)?"
-choices.tooEarly = "Ended too early"
-choices.justRight = "Just right"
-choices.tooLate = "Ended too late"
 
 [questions.talkLength]
 prompt = "What did you think of the length of talks?"
@@ -150,14 +134,7 @@ choices.tooLong = "They were too long"
 
 [questions.talkNumber]
 prompt = "What did you think of the number of talks?"
-choices.tooFew = "There were too few"
-choices.justEnough = "There were just enough"
-choices.tooMany = "There were too many"
-
-[questions.workshopNumber]
-prompt = "What did you think of the number of workshops?"
-help = "If you joined in-person."
-choices.tooFew = "There were too few"
+choices.tooFew = "I wish there had been more talks, maybe on a third track"
 choices.justEnough = "There were just enough"
 choices.tooMany = "There were too many"
 
@@ -167,77 +144,60 @@ choices.tooAdvanced = "The talks were in general too advanced"
 choices.justRight = "It was just right"
 choices.tooBeginner = "The talks were in general too beginner-oriented"
 
+[questions.whatElseSchedule]
+prompt = "What else would you like to share with us about the schedule?"
+
 [questions.outsideProgram]
-prompt = "How did you enjoy your time at the venue outside the program (e.g. evenings, hallway track, side-quests)?"
+prompt = "How did you enjoy your time at the venue outside the program (e.g. evenings, hallway track, city exploration)?"
 
 [questions.negativeInteractions]
 prompt = "Did you have any negative interactions with others you wish to tell us about?"
 
 [questions.cameraPolicy]
-prompt = "Did you have any issues with the camera policy (red lanyard for no picture)?"
+prompt = "Were you happy with the camera policy (red lanyard for no picture)? Did you feel like it was respected by photographers?"
 
 [questions.communication]
-prompt = "How satisfied were you with the communication and information availability during the event (e.g. opening ceremony, emails, matrix)?"
-
-[questions.wristBands]
-prompt = "Did you find the coloured wrist bands helpful in finding people with related interests?"
-help = "Select all that apply."
-choices.orange = "🧡 I wore an orange wrist band and got hugs"
-choices.blue = "💙 I wore a blue wrist band and was approached for work offers"
-choices.red = "❤️ I wore a red wrist band and received work offers"
-choices.purple = "💜 I wore a purple wrist band and was approached by beginners"
-choices.green = "💚 I wore a green wrist band and people approached me to discuss their Nixpkgs PRs"
-choices.yellow = "💛 I wore a yellow wrist band and bee business happened 🐝"
-choices.didNotUnderstand = "I did not understand the wrist bands"
-choices.didNotWear = "I did not wear any wrist bands"
-choices.woreButNoOne = "I wore wrist bands, but they didn't seem to attract anyone"
-choices.thereWereBands = "There were wrist bands???"
+prompt = "How satisfied were you with the communication and information availability during the event (e.g. opening ceremony, matrix, emails)?"
 
 [questions.sponsorships]
 prompt = "How did you feel about the sponsorships and the presence of company representatives this year?"
 choices.tooCorporate = "It was too corporate"
 choices.goodTime = "I had a good time with the sponsors"
-choices.moreCorporate = "There could be even more corporate presence"
+choices.moreCorporate = "I would not mind more corporate presence if it means a higher quality event and more stipends"
+
+[questions."ctfJoined"]
+prompt = "Did you participate in NixCon's first CTF?"
+choices.yes = "Yes, I tried to capture the flag"
+choices.no = "No, it's not my cup of tea"
+choices.didNotKnow = "There was a CTF?"
+
+[questions."ctfThoughts"]
+prompt = "What did you like about the CTF? What can we do better next time?"
+
+[questions."ctfMissed"]
+prompt = "Is there anything we can do to make the CTF event more appealing for you?"
+
+[questions."partnerTrackJoined"]
+prompt = "Did you (or your +1) join NixCon's first organised partner track?"
+choices.yes = "Yes, and now we know all about Krakow"
+choices.no = "No, I came for the conference"
+choices.didNotKnow = "There was a partner track?"
+
+[questions."partnerTrackThoughts"]
+prompt = "What did you like about the partner track? What can we do better next time?"
+
+[questions."partnerTrackMissed"]
+prompt = "Is there anything we can do to make the partner track more appealing?"
+help = "Would more information have helped? Should we have advertised it better?"
 
 [questions.venueThoughts]
-prompt = "How did you find the venue (suitability, getting around, space, the view, ...)?"
+prompt = "How did you like the venue (suitability, getting around, space, the view, ...)?"
 
 [questions.ticketPrice]
-prompt = "What did you think about the ticket price and the free tickets for contributors?"
+prompt = "What did you think about the ticket price and the discounted tickets for contributors?"
 
-[questions.payMoreForOthers]
-prompt = "Would you be willing to pay more for your ticket, if the ticket sales helped more people attend NixCon?"
-choices.yes = "Yes"
-choices.no = "No"
-
-[questions.moreSponsorsHelp]
-prompt = "Would you be okay with seeing more sponsors at NixCon, if their sponsorship helped more people attend NixCon?"
-choices.yes = "Yes"
-choices.no = "No"
-
-[questions.locationTradition]
-prompt = "So far, NixCon has happened in a different location every year. Do you want this tradition to continue?"
-choices.likeNewLocations = "I like seeing new locations, venues, and how different teams organise NixCons"
-choices.preferSameVenue = "I would prefer less uncertainty in where and how NixCons are run, by having the same venue and team next year"
-
-[questions.preferredDays]
-prompt = "On what days do you prefer NixCon to take place?"
-choices.satSun = "Sat-Sun (2 days)"
-choices.friSun = "Fri-Sun (3 days)"
-choices.satMon = "Sat-Mon (3 days)"
-choices.friMon = "Fri-Mon (4 days)"
-
-[questions.hackingTime]
-prompt = "How would you prefer we schedule the dedicated hacking time (time in the schedule with no talks or workshops)?"
-choices.noneNeeded = "No dedicated hacking time needed, I can hack in parallel to the talks"
-choices.wholeDay = "I would like a whole day to be dedicated for hacking"
-choices.someEachDay = "I would like to have some dedicated hacking time on each day"
+[questions.merchFeedback]
+prompt = "What would you change about the merch this year?"
 
 [questions.anythingElse]
 prompt = "Anything else you would like to add?"
-
-[questions.bee]
-prompt = "Bee?"
-choices.yesHoney = "Yes, honey"
-choices.bzz = "Bzz"
-choices.noThanks = "No thanks"
