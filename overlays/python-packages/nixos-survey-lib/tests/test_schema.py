@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pytest
 from nixos_survey_lib.schema import (
+    Clause,
+    Condition,
     Question,
     Survey,
     SurveyError,
@@ -683,3 +685,151 @@ def test_question_defaults_allow_legacy_construction():
     assert q.help is None and q.mandatory == "off" and q.other is False
     assert q.display == "radio" and q.max_answers is None and q.size == "long"
     assert q.choice_keys is None
+
+
+# --- conditions --------------------------------------------------------------
+#
+# VALID_STRUCTURE defines, in order: country (single europe/asia), os (multiple
+# linux/macos/windows), priorities (ranking), nixVersion (text). A condition
+# is `all`/`any` of clauses; each clause gates on an earlier question's keys.
+
+_QCOND = 'type = "text"\nsize = "short"'
+
+
+def test_condition_on_question_resolves(tmp_path):
+    """A question condition parses into a Condition of clauses on the
+    structure question, referencing earlier questions and their choice keys."""
+    p = _structure_with(
+        tmp_path,
+        _QCOND,
+        _QCOND + '\ncondition.any = [{ question = "country", includes = ["europe", "asia"] }]',
+    )
+    q = load_structure(p).groups[0].questions[3]
+    assert q.condition == Condition(
+        combinator="any", clauses=[Clause(question="country", choices=["europe", "asia"])]
+    )
+
+
+def test_condition_all_across_two_questions(tmp_path):
+    """`all` combines several clauses with AND; each references its own
+    trigger."""
+    p = _structure_with(
+        tmp_path,
+        _QCOND,
+        _QCOND + "\ncondition.all = ["
+        '{ question = "country", includes = ["europe"] }, '
+        '{ question = "os", includes = ["linux"] }]',
+    )
+    q = load_structure(p).groups[0].questions[3]
+    assert q.condition == Condition(
+        combinator="all",
+        clauses=[
+            Clause(question="country", choices=["europe"]),
+            Clause(question="os", choices=["linux"]),
+        ],
+    )
+
+
+def test_condition_on_group_resolves(tmp_path):
+    """A group condition parses into a Condition on the structure group. Its
+    triggers must sit in an earlier group; a second group carries it."""
+    extra = (
+        '\n\n[[groups]]\nid = "more"\n'
+        'condition.any = [{ question = "country", includes = ["europe"] }]\n'
+        '[[groups.questions]]\nid = "why"\ntype = "text"\n'
+    )
+    p = _write(tmp_path, VALID_STRUCTURE + extra)
+    s = load_structure(p)
+    assert s.groups[1].condition == Condition(
+        combinator="any", clauses=[Clause(question="country", choices=["europe"])]
+    )
+
+
+def test_condition_reaches_resolved_question(tmp_path):
+    """load_survey carries the condition onto the resolved Question."""
+    structure = VALID_STRUCTURE.replace(
+        _QCOND,
+        _QCOND + '\ncondition.all = [{ question = "country", includes = ["europe"] }]',
+    )
+    survey = load_survey(_survey_dir(tmp_path, structure=structure))
+    q = next(q for q in survey.questions if q.id == "nixVersion")
+    assert q.condition == Condition(
+        combinator="all", clauses=[Clause(question="country", choices=["europe"])]
+    )
+
+
+@pytest.mark.parametrize(
+    "cond, match",
+    [
+        ('.all = [{ question = "nope", includes = ["europe"] }]', "not a question defined before"),
+        ('.all = [{ question = "country", includes = ["mars"] }]', "not defined on question"),
+        ('.all = [{ question = "country" }]', "includes"),
+        ('.all = [{ includes = ["europe"] }]', "question"),
+        ('.all = [{ question = "country", includes = [] }]', "must not be empty"),
+        (
+            '.all = [{ question = "country", includes = ["europe"], extra = 1 }]',
+            "unknown key",
+        ),
+        ('.all = [{ question = "country", includes = ["europe", "europe"] }]', "duplicate"),
+        ('.all = [{ question = "country", includes = ["bad key"] }]', "must match"),
+        (".all = []", "non-empty list"),
+        (
+            ' = { all = [{ question = "country", includes = ["europe"] }], '
+            'any = [{ question = "os", includes = ["linux"] }] }',
+            "exactly one of",
+        ),
+        (' = { question = "country", includes = ["europe"] }', "unknown key"),
+    ],
+)
+def test_condition_rules(tmp_path, cond, match):
+    """Each broken condition on the last (text) question is rejected with a
+    message naming the rule: unknown/text/forward trigger, unknown choice key,
+    malformed clause list, and combinator misuse."""
+    p = _structure_with(tmp_path, _QCOND, _QCOND + f"\ncondition{cond}")
+    with pytest.raises(SurveyError, match=match):
+        load_structure(p)
+
+
+def test_condition_text_trigger_rejected(tmp_path):
+    """A text question has no choices and cannot be a trigger."""
+    extra = '\n\n[[groups.questions]]\nid = "extra"\ntype = "text"\n'
+    extra += 'condition.all = [{ question = "nixVersion", includes = ["x"] }]\n'
+    p = _write(tmp_path, VALID_STRUCTURE + extra)
+    with pytest.raises(SurveyError, match="single or multiple"):
+        load_structure(p)
+
+
+def test_condition_self_reference_rejected(tmp_path):
+    """A question may not gate itself."""
+    p = _structure_with(
+        tmp_path,
+        _QCOND,
+        _QCOND + '\ncondition.all = [{ question = "nixVersion", includes = ["x"] }]',
+    )
+    with pytest.raises(SurveyError, match="must not reference itself"):
+        load_structure(p)
+
+
+def test_condition_forward_reference_rejected(tmp_path):
+    """A question may not gate on a question defined after it: gating the
+    first question (country) on the later `os` is a forward reference."""
+    p = _structure_with(
+        tmp_path,
+        'choices = ["europe", "asia"]',
+        'choices = ["europe", "asia"]\ncondition.all = [{ question = "os", includes = ["linux"] }]',
+    )
+    with pytest.raises(SurveyError, match="not a question defined before"):
+        load_structure(p)
+
+
+def test_group_condition_may_not_reference_own_group(tmp_path):
+    """A group condition referencing a question inside that same group is a
+    forward reference (the group gate is evaluated before its questions)."""
+    p = _structure_with(
+        tmp_path,
+        '[[groups]]\nid = "aboutYou"',
+        '[[groups]]\nid = "aboutYou"\n'
+        'condition.all = [{ question = "country", includes = ["europe"] }]',
+    )
+    with pytest.raises(SurveyError, match="not a question defined before"):
+        load_structure(p)

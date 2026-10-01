@@ -52,3 +52,29 @@ size = "short"
 [[groups.questions]]
 id = "feedback"
 type = "text"
+
+# A group gated on earlier questions (any = OR across two triggers, one a
+# single and one a multiple question), containing a question with its own
+# narrower single-clause gate: exercises group relevance, question relevance,
+# the all/any combinators, and their combination in the emitter.
+[[groups]]
+id = "followup"
+condition.any = [
+  { question = "country", includes = [
+    "europe",
+    "asia",
+  ] },
+  { question = "os", includes = [
+    "linux",
+  ] },
+]
+
+[[groups.questions]]
+id = "moveReason"
+type = "single"
+choices = ["work", "study"]
+condition.all = [{ question = "country", includes = ["europe"] }]
+
+[[groups.questions]]
+id = "moveDetail"
+type = "text"

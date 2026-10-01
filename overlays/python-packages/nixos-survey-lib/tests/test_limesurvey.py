@@ -157,7 +157,7 @@ def test_language_block_order(fixture_survey):
     assert all(c == "S" for c in classes[:first_sl])
     assert all(c == "SL" for c in classes[first_sl:first_g])
     langs = [r["language"] for r in rows[first_g:]]
-    assert langs == ["en"] * 18 + ["de"] * 18
+    assert langs == ["en"] * 23 + ["de"] * 23
 
 
 def test_max_answers_on_reference_row_only(fixture_survey):
@@ -179,7 +179,23 @@ def test_group_rows_carry_group_number_and_description(fixture_survey):
     assert [(r["type/scale"], r["name"], r["text"]) for r in rows] == [
         ("1", "Über dich", "Zwei Fragen zu dir."),
         ("2", "Nutzung", ""),
+        ("3", "Nachfrage", ""),
     ]
+
+
+def test_group_relevance_on_reference_row_only(fixture_survey):
+    """A group condition becomes the G row's relevance equation, written on
+    the reference-language row only (like max_answers); other languages leave
+    it empty. Unconditioned groups leave the cell empty so the importer
+    applies its default."""
+    rows = [r for r in _rows(to_tsv(fixture_survey)) if r["class"] == "G"]
+    by_key = {(r["language"], r["name"]): r["relevance"] for r in rows}
+    assert by_key[("en", "Follow-up")] == (
+        '((country == "A1" or country == "A2") or os_SQ001 == "Y")'
+    )
+    assert by_key[("de", "Nachfrage")] == ""
+    assert by_key[("en", "About you")] == ""
+    assert by_key[("en", "Usage")] == ""
 
 
 def test_choice_rows(fixture_survey):
@@ -191,19 +207,114 @@ def test_choice_rows(fixture_survey):
     assert sq == [("", "SQ001", "GNU/Linux"), ("", "SQ002", "macOS"), ("", "SQ003", "Windows")]
     a = [(r["type/scale"], r["name"], r["text"]) for r in en if r["class"] == "A"]
     assert a[:2] == [("0", "A1", "Europe"), ("0", "A2", "Asia")]
-    assert a[-1] == ("0", "A3", "Docs &amp; manuals")
+    assert ("0", "A3", "Docs &amp; manuals") in a
 
 
 def test_q_row_cells_left_empty_for_importer_defaults(fixture_survey):
     """Cells we do not own stay empty so the importer applies its defaults.
     A filled id, related_id or encrypted cell would be stored as a stray
-    question attribute. relevance is always 1 (always shown)."""
+    question attribute. relevance is 1 (always shown) unless the question
+    carries a condition, in which case it is the condition's equation."""
     for r in _rows(to_tsv(fixture_survey)):
         if r["class"] == "Q":
             assert r["id"] == "" and r["related_id"] == "" and r["encrypted"] == ""
             assert r["same_default"] == "" and r["same_script"] == ""
             assert r["default"] == "" and r["validation"] == ""
-            assert r["relevance"] == "1"
+            if r["name"] == "moveReason":
+                assert r["relevance"] == 'country == "A1"'
+            else:
+                assert r["relevance"] == "1"
+
+
+def test_relevance_equation_forms(tmp_path):
+    """A condition compiles to a relevance equation: a single trigger compares
+    its answer code A{i}; a multiple trigger tests its subquestion code
+    SQ{i:03d}; a clause's keys are OR-ed; clauses are joined with "and" (all)
+    or "or" (any)."""
+    structure = """
+[survey]
+id = 9001
+language = "en"
+languages = ["en"]
+[survey.privacy]
+anonymized = true
+save_ip_address = false
+save_referrer = false
+date_stamp = false
+save_timings = false
+
+[[groups]]
+id = "g"
+[[groups.questions]]
+id = "attended"
+type = "single"
+choices = ["yes", "no"]
+[[groups.questions]]
+id = "watched"
+type = "single"
+choices = ["yes", "no"]
+[[groups.questions]]
+id = "os"
+type = "multiple"
+choices = ["linux", "macos"]
+[[groups.questions]]
+id = "single"
+type = "text"
+condition.all = [{ question = "attended", includes = ["yes"] }]
+[[groups.questions]]
+id = "orAcross"
+type = "text"
+condition.any = [
+  { question = "attended", includes = ["yes"] },
+  { question = "watched", includes = ["yes"] },
+]
+[[groups.questions]]
+id = "andAcross"
+type = "text"
+condition.all = [
+  { question = "attended", includes = ["no"] },
+  { question = "watched", includes = ["no"] },
+]
+[[groups.questions]]
+id = "multi"
+type = "text"
+condition.all = [{ question = "os", includes = ["macos"] }]
+"""
+    text = """
+[survey]
+title = "T"
+intro = "I"
+[groups.g]
+title = "G"
+[questions.attended]
+prompt = "?"
+choices.yes = "Yes"
+choices.no = "No"
+[questions.watched]
+prompt = "?"
+choices.yes = "Yes"
+choices.no = "No"
+[questions.os]
+prompt = "?"
+choices.linux = "Linux"
+choices.macos = "macOS"
+[questions.single]
+prompt = "?"
+[questions.orAcross]
+prompt = "?"
+[questions.andAcross]
+prompt = "?"
+[questions.multi]
+prompt = "?"
+"""
+    (tmp_path / "survey.toml").write_text(structure, encoding="utf-8")
+    (tmp_path / "survey.en.toml").write_text(text, encoding="utf-8")
+    rows = _rows(to_tsv(load_survey(tmp_path / "survey.toml")))
+    rel = {r["name"]: r["relevance"] for r in rows if r["class"] == "Q"}
+    assert rel["single"] == 'attended == "A1"'
+    assert rel["orAcross"] == '(attended == "A1" or watched == "A1")'
+    assert rel["andAcross"] == '(attended == "A2" and watched == "A2")'
+    assert rel["multi"] == 'os_SQ002 == "Y"'
 
 
 def test_single_language_survey_omits_additional_languages_and_endtext(tmp_path, fixtures_dir):

@@ -32,6 +32,11 @@
 		A	0	A3		Docs &amp; manuals		en								
 		Q	S	nixVersion	1	Which version of Nix do you use?		en		N		N				
 		Q	T	feedback	1	Anything else?		en		N		N				
+		G	3	Follow-up	"((country == ""A1"" or country == ""A2"") or os_SQ001 == ""Y"")"			en								
+		Q	L	moveReason	"country == ""A1"""	Why did you move?		en		N		N				
+		A	0	A1		For work		en								
+		A	0	A2		For study		en								
+		Q	T	moveDetail	1	Tell us more.		en		N		N				
 		G	1	Über dich		Zwei Fragen zu dir.		de								
 		Q	L	country	1	Wo lebst du?		de		N		N				
 		A	0	A1		Europa		de								
@@ -50,3 +55,8 @@
 		A	0	A3		Doku &amp; Handbücher		de								
 		Q	S	nixVersion	1	Welche Nix-Version nutzt du?		de		N		N				
 		Q	T	feedback	1	Sonst noch etwas?		de		N		N				
+		G	3	Nachfrage				de								
+		Q	L	moveReason	"country == ""A1"""	Warum bist du umgezogen?		de		N		N				
+		A	0	A1		Wegen der Arbeit		de								
+		A	0	A2		Wegen des Studiums		de								
+		Q	T	moveDetail	1	Erzähl uns mehr.		de		N		N				

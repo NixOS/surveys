@@ -5,6 +5,8 @@ from typing import Any, Literal
 import polars as pl
 
 from .schema import (  # noqa: F401  QuestionType is re-exported for callers
+    Clause,
+    Condition,
     Question,
     QuestionType,
     Survey,
