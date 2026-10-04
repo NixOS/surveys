@@ -24,10 +24,11 @@ COLS = [
     "same_default",
     "same_script",
     "max_answers",
+    "answer_order",
 ]
 
 
-def R(cls, ts="", name="", text="", help="", lang="", rel="", mand="", other="", ma=""):
+def R(cls, ts="", name="", text="", help="", lang="", rel="", mand="", other="", ma="", ao=""):
     """One row: the named cells in COLS order, every other cell empty."""
     d = {
         "class": cls,
@@ -40,6 +41,7 @@ def R(cls, ts="", name="", text="", help="", lang="", rel="", mand="", other="",
         "mandatory": mand,
         "other": other,
         "max_answers": ma,
+        "answer_order": ao,
     }
     return [d.get(c, "") for c in COLS]
 
@@ -56,13 +58,15 @@ def SL(name, text, lang):
 
 def content(lang, t, ref):
     """The G/Q/SQ/A block for one language. ``ref`` marks the reference
-    language, which is the only one carrying the max_answers attribute."""
+    language, the only one carrying the max_answers and answer_order
+    attributes."""
     g1, g2 = t["groups"]
     q = t["q"]
     ma = "2" if ref else ""
+    ao = "alphabetical" if ref else ""
     return [
         R("G", "1", g1[0], g1[1], lang=lang),
-        R("Q", "L", "country", q["country"][0], lang=lang, rel="1", mand="N", other="N"),
+        R("Q", "L", "country", q["country"][0], lang=lang, rel="1", mand="N", other="N", ao=ao),
         R("A", "0", "A1", q["country"][1][0], lang=lang),
         R("A", "0", "A2", q["country"][1][1], lang=lang),
         R("Q", "!", "age", q["age"][0], lang=lang, rel="1", mand="Y", other="N"),
@@ -105,7 +109,7 @@ EN = {
             ["GNU/Linux", "macOS", "Windows"],
             "Pick all that apply.",
         ),
-        "priorities": ("Rank your priorities.", ["Performance", "Security", "Docs &amp; manuals"]),
+        "priorities": ("Rank your priorities.", ["Performance", "Security", "Docs & manuals"]),
         "nixVersion": ("Which version of Nix do you use?",),
         "feedback": ("Anything else?",),
     },
@@ -125,7 +129,7 @@ DE = {
         ),
         "priorities": (
             "Ordne deine Prioritäten.",
-            ["Leistung", "Sicherheit", "Doku &amp; Handbücher"],
+            ["Leistung", "Sicherheit", "Doku & Handbücher"],
         ),
         "nixVersion": ("Welche Nix-Version nutzt du?",),
         "feedback": ("Sonst noch etwas?",),
@@ -140,6 +144,8 @@ def main():
         S("sid", "424242"),
         S("language", "en"),
         S("additional_languages", "de"),
+        S("template", "fruity_twentythree"),
+        S("allowprev", "Y"),
         S("format", "G"),
         S("anonymized", "Y"),
         S("ipaddr", "N"),

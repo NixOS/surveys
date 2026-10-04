@@ -2,11 +2,12 @@
   lib,
   testers,
   nixos-surveys-community-2025-limesurvey,
+  nixos-surveys-community-2026-limesurvey,
 }:
 
 # Boots LimeSurvey from the nixpkgs module with the JSON-RPC interface on,
-# imports the generated 2025 survey file and the two-language golden fixture
-# from the library's tests, and asserts on the result.
+# imports the generated 2025 and 2026 survey files and the two-language golden
+# fixture from the library's tests, and asserts on the result.
 # Build on demand: nix build .#nixos-surveys-limesurvey-import-test
 # Needs KVM (Linux only). Not part of flake checks.
 testers.runNixOSTest {
@@ -49,7 +50,7 @@ testers.runNixOSTest {
     # that the run actually did something.
     machine.log(
       machine.succeed(
-        "python3 ${./import_check.py} http://survey.local ${nixos-surveys-community-2025-limesurvey}/survey.txt ${../../python-packages/nixos-survey-lib/tests/fixtures/limesurvey/expected_survey.txt}"
+        "python3 ${./import_check.py} http://survey.local ${nixos-surveys-community-2025-limesurvey}/survey.txt ${../../python-packages/nixos-survey-lib/tests/fixtures/limesurvey/expected_survey.txt} ${nixos-surveys-community-2026-limesurvey}/survey.txt"
       )
     )
   '';

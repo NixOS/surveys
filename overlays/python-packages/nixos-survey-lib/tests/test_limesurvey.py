@@ -49,14 +49,14 @@ def test_output_starts_with_bom(fixture_survey):
     assert tsv.encode("utf-8")[:3] == b"\xef\xbb\xbf"
 
 
-def test_header_has_sixteen_standard_columns_plus_max_answers():
+def test_header_is_limesurveys_columns_plus_our_attributes():
     """The header is LimeSurvey's sixteen fixed columns, in its order, plus
-    the one attribute column we use. The importer reads every non-empty cell
+    the two attribute columns we use. The importer reads every non-empty cell
     whose column is not in its skip list (class, type/scale, name, text,
     validation, relevance, help, language, mandatory, other, same_default,
     same_script, default) as a question attribute. That includes id,
     related_id and encrypted, which is why those cells stay empty."""
-    assert len(COLUMNS) == 17
+    assert len(COLUMNS) == 18
     assert COLUMNS[:16] == (
         "id",
         "related_id",
@@ -76,6 +76,19 @@ def test_header_has_sixteen_standard_columns_plus_max_answers():
         "same_script",
     )
     assert COLUMNS[16] == "max_answers"
+    assert COLUMNS[17] == "answer_order"
+
+
+def test_answer_order_on_reference_row_only(fixture_survey):
+    """alphasort in the TOML becomes LimeSurvey's answer_order attribute,
+    which supersedes the legacy alphasort one and is what the admin UI writes.
+    Like max_answers it is language-independent, so only the reference row
+    carries it."""
+    rows = [
+        r for r in _rows(to_tsv(fixture_survey)) if r["class"] == "Q" and r["name"] == "country"
+    ]
+    by_lang = {r["language"]: r["answer_order"] for r in rows}
+    assert by_lang == {"en": "alphabetical", "de": ""}
 
 
 def test_row_rejects_unknown_column():
@@ -115,10 +128,10 @@ def test_mandatory_letters(fixture_survey):
     assert rows["age"]["mandatory"] == "Y"
 
 
-def test_plain_collapses_whitespace_and_escapes():
-    """Plain-text cells are single-line with & < > escaped; quotes are left
-    alone because the csv layer handles them."""
-    assert plain("  Nix  &\tNixOS\r\n <tools> ") == "Nix &amp; NixOS &lt;tools&gt;"
+def test_plain_collapses_whitespace_without_escaping():
+    """Plain-text cells are single-line and unescaped. LimeSurvey encodes them
+    on render, so escaping here would reach the respondent as &amp;amp;."""
+    assert plain("  Nix  &\tNixOS\r\n <tools> ") == "Nix & NixOS <tools>"
     assert plain('say "hi"') == 'say "hi"'
 
 
@@ -136,6 +149,8 @@ def test_sid_and_settings_rows(fixture_survey):
         "sid": "424242",
         "language": "en",
         "additional_languages": "de",
+        "template": "fruity_twentythree",
+        "allowprev": "Y",
         "format": "G",
         "anonymized": "Y",
         "ipaddr": "N",
@@ -191,7 +206,7 @@ def test_choice_rows(fixture_survey):
     assert sq == [("", "SQ001", "GNU/Linux"), ("", "SQ002", "macOS"), ("", "SQ003", "Windows")]
     a = [(r["type/scale"], r["name"], r["text"]) for r in en if r["class"] == "A"]
     assert a[:2] == [("0", "A1", "Europe"), ("0", "A2", "Asia")]
-    assert a[-1] == ("0", "A3", "Docs &amp; manuals")
+    assert a[-1] == ("0", "A3", "Docs & manuals")
 
 
 def test_q_row_cells_left_empty_for_importer_defaults(fixture_survey):

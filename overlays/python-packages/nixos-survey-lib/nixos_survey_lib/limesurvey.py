@@ -15,7 +15,6 @@ Read against LimeSurvey 6.15.14: application/helpers/admin/import_helper.php
 from __future__ import annotations
 
 import csv
-import html
 import io
 import re
 
@@ -24,7 +23,7 @@ from .schema import LanguageTexts, Question, Survey
 BOM = "\ufeff"
 
 # LimeSurvey's exporter writes these sixteen columns in this order; the
-# header here ends with the one question attribute this converter uses. The
+# header here ends with the two question attributes this converter uses. The
 # importer reads every non-empty cell whose column is not in its skip list
 # (class, type/scale, name, text, validation, relevance, help, language,
 # mandatory, other, same_default, same_script, default) as a question
@@ -48,6 +47,7 @@ COLUMNS = (
     "same_default",
     "same_script",
     "max_answers",
+    "answer_order",
 )
 
 _WS = re.compile(r"\s+")
@@ -56,9 +56,17 @@ _MANDATORY = {"off": "N", "soft": "S", "on": "Y"}
 
 
 def plain(text: str) -> str:
-    """Plain text cell: one-line, HTML-significant characters escaped.
-    Quotes are left alone; the csv layer handles them."""
-    return html.escape(_WS.sub(" ", text).strip(), quote=False)
+    """Plain text cell: one line, passed through unescaped.
+
+    LimeSurvey encodes these values itself when it renders them, so escaping
+    here is applied twice: "Antigua & Barbuda" reaches the browser as
+    "Antigua &amp;amp; Barbuda" and the respondent reads "Antigua &amp;
+    Barbuda". The 2025 survey has shipped "Latin America &amp; the Caribbean"
+    in its country question for this reason.
+
+    Quotes are left alone; the csv layer handles them.
+    """
+    return _WS.sub(" ", text).strip()
 
 
 def html_text(text: str) -> str:
@@ -109,6 +117,15 @@ def _settings_rows(survey: Survey) -> list[list[str]]:
     additional = _language_order(survey)[1:]
     if additional:
         rows.append(_row(cls="S", name="additional_languages", text=" ".join(additional)))
+    if survey.template is not None:
+        # The theme. Pinning it here means the survey looks the same whatever
+        # the server's default is, which is the difference between a readable
+        # instrument and one nobody can fix without admin access.
+        rows.append(_row(cls="S", name="template", text=survey.template))
+    if survey.allow_previous:
+        # LimeSurvey defaults this off, so a respondent who misreads a question
+        # on page 2 cannot go back and fix it from page 3.
+        rows.append(_row(cls="S", name="allowprev", text="Y"))
     rows += [
         _row(cls="S", name="format", text="G"),  # one group per page
         _row(cls="S", name="anonymized", text=_yn(p.anonymized)),
@@ -137,8 +154,15 @@ def _content_rows(survey: Survey, t: LanguageTexts, *, is_reference: bool) -> li
     """The G/Q/SQ/A block for one language.
 
     Group number and choice codes are positional so the importer can line
-    up translations. Attributes (max_answers) go on the reference-language
-    row only; the importer would otherwise store them once per language.
+    up translations. Attributes (max_answers, answer_order) go on the
+    reference-language row only; the importer would otherwise store them once
+    per language.
+
+    ``answer_order`` is LimeSurvey 6's name for alphabetical answer sorting.
+    It supersedes the legacy ``alphasort`` attribute, takes precedence over it
+    in Question::shouldOrderAnswersAlphabetically, and is what the admin UI
+    writes when anyone saves the question, so emitting the legacy name would
+    produce a setting that works until someone looks at it.
     """
     rows: list[list[str]] = []
     for number, group in enumerate(survey.groups, start=1):
@@ -168,6 +192,7 @@ def _content_rows(survey: Survey, t: LanguageTexts, *, is_reference: bool) -> li
                     max_answers=str(q.max_answers)
                     if is_reference and q.max_answers is not None
                     else "",
+                    answer_order="alphabetical" if is_reference and q.alphasort else "",
                 )
             )
             if qt.choices is None:
