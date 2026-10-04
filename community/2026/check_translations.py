@@ -18,17 +18,26 @@ from pathlib import Path
 
 from nixos_survey_lib.schema import load_survey
 
-# Formality slips. The questions address the respondent informally in es, de,
-# and zh, matching their informal LimeSurvey locales. fr uses formal address
-# ("vous"), matching LimeSurvey's standard fr chrome and French survey
-# convention; informal pronouns there are errors. See community/TRANSLATING.md.
+# Formality slips. es and de have informal LimeSurvey locales, so informal
+# question text matches the chrome rendered around it. fr has no informal
+# locale and its chrome is "vous", so the questions use formal address and
+# informal pronouns there are errors. See community/TRANSLATING.md.
 FORMAL = {
     "es-informal": ["usted", "ustedes"],
     "de-informal": ["Sie", "Ihnen", "Ihre", "Ihrem", "Ihren"],
-    "zh-Hans": ["您"],
 }
 INFORMAL = {
     "fr": ["tu", "ton", "ta", "tes", "toi"],
+}
+
+# Reported, not failed. zh-Hans has no informal locale either and its chrome
+# does use 您, so our 你 is the one register that disagrees with its chrome.
+# It ships anyway: 你/您 is a weaker distinction than tu/vous, and the Chinese
+# chrome is largely pronoun-free, so the collision is a handful of strings
+# near the end of the flow. Which way to resolve it is the native-speaker
+# reviewer's call, not a build failure.
+REGISTER_NOTE = {
+    "zh-Hans": ["您"],
 }
 
 # Names that must survive translation. Compared case-insensitively: German
@@ -98,6 +107,9 @@ def main(path: str) -> int:
                 if contains(value, word):
                     print(f"{language}: informal register {word!r} in {where}: {value}")
                     failures += 1
+            for word in REGISTER_NOTE.get(language, []):
+                if contains(value, word):
+                    print(f"{language}: NOTE register {word!r} in {where}: {value}")
             source = english.get(where)
             if source is None:
                 continue

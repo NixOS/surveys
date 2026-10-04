@@ -513,17 +513,14 @@ choices.bsd = "BSD"
 choices.android = "Android"
 choices.other = "Sonstiges"
 
-[questions.targetTriple]
-prompt = "Welches Target-Triple beschreibt dein System am besten? Führe \"uname -a\" aus, wenn du unsicher bist."
-choices.x8664LinuxGnu = "x86_64-linux-gnu"
-choices.aarch64LinuxGnu = "aarch64-linux-gnu"
-choices.aarch64AppleDarwin = "aarch64-apple-darwin - Apple Silicon"
-choices.x8664AppleDarwin = "x86_64-apple-darwin - Intel-Mac"
-choices.i686LinuxGnu = "i686-linux-gnu"
-choices.x8664LinuxMusl = "x86_64-linux-musl - pkgsMusl, pkgsStatic oder Bootstrap"
-choices.aarch64LinuxMusl = "aarch64-linux-musl - pkgsMusl, pkgsStatic oder Bootstrap"
-choices.riscv64LinuxGnu = "riscv64-linux-gnu"
+[questions.cpuArchitecture]
+prompt = "Auf welchen Prozessorarchitekturen nutzt du Nix?"
+choices.x8664 = "x86_64 / amd64 (die meisten Intel- und AMD-PCs und -Server)"
+choices.aarch64 = "aarch64 / arm64 (Apple Silicon, Raspberry Pi, ARM-Server)"
+choices.i686 = "i686 / 32-Bit-x86"
+choices.riscv64 = "riscv64"
 choices.other = "Sonstiges"
+choices.notSure = "Weiß ich nicht"
 
 [questions.installMethod]
 prompt = "Wie hast du Nix auf deinen Systemen installiert?"

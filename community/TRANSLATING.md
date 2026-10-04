@@ -26,7 +26,7 @@ directly with LimeSurvey's built-in `fr` locale, which only ships formal chrome.
 | `fr` | vous | Formal register (vouvoiement). Matches standard survey conventions and LimeSurvey's `fr` chrome. |
 | `es-informal` | tú | Not `usted`, and not voseo. |
 | `de-informal` | du | Lower case `du`, as in modern usage. Avoid sentence-initial `Sie` even when it means "it" or "she": it is indistinguishable from formal address at a glance, and `check_translations.py` flags it. Reword. |
-| `zh-Hans` | 你 | Not 您. Chinese has no T-V distinction in the European sense; this is the nearest equivalent choice. |
+| `zh-Hans` | 你 | LimeSurvey ships no informal `zh-Hans` and its chrome uses 您, so this is the one language whose text and chrome disagree. 你 ships anyway: 你/您 is a weaker distinction than tu/vous, and the Chinese chrome is largely pronoun-free, so the collision is a few strings near the end of the flow. `check_translations.py` reports 您 as a NOTE rather than an error; the reviewer decides. |
 
 ## Terminology: five terms that must stay distinct
 

@@ -513,17 +513,14 @@ choices.bsd = "BSD"
 choices.android = "Android"
 choices.other = "其他"
 
-[questions.targetTriple]
-prompt = "哪个目标三元组最能描述你的系统？如果不确定，请运行 \"uname -a\"。"
-choices.x8664LinuxGnu = "x86_64-linux-gnu"
-choices.aarch64LinuxGnu = "aarch64-linux-gnu"
-choices.aarch64AppleDarwin = "aarch64-apple-darwin - Apple Silicon"
-choices.x8664AppleDarwin = "x86_64-apple-darwin - Intel Mac"
-choices.i686LinuxGnu = "i686-linux-gnu"
-choices.x8664LinuxMusl = "x86_64-linux-musl - pkgsMusl、pkgsStatic 或 bootstrap"
-choices.aarch64LinuxMusl = "aarch64-linux-musl - pkgsMusl、pkgsStatic 或 bootstrap"
-choices.riscv64LinuxGnu = "riscv64-linux-gnu"
+[questions.cpuArchitecture]
+prompt = "你在哪些 CPU 架构上使用 Nix？"
+choices.x8664 = "x86_64 / amd64（大多数 Intel 和 AMD 的 PC 与服务器）"
+choices.aarch64 = "aarch64 / arm64（Apple Silicon、树莓派、ARM 服务器）"
+choices.i686 = "i686 / 32 位 x86"
+choices.riscv64 = "riscv64"
 choices.other = "其他"
+choices.notSure = "不确定"
 
 [questions.installMethod]
 prompt = "你是如何在自己的系统上安装 Nix 的？"

@@ -26,7 +26,6 @@ CARRIED_VERBATIM = (
     "involvement",
     "operatingSystems",
     "nixOnOs",
-    "targetTriple",
     "infrastructure",
     "experimentalFeatures",
 )
@@ -74,7 +73,7 @@ def test_ids_are_unique_and_within_limesurveys_limit(survey):
 
 
 def test_carried_questions_are_byte_identical_to_2025(survey, survey_2025):
-    """Nine questions are copied from 2025 unchanged, and with them about 200
+    """Eight questions are copied from 2025 unchanged, and with them about 200
     choice labels are retyped into a new file. Nothing else in this suite
     would notice a dropped comma. Ids not yet added are skipped, so this grows
     with the instrument."""
@@ -87,6 +86,22 @@ def test_carried_questions_are_byte_identical_to_2025(survey, survey_2025):
         assert b.prompt == a.prompt, qid
         assert b.choice_keys == a.choice_keys, qid
         assert b.choices == a.choices, qid
+
+
+def test_target_triple_is_replaced_by_cpu_architecture(survey, survey_2025):
+    """2025's targetTriple asked for a target triple and got contradictions:
+    of 614 respondents who said they run Nix on macOS, 139 picked no darwin
+    triple, and of 596 who picked one, 121 said they do not run Nix on macOS.
+    CARRIED_VERBATIM skips ids that are absent, so dropping the question there
+    leaves no evidence; this test is the evidence. Architecture only, since
+    nixOnOs already carries the OS, and notSure so that confusion is countable
+    rather than silent."""
+    old, new = questions(survey_2025), questions(survey)
+    assert "targetTriple" in old
+    assert "targetTriple" not in new
+    q = new["cpuArchitecture"]
+    assert q.type == "multiple"
+    assert q.choice_keys == ["x8664", "aarch64", "i686", "riscv64", "other", "notSure"]
 
 
 def test_changed_questions_keep_their_2025_type(survey, survey_2025):
@@ -303,7 +318,7 @@ def test_usage_group(survey):
     assert [q.id for q in group.questions] == [
         "operatingSystems",
         "nixOnOs",
-        "targetTriple",
+        "cpuArchitecture",
         "installMethod",
         "nixImplementations",
         "nixVersion",

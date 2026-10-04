@@ -660,21 +660,24 @@ choices = [
   "other",
 ]
 
-# Carried verbatim. The only source of CPU architecture data; "Other" 2.1%.
+# Replaces 2025's targetTriple, which respondents could not answer. Of 614
+# people who said they run Nix on macOS, 139 (22.6%) picked no darwin triple;
+# of 596 who picked a darwin triple, 121 (20.3%) said they do not run Nix on
+# macOS. The two questions contradict each other in both directions on the
+# easiest discrimination in the list. "Other" was 2.1% and hid all of it: an
+# unrecognised option list yields a plausible wrong pick, not an "Other", so
+# the usual health metric cannot see this failure.
+# The OS half of a triple is already in nixOnOs directly above, so only the
+# architecture was ever unique here. 2025 collapses onto these buckets
+# (x86_64 95.0%, aarch64 28.5%, i686 0.9%, riscv64 2.0%), so the architecture
+# trend survives. The libc dimension (musl, 3.3% + 1.4%) is dropped: it is a
+# harder discrimination than "do I own a Mac", which already failed at ~20%.
+# Both naming conventions appear in each label because people know one or the
+# other, and notSure makes residual confusion visible instead of silent.
 [[groups.questions]]
-id = "targetTriple"
+id = "cpuArchitecture"
 type = "multiple"
-choices = [
-  "x8664LinuxGnu",
-  "aarch64LinuxGnu",
-  "aarch64AppleDarwin",
-  "x8664AppleDarwin",
-  "i686LinuxGnu",
-  "x8664LinuxMusl",
-  "aarch64LinuxMusl",
-  "riscv64LinuxGnu",
-  "other",
-]
+choices = ["x8664", "aarch64", "i686", "riscv64", "other", "notSure"]
 
 # Seven fixes, all to the option list; the type and prompt are unchanged.
 # 2025 drew 7.5% "Other" (256 people) and the research found what was in it:
