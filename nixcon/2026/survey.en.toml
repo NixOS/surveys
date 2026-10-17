@@ -1,0 +1,203 @@
+[survey]
+title = "NixCon 2026 survey"
+intro = "Welcome to the NixCon 2026 survey! Please take a few minutes to fill out this survey with info about your experience at NixCon 2026. Even if you did not attend in person, we'd be happy to hear about why that is. Feel free to skip any questions you have no particular opinion about."
+
+[groups.meta]
+title = "Meta"
+
+[groups.livestream]
+title = "Live stream"
+description = "For those who joined remotely via livestream."
+
+[groups.schedule]
+title = "Schedule"
+description = "For those who joined remotely or in-person."
+
+[groups.social]
+title = "Social"
+description = "For those who joined in-person."
+
+[groups.venue]
+title = "Venue"
+description = "For those who joined in-person."
+
+[groups.other]
+title = "Other"
+
+[questions.attended]
+prompt = "Did you attend NixCon 2026 in person?"
+choices.yes = "Yes"
+choices.no = "No"
+
+[questions.watchedLivestream]
+prompt = "Did you watch the NixCon 2026 livestreams?"
+choices.yes = "Yes"
+choices.no = "No"
+
+[questions.enjoyment]
+prompt = "How did you like NixCon 2026 on a scale from 1 (bad) to 5 (good)?"
+help = "If you joined remotely or in-person."
+choices.v1 = "1 (bad)"
+choices.v2 = "2"
+choices.v3 = "3"
+choices.v4 = "4"
+choices.v5 = "5 (good)"
+
+[questions.whyNotAttend]
+prompt = "If you wanted to come to this NixCon in person but could not make it, why not?"
+help = "If you joined remotely or not at all. Select all that apply."
+choices.ticketTooExpensive = "Ticket too expensive"
+choices.accommodationTooExpensive = "Accommodation too expensive"
+choices.travelTooExpensive = "Travel too expensive"
+choices.environmentalImpact = "Environmental impact of travel"
+choices.noApprovalAtWork = "Could not get approval at work"
+choices.familyResponsibilities = "Family responsibilities"
+choices.schedulingConflicts = "Scheduling conflicts"
+choices.couldNotGetVisa = "Could not get a visa"
+choices.healthIssues = "Health issues"
+
+[questions.previousNixcons]
+prompt = "Which previous NixCons did you attend?"
+help = "Select all that apply."
+choices.y2015Berlin = "2015: Berlin (Germany)"
+choices.y2017Unterfohring = "2017: Unterföhring (Germany)"
+choices.y2018London = "2018: London (UK)"
+choices.y2019Brno = "2019: Brno (Czechia)"
+choices.y2020Online = "2020: (online)"
+choices.y2022Paris = "2022: Paris (France)"
+choices.y2023Darmstadt = "2023: Darmstadt (Germany)"
+choices.y2024Berlin = "2024: Berlin (Germany)"
+choices.y2025Switzerland = "2025: Rapperswil (Switzerland)"
+
+[questions.moreSupport]
+prompt = "In what way would you have appreciated more support?"
+help = "If you attended remotely or not at all. Select all that apply."
+choices.freeTicket = "Free ticket"
+choices.helpAccommodation = "Help with finding accommodation"
+choices.stipend = "Stipend (covered travel and accommodation costs)"
+
+[questions.wentGreat]
+prompt = "What do you think went great? What should we continue doing in future conferences?"
+
+[questions.notGreat]
+prompt = "What did not go so well? What should we be avoid in future conferences?"
+
+[questions.makeBetter]
+prompt = "What else can we do to make future NixCons better?"
+
+[questions.videoQuality]
+prompt = "How was the video quality? (1-5)"
+choices.v1 = "1"
+choices.v2 = "2"
+choices.v3 = "3"
+choices.v4 = "4"
+choices.v5 = "5"
+
+[questions.videoImprove]
+prompt = "How could the video quality be better?"
+
+[questions.audioQuality]
+prompt = "How was the audio quality? (1-5)"
+choices.v1 = "1"
+choices.v2 = "2"
+choices.v3 = "3"
+choices.v4 = "4"
+choices.v5 = "5"
+
+[questions.audioImprove]
+prompt = "How could the audio quality be better?"
+
+[questions.livestreamMisc]
+prompt = "Anything else you'd like to say about the livestreams?"
+
+[questions.hackDays]
+prompt = "Were you happy with the overall program arrangement this year?"
+help = "Did you like the Friday and Monday hack days? Would you have preferred a weekend hack day?"
+
+[questions.contentSelection]
+prompt = "Were you happy with the overall selection of the talks and workshops?"
+
+[questions.contentQuality]
+prompt = "Were you happy with the overall quality of the talks and workshops?"
+
+[questions.breaksBetween]
+prompt = "What did you think of the breaks between talks?"
+choices.tooShort = "Too short"
+choices.justRight = "Just right"
+choices.tooLong = "Too long"
+
+[questions.talkLength]
+prompt = "What did you think of the length of talks?"
+choices.tooShort = "They were too short"
+choices.justRight = "They were just right"
+choices.tooLong = "They were too long"
+
+[questions.talkNumber]
+prompt = "What did you think of the number of talks?"
+choices.tooFew = "I wish there had been more talks, maybe on a third track"
+choices.justEnough = "There were just enough"
+choices.tooMany = "There were too many"
+
+[questions.skillLevel]
+prompt = "What did you think of the skill level requirements?"
+choices.tooAdvanced = "The talks were in general too advanced"
+choices.justRight = "It was just right"
+choices.tooBeginner = "The talks were in general too beginner-oriented"
+
+[questions.whatElseSchedule]
+prompt = "What else would you like to share with us about the schedule?"
+
+[questions.outsideProgram]
+prompt = "How did you enjoy your time at the venue outside the program (e.g. evenings, hallway track, city exploration)?"
+
+[questions.negativeInteractions]
+prompt = "Did you have any negative interactions with others you wish to tell us about?"
+
+[questions.cameraPolicy]
+prompt = "Were you happy with the camera policy (red lanyard for no picture)? Did you feel like it was respected by photographers?"
+
+[questions.communication]
+prompt = "How satisfied were you with the communication and information availability during the event (e.g. opening ceremony, matrix, emails)?"
+
+[questions.sponsorships]
+prompt = "How did you feel about the sponsorships and the presence of company representatives this year?"
+choices.tooCorporate = "It was too corporate"
+choices.goodTime = "I had a good time with the sponsors"
+choices.moreCorporate = "I would not mind more corporate presence if it means a higher quality event and more stipends"
+
+[questions."ctfJoined"]
+prompt = "Did you participate in NixCon's first CTF?"
+choices.yes = "Yes, I tried to capture the flag"
+choices.no = "No, it's not my cup of tea"
+choices.didNotKnow = "There was a CTF?"
+
+[questions."ctfThoughts"]
+prompt = "What did you like about the CTF? What can we do better next time?"
+
+[questions."ctfMissed"]
+prompt = "Is there anything we can do to make the CTF event more appealing for you?"
+
+[questions."partnerTrackJoined"]
+prompt = "Did you (or your +1) join NixCon's first organised partner track?"
+choices.yes = "Yes, and now we know all about Krakow"
+choices.no = "No, I came for the conference"
+choices.didNotKnow = "There was a partner track?"
+
+[questions."partnerTrackThoughts"]
+prompt = "What did you like about the partner track? What can we do better next time?"
+
+[questions."partnerTrackMissed"]
+prompt = "Is there anything we can do to make the partner track more appealing?"
+help = "Would more information have helped? Should we have advertised it better?"
+
+[questions.venueThoughts]
+prompt = "How did you like the venue (suitability, getting around, space, the view, ...)?"
+
+[questions.ticketPrice]
+prompt = "What did you think about the ticket price and the discounted tickets for contributors?"
+
+[questions.merchFeedback]
+prompt = "What would you change about the merch this year?"
+
+[questions.anythingElse]
+prompt = "Anything else you would like to add?"
