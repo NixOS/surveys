@@ -241,7 +241,12 @@ condition.all = [{ question = "partnerTrackJoined", includes = ["yes"] }]
 [[groups.questions]]
 id = "partnerTrackMissed"
 type = "text"
-condition.all = [{ question = "partnerTrackJoined", includes = ["no", "didNotKnow"] }]
+condition.all = [
+  { question = "partnerTrackJoined", includes = [
+    "no",
+    "didNotKnow",
+  ] },
+]
 
 [[groups.questions]]
 id = "venueThoughts"

@@ -48,14 +48,15 @@ def check_fixture(url: str, key: str, tsv_path: str) -> None:
     """Import the two-language golden fixture and assert on what was stored.
 
     The 2025 file is one group in one language, so it leaves most of the
-    converter untested. This one covers the rest: a second group, a
+    converter untested. This one covers the rest: further groups, a
     translated G/Q block, the type, other and mandatory flags per question,
-    the max_answers attribute, the language settings, and the end text.
+    the max_answers attribute, the language settings, the end text, and the
+    relevance equations behind conditional groups and questions.
     """
     sid = import_tsv(url, key, tsv_path)
 
     groups = rpc(url, "list_groups", key, sid)
-    assert len(groups) == 2, f"expected 2 groups, got {len(groups)}: {groups}"
+    assert len(groups) == 3, f"expected 3 groups, got {len(groups)}: {groups}"
     # Group order is the converter's link between a group and its
     # translation, so read every list back in that order.
     position = {int(g["gid"]): int(g["group_order"]) for g in groups}
@@ -63,18 +64,47 @@ def check_fixture(url: str, key: str, tsv_path: str) -> None:
         rpc(url, "list_groups", key, sid, "de"), key=lambda g: position[int(g["gid"])]
     )
     names = [g["group_name"] for g in de_groups]
-    assert names == ["Über dich", "Nutzung"], f"German group names: {names}"
+    assert names == ["Über dich", "Nutzung", "Nachfrage"], f"German group names: {names}"
 
     questions = [q for q in rpc(url, "list_questions", key, sid) if str(q["parent_qid"]) == "0"]
     questions.sort(key=lambda q: (position[int(q["gid"])], int(q["question_order"])))
     codes = [q["title"] for q in questions]
-    assert codes == ["country", "age", "os", "priorities", "nixVersion", "feedback"], codes
+    assert codes == [
+        "country",
+        "age",
+        "os",
+        "priorities",
+        "nixVersion",
+        "feedback",
+        "moveReason",
+        "moveDetail",
+    ], codes
     types = [q["type"] for q in questions]
-    assert types == ["L", "!", "M", "R", "S", "T"], types
+    assert types == ["L", "!", "M", "R", "S", "T", "L", "T"], types
     other = [q["other"] for q in questions]
-    assert other == ["N", "N", "Y", "N", "N", "N"], other
+    assert other == ["N", "N", "Y", "N", "N", "N", "N", "N"], other
     mandatory = [q["mandatory"] for q in questions]
-    assert mandatory == ["N", "Y", "S", "N", "N", "N"], mandatory
+    assert mandatory == ["N", "Y", "S", "N", "N", "N", "N", "N"], mandatory
+
+    # Conditions reach LimeSurvey as relevance equations, one on the group and
+    # one on the question, and the emitter builds them from positional choice
+    # codes. A wrong index produces a survey that silently hides the wrong
+    # questions, which no unit test on the TSV can rule out: only reading the
+    # equation back from LimeSurvey shows the import understood it.
+    followup = next(g for g in groups if position[int(g["gid"])] == 3)
+    grelevance = followup["grelevance"]
+    expected_g = '((country == "A1" or country == "A2") or os_SQ001 == "Y")'
+    assert grelevance == expected_g, f"group relevance: {grelevance!r}"
+
+    move_qid = next(q["qid"] for q in questions if q["title"] == "moveReason")
+    qrel = rpc(url, "get_question_properties", key, int(move_qid), ["relevance"])["relevance"]
+    assert qrel == 'country == "A1"', f"question relevance: {qrel!r}"
+
+    detail_qid = next(q["qid"] for q in questions if q["title"] == "moveDetail")
+    detail_rel = rpc(url, "get_question_properties", key, int(detail_qid), ["relevance"])[
+        "relevance"
+    ]
+    assert detail_rel == "1", f"unconditional question relevance: {detail_rel!r}"
 
     de_questions = {
         q["title"]: q
