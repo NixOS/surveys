@@ -1,0 +1,263 @@
+[survey]
+id = 2026
+language = "en"
+languages = ["en"]
+
+[survey.privacy]
+anonymized = true
+save_ip_address = false
+save_referrer = false
+date_stamp = false
+save_timings = false
+
+[[groups]]
+id = "meta"
+
+[[groups.questions]]
+id = "attended"
+type = "single"
+choices = ["yes", "no"]
+
+[[groups.questions]]
+id = "watchedLivestream"
+type = "single"
+choices = ["yes", "no"]
+
+[[groups.questions]]
+id = "enjoyment"
+type = "single"
+choices = ["v1", "v2", "v3", "v4", "v5"]
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
+
+[[groups.questions]]
+id = "whyNotAttend"
+type = "multiple"
+other = true
+choices = [
+  "ticketTooExpensive",
+  "accommodationTooExpensive",
+  "travelTooExpensive",
+  "environmentalImpact",
+  "noApprovalAtWork",
+  "familyResponsibilities",
+  "schedulingConflicts",
+  "couldNotGetVisa",
+  "healthIssues",
+]
+condition.all = [{ question = "attended", includes = ["no"] }]
+
+[[groups.questions]]
+id = "previousNixcons"
+type = "multiple"
+choices = [
+  "y2015Berlin",
+  "y2017Unterfohring",
+  "y2018London",
+  "y2019Brno",
+  "y2020Online",
+  "y2022Paris",
+  "y2023Darmstadt",
+  "y2024Berlin",
+  "y2025Switzerland",
+]
+
+[[groups.questions]]
+id = "moreSupport"
+type = "multiple"
+other = true
+choices = ["freeTicket", "helpAccommodation", "stipend"]
+condition.all = [{ question = "attended", includes = ["no"] }]
+
+[[groups.questions]]
+id = "wentGreat"
+type = "text"
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
+
+[[groups.questions]]
+id = "notGreat"
+type = "text"
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
+
+[[groups.questions]]
+id = "makeBetter"
+type = "text"
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
+
+[[groups]]
+id = "livestream"
+condition.all = [{ question = "watchedLivestream", includes = ["yes"] }]
+
+[[groups.questions]]
+id = "videoQuality"
+type = "single"
+choices = ["v1", "v2", "v3", "v4", "v5"]
+
+[[groups.questions]]
+id = "videoImprove"
+type = "text"
+
+[[groups.questions]]
+id = "audioQuality"
+type = "single"
+choices = ["v1", "v2", "v3", "v4", "v5"]
+
+[[groups.questions]]
+id = "audioImprove"
+type = "text"
+
+[[groups.questions]]
+id = "livestreamMisc"
+type = "text"
+
+[[groups]]
+id = "schedule"
+condition.any = [
+  { question = "attended", includes = [
+    "yes",
+  ] },
+  { question = "watchedLivestream", includes = [
+    "yes",
+  ] },
+]
+
+[[groups.questions]]
+id = "hackDays"
+type = "text"
+
+[[groups.questions]]
+id = "contentSelection"
+type = "text"
+
+[[groups.questions]]
+id = "contentQuality"
+type = "text"
+
+[[groups.questions]]
+id = "breaksBetween"
+type = "single"
+choices = ["tooShort", "justRight", "tooLong"]
+
+[[groups.questions]]
+id = "talkLength"
+type = "single"
+choices = ["tooShort", "justRight", "tooLong"]
+
+[[groups.questions]]
+id = "talkNumber"
+type = "single"
+choices = ["tooFew", "justEnough", "tooMany"]
+
+[[groups.questions]]
+id = "skillLevel"
+type = "single"
+choices = ["tooAdvanced", "justRight", "tooBeginner"]
+
+[[groups.questions]]
+id = "whatElseSchedule"
+type = "text"
+
+[[groups]]
+id = "social"
+condition.all = [{ question = "attended", includes = ["yes"] }]
+
+[[groups.questions]]
+id = "outsideProgram"
+type = "text"
+
+[[groups.questions]]
+id = "negativeInteractions"
+type = "text"
+
+[[groups.questions]]
+id = "cameraPolicy"
+type = "text"
+
+[[groups.questions]]
+id = "communication"
+type = "text"
+
+[[groups.questions]]
+id = "sponsorships"
+type = "single"
+choices = ["tooCorporate", "goodTime", "moreCorporate"]
+
+[[groups]]
+id = "venue"
+condition.all = [{ question = "attended", includes = ["yes"] }]
+
+[[groups.questions]]
+id = "ctfJoined"
+type = "single"
+choices = ["yes", "no", "didNotKnow"]
+
+[[groups.questions]]
+id = "ctfThoughts"
+type = "text"
+condition.all = [{ question = "ctfJoined", includes = ["yes"] }]
+
+[[groups.questions]]
+id = "ctfMissed"
+type = "text"
+condition.all = [{ question = "ctfJoined", includes = ["no", "didNotKnow"] }]
+
+[[groups.questions]]
+id = "partnerTrackJoined"
+type = "single"
+choices = ["yes", "no", "didNotKnow"]
+
+[[groups.questions]]
+id = "partnerTrackThoughts"
+type = "text"
+condition.all = [{ question = "partnerTrackJoined", includes = ["yes"] }]
+
+[[groups.questions]]
+id = "partnerTrackMissed"
+type = "text"
+condition.all = [{ question = "partnerTrackJoined", includes = ["no", "didNotKnow"] }]
+
+[[groups.questions]]
+id = "venueThoughts"
+type = "text"
+
+[[groups.questions]]
+id = "ticketPrice"
+type = "text"
+
+[[groups.questions]]
+id = "merchFeedback"
+type = "text"
+
+[[groups]]
+id = "other"
+
+[[groups.questions]]
+id = "anythingElse"
+type = "text"
