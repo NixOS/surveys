@@ -117,7 +117,7 @@ string, and it refuses a file whose language is not listed, so neither half
 can exist without the other. Dropping a language means `git rm`-ing its file
 as well as removing the code.
 
-Volume for 2026: roughly 780 strings per language, of which about 250 are
+Volume for 2026: roughly 815 strings per language, of which about 250 are
 generated country names and about 530 need real translation.
 
 `check_translations.py` in the year's directory catches what the loader

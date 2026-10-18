@@ -1083,6 +1083,94 @@ choices = [
 ]
 
 [[groups]]
+id = "ai"
+
+# Verbatim from Stack Overflow's 2025 AISelect, which they published as the
+# fielded instrument (packages/archive/2025/schema.csv in StackExchange/Survey).
+# Copied exactly so the result is comparable against their 33,662 respondents:
+# 78.5% use AI tools (47.1 daily, 17.7 weekly, 13.7 monthly or less).
+# The 2025 wording is used rather than their 2026 rewrite because 2026 asks
+# about tools "in your role at work", and 24.0% of 2025's respondents here were
+# students, the largest single role category. "Development process" is
+# role-neutral; "at work" would exclude a quarter of this population.
+[[groups.questions]]
+id = "aiToolUse"
+type = "single"
+choices = [
+  "daily",
+  "weekly",
+  "monthlyOrInfrequently",
+  "noButPlanTo",
+  "noAndDontPlanTo",
+]
+
+# Verbatim from Stack Overflow's 2025 AISent. Benchmark: 59.7% favorable.
+# "Unsure" is their escape and stays last, matching this file's convention.
+[[groups.questions]]
+id = "aiSentiment"
+type = "single"
+choices = [
+  "veryFavorable",
+  "favorable",
+  "indifferent",
+  "unfavorable",
+  "veryUnfavorable",
+  "unsure",
+]
+
+# Stack Overflow's 2025 AIAcc plus one option. Benchmark: 32.7% trust, 45.7%
+# distrust, so more developers distrust the accuracy than trust it while 78.5%
+# use the tools anyway.
+# AIAcc as fielded had no escape, so respondents who do not use AI tools were
+# asked how much they trust them and landed in "Neither trust nor distrust".
+# That is the S1 no-escape defect this year's redesign removed everywhere else,
+# and Stack Overflow themselves fixed it in 2026 by adding both an escape and
+# gating. The five-point scale is untouched so the trust/distrust ratio stays
+# comparable among AI users; only the denominator changes.
+# Worded as a flat factual statement rather than their 2026 "Not sure / I do
+# not use AI tools", because "not sure" would collide with the scale midpoint.
+[[groups.questions]]
+id = "aiAccuracyTrust"
+type = "single"
+choices = [
+  "highlyTrust",
+  "somewhatTrust",
+  "neitherTrustNorDistrust",
+  "somewhatDistrust",
+  "highlyDistrust",
+  "dontUseAiTools",
+]
+
+# New, and the only question here no other survey can ask. The community
+# asserts constantly that models are bad at Nix, with no data behind it. Asked
+# as a comparison rather than an absolute so it separates "AI is unreliable"
+# from "AI is unreliable at Nix specifically", which aiAccuracyTrust cannot do
+# alone. Pairs with helpResources, where LLMs already drew 27.0% into the top 5
+# and 9.0% first place in 2025, ahead of Discourse and nix.dev.
+[[groups.questions]]
+id = "aiNixQuality"
+type = "single"
+choices = [
+  "muchBetter",
+  "somewhatBetter",
+  "aboutTheSame",
+  "somewhatWorse",
+  "muchWorse",
+  "dontUseAiForNix",
+]
+
+# New. Nixpkgs CONTRIBUTING.md already carries an LLM disclosure policy with no
+# data under it. Deliberately does not ask whether the use was disclosed: that
+# asks respondents to self-report breaking a policy, which under-reports and
+# reads as accusatory in an instrument that already drew 21 complaints about
+# the gender items. Lives here rather than in `contributing` so the AI block
+# stays one unit that 2027 can rotate or drop whole.
+[[groups.questions]]
+id = "aiNixContribution"
+type = "single"
+choices = ["yes", "no", "haveNotContributed"]
+
+[[groups]]
 id = "contributing"
 
 # Replaces contribExperience, which conflated three constructs in one

@@ -801,6 +801,50 @@ choices.rarely = "Rara vez"
 choices.never = "Nunca"
 choices.iDontLookForHelp = "No busco ayuda con Nix ni NixOS"
 
+[groups.ai]
+title = "Herramientas de IA"
+
+[questions.aiToolUse]
+prompt = "¿Usas actualmente herramientas de IA en tu proceso de desarrollo?"
+choices.daily = "Sí, uso herramientas de IA a diario"
+choices.weekly = "Sí, uso herramientas de IA semanalmente"
+choices.monthlyOrInfrequently = "Sí, uso herramientas de IA mensualmente o con poca frecuencia"
+choices.noButPlanTo = "No, pero pienso hacerlo pronto"
+choices.noAndDontPlanTo = "No, y no pienso hacerlo"
+
+[questions.aiSentiment]
+prompt = "¿Cuál es tu postura sobre el uso de herramientas de IA en tu flujo de trabajo de desarrollo?"
+choices.veryFavorable = "Muy favorable"
+choices.favorable = "Favorable"
+choices.indifferent = "Indiferente"
+choices.unfavorable = "Desfavorable"
+choices.veryUnfavorable = "Muy desfavorable"
+choices.unsure = "No lo sé"
+
+[questions.aiAccuracyTrust]
+prompt = "¿Cuánto confías en la exactitud de los resultados de las herramientas de IA en tu flujo de trabajo de desarrollo?"
+choices.highlyTrust = "Confío mucho"
+choices.somewhatTrust = "Confío algo"
+choices.neitherTrustNorDistrust = "Ni confío ni desconfío"
+choices.somewhatDistrust = "Desconfío algo"
+choices.highlyDistrust = "Desconfío mucho"
+choices.dontUseAiTools = "No uso herramientas de IA"
+
+[questions.aiNixQuality]
+prompt = "En comparación con otros lenguajes y herramientas que usas, ¿qué tal manejan Nix las herramientas de IA?"
+choices.muchBetter = "Mucho mejor con Nix"
+choices.somewhatBetter = "Algo mejor con Nix"
+choices.aboutTheSame = "Más o menos igual"
+choices.somewhatWorse = "Algo peor con Nix"
+choices.muchWorse = "Mucho peor con Nix"
+choices.dontUseAiForNix = "No uso herramientas de IA para Nix"
+
+[questions.aiNixContribution]
+prompt = "¿Has usado herramientas de IA para escribir una contribución a Nixpkgs o a otro proyecto Nix?"
+choices.yes = "Sí"
+choices.no = "No"
+choices.haveNotContributed = "No he contribuido"
+
 [groups.contributing]
 title = "Contribuir"
 

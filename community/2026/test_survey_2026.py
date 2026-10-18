@@ -469,18 +469,73 @@ def test_remaining_groups(survey):
     assert ids["finally"] == ["surveyFeedback"]
 
 
-def test_the_instrument_is_forty_questions_in_eight_groups(survey):
+def test_the_instrument_is_forty_five_questions_in_nine_groups(survey):
     assert [g.id for g in survey.groups] == [
         "aboutYou",
         "experience",
         "usage",
         "adoption",
         "findingHelp",
+        "ai",
         "contributing",
         "foundation",
         "finally",
     ]
-    assert sum(len(g.questions) for g in survey.groups) == 40
+    assert sum(len(g.questions) for g in survey.groups) == 45
+
+
+def test_ai_group(survey):
+    """Three questions are copied from Stack Overflow's published 2025
+    instrument so the answers are comparable against their ~33,000
+    respondents, and they are byte-exact apart from one appended escape on
+    aiAccuracyTrust. A reworded prompt silently ends that comparison while the
+    build stays green, which is what this pins.
+
+    The 2025 wording is deliberate: Stack Overflow's 2026 rewrite asks about
+    tools "in your role at work", and students were 24.0% of this survey's
+    2025 respondents, the largest single role.
+    """
+    group = next(g for g in survey.groups if g.id == "ai")
+    assert [q.id for q in group.questions] == [
+        "aiToolUse",
+        "aiSentiment",
+        "aiAccuracyTrust",
+        "aiNixQuality",
+        "aiNixContribution",
+    ]
+    assert all(q.type == "single" for q in group.questions)
+
+    en = survey.texts[survey.language].questions
+    assert en["aiToolUse"].prompt == ("Do you currently use AI tools in your development process?")
+    assert en["aiSentiment"].prompt == (
+        "How favorable is your stance on using AI tools as part of your development workflow?"
+    )
+    assert en["aiAccuracyTrust"].prompt == (
+        "How much do you trust the accuracy of the output from AI tools as part of your "
+        "development workflow?"
+    )
+    # The five-point scale is Stack Overflow's; only the escape is ours, and it
+    # has to stay last or the ordered set stops reading as a scale.
+    assert en["aiAccuracyTrust"].choices == [
+        "Highly trust",
+        "Somewhat trust",
+        "Neither trust nor distrust",
+        "Somewhat distrust",
+        "Highly distrust",
+        "I don't use AI tools",
+    ]
+
+
+def test_no_question_is_conditional(survey):
+    """The community survey is deliberately linear. Conditions landed in the
+    library with the NixCon survey, and a single branch here would be the only
+    one in 45 questions, leaving one question with a denominator that differs
+    from every other. Checked rather than assumed, because adding a condition
+    is a one-line change that nothing else would catch."""
+    for group in survey.groups:
+        assert group.condition is None, group.id
+        for q in group.questions:
+            assert q.condition is None, q.id
 
 
 def test_every_carried_question_is_present(survey):
