@@ -803,6 +803,50 @@ choices.rarely = "Rarely"
 choices.never = "Never"
 choices.iDontLookForHelp = "I don't look for help with Nix or NixOS"
 
+[groups.ai]
+title = "AI tools"
+
+[questions.aiToolUse]
+prompt = "Do you currently use AI tools in your development process?"
+choices.daily = "Yes, I use AI tools daily"
+choices.weekly = "Yes, I use AI tools weekly"
+choices.monthlyOrInfrequently = "Yes, I use AI tools monthly or infrequently"
+choices.noButPlanTo = "No, but I plan to soon"
+choices.noAndDontPlanTo = "No, and I don't plan to"
+
+[questions.aiSentiment]
+prompt = "How favorable is your stance on using AI tools as part of your development workflow?"
+choices.veryFavorable = "Very favorable"
+choices.favorable = "Favorable"
+choices.indifferent = "Indifferent"
+choices.unfavorable = "Unfavorable"
+choices.veryUnfavorable = "Very unfavorable"
+choices.unsure = "Unsure"
+
+[questions.aiAccuracyTrust]
+prompt = "How much do you trust the accuracy of the output from AI tools as part of your development workflow?"
+choices.highlyTrust = "Highly trust"
+choices.somewhatTrust = "Somewhat trust"
+choices.neitherTrustNorDistrust = "Neither trust nor distrust"
+choices.somewhatDistrust = "Somewhat distrust"
+choices.highlyDistrust = "Highly distrust"
+choices.dontUseAiTools = "I don't use AI tools"
+
+[questions.aiNixQuality]
+prompt = "Compared with other languages and tools you use, how well do AI tools handle Nix?"
+choices.muchBetter = "Much better at Nix"
+choices.somewhatBetter = "Somewhat better at Nix"
+choices.aboutTheSame = "About the same"
+choices.somewhatWorse = "Somewhat worse at Nix"
+choices.muchWorse = "Much worse at Nix"
+choices.dontUseAiForNix = "I don't use AI tools for Nix"
+
+[questions.aiNixContribution]
+prompt = "Have you used AI tools to help write a contribution to Nixpkgs or another Nix project?"
+choices.yes = "Yes"
+choices.no = "No"
+choices.haveNotContributed = "I have not contributed"
+
 [groups.contributing]
 title = "Contributing"
 

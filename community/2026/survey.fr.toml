@@ -801,6 +801,50 @@ choices.rarely = "Rarement"
 choices.never = "Jamais"
 choices.iDontLookForHelp = "Je ne cherche pas d'aide sur Nix ou NixOS"
 
+[groups.ai]
+title = "Outils d'IA"
+
+[questions.aiToolUse]
+prompt = "Utilisez-vous actuellement des outils d'IA dans votre processus de développement ?"
+choices.daily = "Oui, j'utilise des outils d'IA tous les jours"
+choices.weekly = "Oui, j'utilise des outils d'IA chaque semaine"
+choices.monthlyOrInfrequently = "Oui, j'utilise des outils d'IA une fois par mois ou rarement"
+choices.noButPlanTo = "Non, mais je compte le faire bientôt"
+choices.noAndDontPlanTo = "Non, et je ne compte pas le faire"
+
+[questions.aiSentiment]
+prompt = "Quelle est votre position sur l'utilisation d'outils d'IA dans votre flux de travail de développement ?"
+choices.veryFavorable = "Très favorable"
+choices.favorable = "Favorable"
+choices.indifferent = "Indifférent·e"
+choices.unfavorable = "Défavorable"
+choices.veryUnfavorable = "Très défavorable"
+choices.unsure = "Je ne sais pas"
+
+[questions.aiAccuracyTrust]
+prompt = "Dans quelle mesure faites-vous confiance à l'exactitude des résultats produits par les outils d'IA dans votre flux de travail de développement ?"
+choices.highlyTrust = "Confiance totale"
+choices.somewhatTrust = "Plutôt confiance"
+choices.neitherTrustNorDistrust = "Ni confiance ni méfiance"
+choices.somewhatDistrust = "Plutôt méfiance"
+choices.highlyDistrust = "Forte méfiance"
+choices.dontUseAiTools = "Je n'utilise pas d'outils d'IA"
+
+[questions.aiNixQuality]
+prompt = "Par rapport aux autres langages et outils que vous utilisez, dans quelle mesure les outils d'IA gèrent-ils bien Nix ?"
+choices.muchBetter = "Bien mieux avec Nix"
+choices.somewhatBetter = "Un peu mieux avec Nix"
+choices.aboutTheSame = "À peu près pareil"
+choices.somewhatWorse = "Un peu moins bien avec Nix"
+choices.muchWorse = "Bien moins bien avec Nix"
+choices.dontUseAiForNix = "Je n'utilise pas d'outils d'IA pour Nix"
+
+[questions.aiNixContribution]
+prompt = "Avez-vous utilisé des outils d'IA pour rédiger une contribution à Nixpkgs ou à un autre projet Nix ?"
+choices.yes = "Oui"
+choices.no = "Non"
+choices.haveNotContributed = "Je n'ai pas contribué"
+
 [groups.contributing]
 title = "Contribuer"
 

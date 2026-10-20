@@ -7,7 +7,8 @@ Carried from 2025 and updated for how this year actually ran. See
 ## Design
 
 - [x] Design the survey questions
-  - 47 questions down to 40, in eight groups, five languages.
+  - 47 questions down to 40, in eight groups, five languages. A five-question
+    `ai` section was added after that count, taking it to 45 in nine groups.
   - [ ] ~~Ask community teams what information they need~~
     Not done this year. An October 1 launch left no room, so team outreach
     was declared out of scope rather than skipped by accident. For 2027:

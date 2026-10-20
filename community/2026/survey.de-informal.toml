@@ -801,6 +801,50 @@ choices.rarely = "Selten"
 choices.never = "Nie"
 choices.iDontLookForHelp = "Ich suche keine Hilfe zu Nix oder NixOS"
 
+[groups.ai]
+title = "KI-Werkzeuge"
+
+[questions.aiToolUse]
+prompt = "Nutzt du derzeit KI-Werkzeuge in deinem Entwicklungsprozess?"
+choices.daily = "Ja, ich nutze KI-Werkzeuge täglich"
+choices.weekly = "Ja, ich nutze KI-Werkzeuge wöchentlich"
+choices.monthlyOrInfrequently = "Ja, ich nutze KI-Werkzeuge monatlich oder selten"
+choices.noButPlanTo = "Nein, aber ich habe es bald vor"
+choices.noAndDontPlanTo = "Nein, und ich habe es nicht vor"
+
+[questions.aiSentiment]
+prompt = "Wie stehst du dazu, KI-Werkzeuge in deinem Entwicklungs-Workflow einzusetzen?"
+choices.veryFavorable = "Sehr positiv"
+choices.favorable = "Positiv"
+choices.indifferent = "Gleichgültig"
+choices.unfavorable = "Negativ"
+choices.veryUnfavorable = "Sehr negativ"
+choices.unsure = "Weiß ich nicht"
+
+[questions.aiAccuracyTrust]
+prompt = "Wie sehr vertraust du der Richtigkeit der Ergebnisse von KI-Werkzeugen in deinem Entwicklungs-Workflow?"
+choices.highlyTrust = "Volles Vertrauen"
+choices.somewhatTrust = "Eher Vertrauen"
+choices.neitherTrustNorDistrust = "Weder Vertrauen noch Misstrauen"
+choices.somewhatDistrust = "Eher Misstrauen"
+choices.highlyDistrust = "Starkes Misstrauen"
+choices.dontUseAiTools = "Ich nutze keine KI-Werkzeuge"
+
+[questions.aiNixQuality]
+prompt = "Wie gut kommen KI-Werkzeuge mit Nix zurecht, verglichen mit anderen Sprachen und Werkzeugen, die du nutzt?"
+choices.muchBetter = "Viel besser bei Nix"
+choices.somewhatBetter = "Etwas besser bei Nix"
+choices.aboutTheSame = "Ungefähr gleich"
+choices.somewhatWorse = "Etwas schlechter bei Nix"
+choices.muchWorse = "Viel schlechter bei Nix"
+choices.dontUseAiForNix = "Ich nutze keine KI-Werkzeuge für Nix"
+
+[questions.aiNixContribution]
+prompt = "Hast du KI-Werkzeuge genutzt, um einen Beitrag zu Nixpkgs oder einem anderen Nix-Projekt zu schreiben?"
+choices.yes = "Ja"
+choices.no = "Nein"
+choices.haveNotContributed = "Ich habe nichts beigetragen"
+
 [groups.contributing]
 title = "Beitragen"
 

@@ -140,13 +140,13 @@ def check_2026(url: str, key: str, tsv_path: str) -> None:
     sid = import_tsv(url, key, tsv_path)
 
     groups = rpc(url, "list_groups", key, sid)
-    assert len(groups) == 8, f"expected 8 groups, got {len(groups)}"
+    assert len(groups) == 9, f"expected 9 groups, got {len(groups)}"
     position = {int(g["gid"]): int(g["group_order"]) for g in groups}
     names = [g["group_name"] for g in sorted(groups, key=lambda g: position[int(g["gid"])])]
     assert names[0] == "About you" and names[-1] == "Finally", names
 
     questions = [q for q in rpc(url, "list_questions", key, sid) if str(q["parent_qid"]) == "0"]
-    assert len(questions) == 40, f"expected 40 questions, got {len(questions)}"
+    assert len(questions) == 45, f"expected 45 questions, got {len(questions)}"
     by_code = {q["title"]: q for q in questions}
 
     def attributes(qid: int) -> dict:

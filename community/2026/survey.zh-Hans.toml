@@ -801,6 +801,50 @@ choices.rarely = "很少"
 choices.never = "从不"
 choices.iDontLookForHelp = "我不会去找 Nix 或 NixOS 的帮助"
 
+[groups.ai]
+title = "AI 工具"
+
+[questions.aiToolUse]
+prompt = "你目前在开发过程中使用 AI 工具吗？"
+choices.daily = "是，我每天使用 AI 工具"
+choices.weekly = "是，我每周使用 AI 工具"
+choices.monthlyOrInfrequently = "是，我每月使用或很少使用 AI 工具"
+choices.noButPlanTo = "否，但我打算很快开始使用"
+choices.noAndDontPlanTo = "否，而且我不打算使用"
+
+[questions.aiSentiment]
+prompt = "你如何看待在开发流程中使用 AI 工具？"
+choices.veryFavorable = "非常赞成"
+choices.favorable = "比较赞成"
+choices.indifferent = "无所谓"
+choices.unfavorable = "比较反对"
+choices.veryUnfavorable = "非常反对"
+choices.unsure = "不确定"
+
+[questions.aiAccuracyTrust]
+prompt = "在开发流程中，你有多信任 AI 工具输出结果的准确性？"
+choices.highlyTrust = "非常信任"
+choices.somewhatTrust = "比较信任"
+choices.neitherTrustNorDistrust = "既不信任也不怀疑"
+choices.somewhatDistrust = "比较怀疑"
+choices.highlyDistrust = "非常怀疑"
+choices.dontUseAiTools = "我不使用 AI 工具"
+
+[questions.aiNixQuality]
+prompt = "与你使用的其他语言和工具相比，AI 工具处理 Nix 的能力如何？"
+choices.muchBetter = "处理 Nix 好得多"
+choices.somewhatBetter = "处理 Nix 稍好一些"
+choices.aboutTheSame = "差不多"
+choices.somewhatWorse = "处理 Nix 稍差一些"
+choices.muchWorse = "处理 Nix 差得多"
+choices.dontUseAiForNix = "我不用 AI 工具处理 Nix"
+
+[questions.aiNixContribution]
+prompt = "你是否使用过 AI 工具来帮助编写对 Nixpkgs 或其他 Nix 项目的贡献？"
+choices.yes = "是"
+choices.no = "否"
+choices.haveNotContributed = "我没有贡献过"
+
 [groups.contributing]
 title = "参与贡献"
 
