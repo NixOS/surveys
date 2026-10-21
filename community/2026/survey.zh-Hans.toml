@@ -355,7 +355,7 @@ choices.other = "其他"
 choices.preferNotToSay = "不想回答"
 
 [questions.industry]
-prompt = "以下哪一项最能描述你所在的经济部门？"
+prompt = "以下哪一项最能描述你所在的行业？"
 choices.softwareDevelopment = "软件开发"
 choices.itServices = "IT 服务、咨询、系统集成或托管服务"
 choices.scientificResearch = "科学研究"
