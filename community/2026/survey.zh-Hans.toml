@@ -2,8 +2,8 @@
 # 参见 community/TRANSLATING.md。
 
 [survey]
-title = "Nix 社区调查 2026"
-intro = "<p>欢迎参加今年的 Nix 社区调查，填写大约需要 10 到 15 分钟。</p><p>你的回答能帮助 Nix 各团队和 NixOS Foundation 决定该把精力投向哪里：需要支持哪些平台、文档在哪些地方帮不上忙，以及是什么让大家没有更多地使用 Nix。结果会以汇总形式发布在 nixos.org/surveys 上，往年的结果也在那里。</p><p>本调查匿名进行。我们不会询问你的姓名或电子邮箱，不记录你的 IP 地址，也不保存时间戳。关于你本人的问题，例如年龄、国家和工作，是为了判断我们听到的是整个社区的声音，还是只有其中一部分。所有问题都可以跳过。</p>"
+title = "2026 年 Nix 社区调查"
+intro = "<p>欢迎参加今年的 Nix 社区调查，填写大约需要 10 到 15 分钟。</p><p>你的回答将帮助 Nix 各团队和 NixOS 基金会确定工作重点：支持哪些平台、文档在哪些方面未能满足使用者需求，以及是什么阻碍大家更充分地使用 Nix。调查结果会以汇总数据的形式发布在 nixos.org/surveys，并与往年结果并列。</p><p>本调查匿名进行。我们不会询问你的姓名或电子邮箱地址，不会记录你的 IP 地址，也不会存储时间戳。关于你本人的问题（如年龄、国家/地区和工作情况），是为了判断我们听到的是整个社区的声音，还是只听到了部分社区的声音。每道题均可跳过。</p>"
 
 [groups.aboutYou]
 title = "关于你"
@@ -314,7 +314,7 @@ choices.retired = "已退休"
 choices.preferNotToSay = "不想回答"
 
 [questions.role]
-prompt = "以下哪一项最能描述你的主要职位或职业？"
+prompt = "以下哪一项最符合你的主要角色或职业？"
 choices.academicResearcher = "学术研究人员"
 choices.architect = "软件或解决方案架构师"
 choices.backEndDeveloper = "后端开发者"
@@ -464,7 +464,7 @@ choices.iWriteOwnModules = "我能写自己的 NixOS 模块。"
 choices.iUnderstandModuleDepth = "我理解模块系统中较深入的某些方面（例如子模块、freeform 模块、优先级系统等）。"
 choices.iHaveUsedOverlays = "我用过 overlay。"
 choices.iUnderstandOverlays = "我理解 overlay 的工作原理。"
-choices.iWrittenDerivation = "我写过 derivation 来打包软件。"
+choices.iWrittenDerivation = "我写过 derivation（派生）来打包软件。"
 choices.iUnderstandStdenv = "我理解 stdenv 和标准构建阶段的工作方式。"
 choices.iComfortableContributing = "我有足够把握向上游贡献。"
 choices.iTeachOthers = "我会教别人 Nix/Nixpkgs/NixOS。"
@@ -530,7 +530,7 @@ choices.nixInstallerRust = "NixOS/nix-installer，用 Rust 写的安装器"
 choices.determinateInstaller = "Determinate Systems 的安装器（安装的是 Determinate Nix）"
 choices.lixInstaller = "Lix 安装器（install.lix.systems）"
 choices.otherPackageManager = "另一个包管理器（例如 apt、pacman、dnf）"
-choices.nixOnDroid = "Android 上的 nix-on-droid"
+choices.nixOnDroid = "nix-on-droid（Android）"
 choices.containerOrCi = "容器镜像或 CI action"
 choices.builtFromSource = "我从源码编译了 Nix"
 choices.other = "其他"
@@ -704,7 +704,7 @@ choices.yes = "是"
 choices.no = "否"
 
 [questions.barriersPersonal]
-prompt = "是什么让你难以比现在更多地使用 Nix？"
+prompt = "哪些障碍让你无法更充分地使用 Nix？"
 choices.learningCurve = "学习曲线太陡"
 choices.nixLanguage = "Nix 语言使用起来很困难"
 choices.documentation = "文档难找或者不完整"
@@ -722,7 +722,7 @@ choices.nothingHoldsMeBack = "没有什么阻碍我"
 choices.iDontUseNix = "我不使用 Nix"
 
 [questions.barriersWork]
-prompt = "是什么阻碍你所在的工作单位或团队更多地使用 Nix？"
+prompt = "哪些障碍让你所在的单位或团队无法更充分地使用 Nix？"
 choices.nobodyKnowsNix = "那里没有人懂 Nix"
 choices.hardToConvince = "很难说服同事或管理层"
 choices.itPolicy = "公司的 IT 政策或合规要求"
@@ -850,9 +850,9 @@ title = "参与贡献"
 
 [questions.contribStatus]
 prompt = "以下哪一项最能描述你向 Nixpkgs 贡献的经历？"
-choices.contributedMerged = "我提交的贡献已被合并"
-choices.contributedNotMerged = "我提交过贡献，但没有被合并"
-choices.triedNotCompleted = "我尝试过贡献，但没有完成"
+choices.contributedMerged = "我贡献过，且已被合并"
+choices.contributedNotMerged = "我提交过贡献，但未被合并"
+choices.triedNotCompleted = "我尝试过贡献，但未完成"
 choices.notTried = "我还没有尝试过贡献"
 choices.dontPlanTo = "我没有贡献的打算"
 
@@ -870,12 +870,12 @@ choices.noneOfThese = "以上都没有"
 [questions.contribSupport]
 prompt = "你向 Nixpkgs 贡献时，过程如何？"
 choices.managedAlone = "我自己搞定了"
-choices.neededHelpGotIt = "我需要社区的帮助，并且得到了"
-choices.neededHelpDidNotGetIt = "我需要社区的帮助，但没有得到"
+choices.neededHelpGotIt = "我需要社区的帮助，并得到了帮助"
+choices.neededHelpDidNotGetIt = "我需要社区的帮助，但没有得到帮助"
 choices.haveNotContributed = "我没有贡献过"
 
 [questions.improvements]
-prompt = "Nix 有余力做三项改进。你会选哪三项？"
+prompt = "假设 Nix 的资源只够完成三项改进，你会选哪三项？"
 choices.performance = "性能"
 choices.languageUsability = "语言易用性"
 choices.flakes = "Flakes"
