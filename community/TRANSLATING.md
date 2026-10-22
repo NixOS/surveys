@@ -79,9 +79,17 @@ survey. Decisions:
 
 | English | fr | es | de | zh-Hans |
 |---|---|---|---|---|
-| Non-binary/non-conforming | Non-binaire / non conforme | No binario / no conforme | Nicht-binär / nicht konform | 非二元性别／性别不一致 |
+| Non-binary/non-conforming | Non-binaire / non conforme | No binario / no conforme | Nicht-binär / nicht konform | 非二元性别／不符合性别规范 |
 | Do you identify as transgender? | Vous identifiez-vous comme transgenre ? | ¿Te identificas como transgénero? | Identifizierst du dich als transgender? | 你认同自己是跨性别者吗？ |
 | Prefer not to say | Je préfère ne pas répondre | Prefiero no decirlo | Keine Angabe | 不想回答 |
+
+Chinese usage examples: [People's Daily Online](http://opinion.people.com.cn/n1/2022/0208/c437948-32347523.html)
+uses "性别认同", and [Xinhua](http://www.news.cn/world/20250322/ca1cd6795eb94b0d818d187797349468/c.html)
+uses "非二元性别者". [China Daily's bilingual definition](https://language.chinadaily.com.cn/a/201904/25/WS5cc103ffa3104842260b830c.html)
+of "gender non-conforming" describes traits that do not match those typically
+associated with one's sex. "不符合性别规范" is a concise explanatory rendering,
+not a fixed term quoted from these outlets. It keeps gender non-conformity
+distinct from gender incongruence ("性别不一致").
 
 Spanish has a live problem here: adjectives agree in gender, so "No binario"
 carries a masculine ending on a question about not being in that binary. "No
